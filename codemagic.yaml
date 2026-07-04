@@ -1,0 +1,68 @@
+# Codemagic — Decluttr
+#
+# Repository root is this Flutter app directory (`mobile/`).
+#
+# Setup: see docs/codemagic-setup.md
+
+workflows:
+  release:
+    name: Release — Decluttr
+    max_build_duration: 120
+    instance_type: mac_mini_m2
+    integrations:
+      app_store_connect: appstore-connect-key
+    environment:
+      flutter: stable
+      xcode: latest
+      cocoapods: default
+      java: 17
+      groups:
+        - google_credentials
+        - mobile_env_files
+      android_signing:
+        - YOUR_DECLUTTR_android_keystore
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.ffslabs.decluttr
+    scripts:
+      - name: Recreate env files from secrets
+        script: |
+          set -euo pipefail
+          mkdir -p env
+          : "${MOBILE_ENV_PRODUCTION:?MOBILE_ENV_PRODUCTION is not set}"
+          : "${MOBILE_ENV_DEVELOPMENT:?MOBILE_ENV_DEVELOPMENT is not set}"
+          printf "%s" "$MOBILE_ENV_PRODUCTION" > env/.env.production
+          printf "%s" "$MOBILE_ENV_DEVELOPMENT" > env/.env.development
+      - name: Set up iOS code signing settings on Xcode project
+        script: xcode-project use-profiles
+      - name: Get Flutter packages
+        script: flutter pub get
+      - name: Install CocoaPods dependencies
+        script: cd ios && pod install
+      - name: Codegen
+        script: |
+          dart run build_runner build --delete-conflicting-outputs
+          flutter gen-l10n
+      - name: Run analyzer
+        script: dart analyze lib test
+      - name: Run tests
+        script: flutter test
+      - name: Build Android APK and App Bundle
+        script: |
+          flutter build apk --release
+          flutter build appbundle --release
+      - name: Build iOS IPA
+        script: flutter build ipa --release --export-options-plist=/Users/builder/export_options.plist
+    artifacts:
+      - build/app/outputs/flutter-apk/*.apk
+      - build/app/outputs/bundle/release/*.aab
+      - build/ios/ipa/*.ipa
+    publishing:
+      google_play:
+        credentials: $GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS
+        track: internal
+        submit_as_draft: true
+      app_store_connect:
+        auth: integration
+        submit_to_testflight: true
+        submit_to_app_store: false

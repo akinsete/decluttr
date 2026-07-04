@@ -1,0 +1,170 @@
+{
+  "@@locale": "en",
+  "appTitle": "Decluttr",
+  "splashTagline": "Keep what matters.\nDelete the rest.",
+  "welcomeHeadlineSuffix": "your digital life",
+  "welcomeSubtitle": "Swipe to keep the good and get rid of what you don't need.",
+  "welcomeGetStarted": "Get started",
+  "welcomeReplay": "Replay splash",
+  "welcomeDoItLater": "I'll do this later",
+  "walkthroughTitle": "How it works",
+  "walkthroughSubtitle": "Swipe to sort, tap for a closer look.",
+  "walkthroughKeepHint": "Swipe right to keep",
+  "walkthroughDeleteHint": "Swipe left to delete",
+  "walkthroughTapHint": "Tap to view details",
+  "walkthroughContinue": "Get started",
+  "walkthroughSkip": "Do it later",
+  "permContactsTitle": "Allow access to your Contacts",
+  "permContactsBullet1": "Find duplicates and outdated entries",
+  "permContactsBullet2": "Merge contacts safely on your device",
+  "permContactsBullet3": "Nothing is uploaded without your consent",
+  "permPhotosTitle": "Allow access to\nyour Photos",
+  "permPhotosSubtitle": "We need access to find and show your photos for cleanup.",
+  "permPhotosBullet1": "Your photos stay private",
+  "permPhotosBullet2": "We never upload anything",
+  "permPhotosBullet3": "You're in control",
+  "permPhotosAllowCta": "Allow photos access",
+  "permAllowAccess": "Allow access",
+  "permNotNow": "Not now",
+  "permMaybeLater": "Maybe later",
+  "homeGreetingFirst": "Welcome 👋",
+  "homeGreetingReturn": "Welcome back 👋",
+  "homeHeroLine1": "Ready for a",
+  "homeHeroLine2Lead": "quick ",
+  "homeHeroAccent": "cleanup?",
+  "homeHeroSub": "Swipe through photos and contacts in minutes.",
+  "homeStreakSubtitle": "Keep your momentum going!",
+  "homeContactsTitle": "Contacts",
+  "homePhotosTitle": "Photos & Videos",
+  "homeTapToStart": "Tap to get started",
+  "homeContactsWaiting": "{count} waiting for you",
+  "@homeContactsWaiting": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "homePhotosWaiting": "{count} waiting for you",
+  "@homePhotosWaiting": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "homeProgressTitle": "Your progress",
+  "homeProgressStats": "{kept} kept · {deleted} cleared",
+  "@homeProgressStats": {
+    "placeholders": {
+      "kept": { "type": "int" },
+      "deleted": { "type": "int" }
+    }
+  },
+  "dockHome": "Home",
+  "dockTrash": "Trash",
+  "dockSettings": "Settings",
+  "batchPhotosTitle": "Photos & Videos",
+  "batchContactsTitle": "Contacts",
+  "batchEmptyTitle": "All caught up ✓",
+  "batchEmptyPhotosSub": "You have cleared every photo batch for now.",
+  "batchEmptyContactsSub": "You have cleared every contact group for now.",
+  "swipeProgress": "{current} / {total}",
+  "@swipeProgress": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "swipeTutorial": "Swipe right to keep, left to delete",
+  "swipeDismissTutorial": "Got it",
+  "swipeKeep": "Keep",
+  "swipeDelete": "Delete",
+  "swipeUndo": "Undo",
+  "sessionSummaryTitle": "Nice work!",
+  "sessionSummarySub": "You reviewed everything in this batch.",
+  "sessionSummaryKept": "{count} kept",
+  "@sessionSummaryKept": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "sessionSummaryDeleted": "{count} deleted",
+  "@sessionSummaryDeleted": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "sessionSummaryBack": "Back to batches",
+  "duplicatesTitle": "Duplicate contacts",
+  "duplicatesProgress": "{current} of {total}",
+  "@duplicatesProgress": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" }
+    }
+  },
+  "duplicatesAfterMerge": "After merge",
+  "duplicatesMerge": "Merge",
+  "duplicatesKeepBoth": "Keep both",
+  "duplicatesDeleteOne": "Delete one",
+  "duplicatesReasonSamePhone": "Same phone number",
+  "duplicatesReasonSameEmail": "Same email address",
+  "duplicatesReasonSimilarName": "Similar name",
+  "trashTitle": "Trash",
+  "trashReclaimable": "{size} reclaimable",
+  "@trashReclaimable": {
+    "placeholders": {
+      "size": { "type": "String" }
+    }
+  },
+  "trashTabPhotos": "Photos",
+  "trashTabContacts": "Contacts",
+  "trashEmpty": "Trash is empty",
+  "trashPurgesIn": "Purges in {days} days",
+  "@trashPurgesIn": {
+    "placeholders": {
+      "days": { "type": "int" }
+    }
+  },
+  "trashRestore": "Restore",
+  "trashDeleteForever": "Delete forever",
+  "trashSelectMode": "Select items",
+  "streakTitle": "Your streak",
+  "streakCurrent": "{days} day streak",
+  "@streakCurrent": {
+    "placeholders": {
+      "days": { "type": "int" }
+    }
+  },
+  "streakLastWeeks": "Last 5 weeks",
+  "streakLegendLess": "Less",
+  "streakLegendMore": "More",
+  "settingsTitle": "Settings",
+  "settingsPremiumTitle": "Go Premium",
+  "settingsPremiumSub": "Unlock unlimited batches and cloud backup.",
+  "settingsPreferences": "Preferences",
+  "settingsAppearance": "Appearance",
+  "settingsAppearanceValue": "Light",
+  "settingsHaptic": "Haptic feedback",
+  "settingsNotifications": "Notifications",
+  "settingsAccount": "Account",
+  "settingsSignIn": "Sign in",
+  "settingsDeleteAccount": "Delete account",
+  "settingsRate": "Rate Decluttr",
+  "settingsShare": "Share Decluttr",
+  "signInTitle": "Sign in",
+  "signInEmail": "Email",
+  "signInPassword": "Password",
+  "signInButton": "Sign in",
+  "errorPhotosTitle": "Unable to load photos",
+  "errorPhotosMessage": "We couldn't load your photo library. Check your connection and try again.",
+  "errorContactsTitle": "Unable to access contacts",
+  "errorContactsMessage": "Decluttr doesn't have permission to read your contacts. Enable access in Settings to continue.",
+  "errorGenericTitle": "Something went wrong",
+  "errorGenericMessage": "An unexpected error occurred. Please try again in a moment.",
+  "errorPermissionTitle": "Permission changed",
+  "errorPermissionMessage": "Photo access was changed in Settings. Reconnect to keep decluttering.",
+  "errorTryAgain": "Try again",
+  "errorGoHome": "Go home",
+  "errorOpenSettings": "Open Settings",
+  "errorNotNow": "Not now",
+  "errorReconnect": "Reconnect",
+  "commonBack": "Back"
+}

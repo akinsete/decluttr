@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "656806354198",
+    "project_id": "decluttr-becd5",
+    "storage_bucket": "decluttr-becd5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:656806354198:android:fdfc90416d8250d4ac4437",
+        "android_client_info": {
+          "package_name": "com.ffslabs.decluttr"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClot9mrEhd3PakpTCK1h89E3ofKmiwtCE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
