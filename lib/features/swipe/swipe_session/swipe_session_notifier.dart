@@ -182,6 +182,8 @@ class SwipeSessionNotifier extends Notifier<SwipeSessionState> {
       subtitle: photo.subtitle,
       gradientIndex: photo.gradientIndex,
       sizeBytes: photo.sizeBytes,
+      isVideo: photo.isVideo,
+      durationLabel: photo.durationLabel,
     );
   }
 
@@ -217,6 +219,8 @@ class SwipeSessionNotifier extends Notifier<SwipeSessionState> {
             initial: state.isPhotos ? null : _initials(item.title),
             sizeBytes: state.isPhotos ? item.sizeBytes : 0,
             gradientIndex: item.gradientIndex,
+            isVideo: state.isPhotos ? item.isVideo : false,
+            durationLabel: state.isPhotos ? item.durationLabel : null,
           ),
         );
 

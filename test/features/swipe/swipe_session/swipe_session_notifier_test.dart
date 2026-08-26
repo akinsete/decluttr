@@ -278,4 +278,8 @@ class _MemoryPhotosRepository implements PhotosRepository {
 
   @override
   Future<Result<bool>> requestPermission() async => const Success(true);
+
+  @override
+  Future<Result<String?>> resolvePlayablePath(String assetId) async =>
+      const Success(null);
 }

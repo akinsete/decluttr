@@ -8,6 +8,8 @@ class SwipeItem {
     this.gradientIndex = 0,
     this.detailBody,
     this.sizeBytes = 0,
+    this.isVideo = false,
+    this.durationLabel,
   });
 
   final String id;
@@ -16,6 +18,8 @@ class SwipeItem {
   final int gradientIndex;
   final String? detailBody;
   final int sizeBytes;
+  final bool isVideo;
+  final String? durationLabel;
 
   SwipeItem copyWith({
     String? title,
@@ -23,6 +27,8 @@ class SwipeItem {
     int? gradientIndex,
     String? detailBody,
     int? sizeBytes,
+    bool? isVideo,
+    String? durationLabel,
   }) {
     return SwipeItem(
       id: id,
@@ -31,6 +37,8 @@ class SwipeItem {
       gradientIndex: gradientIndex ?? this.gradientIndex,
       detailBody: detailBody ?? this.detailBody,
       sizeBytes: sizeBytes ?? this.sizeBytes,
+      isVideo: isVideo ?? this.isVideo,
+      durationLabel: durationLabel ?? this.durationLabel,
     );
   }
 }

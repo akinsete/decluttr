@@ -62,6 +62,8 @@
   "swipeDismissTutorial": "Compris",
   "swipeKeep": "Garder",
   "swipeDelete": "Supprimer",
+  "swipePlayVideo": "Lire la vidéo",
+  "swipeVideoUnavailable": "Impossible de lire cette vidéo",
   "swipeUndo": "Annuler",
   "sessionSummaryTitle": "Terminé !",
   "sessionSummarySubPhotos": "Vous avez passé en revue toutes les photos de ce lot. Beau nettoyage.",

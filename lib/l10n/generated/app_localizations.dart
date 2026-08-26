@@ -478,6 +478,18 @@ abstract class AppLocalizations {
   /// **'Undo'**
   String get swipeUndo;
 
+  /// No description provided for @swipePlayVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Play video'**
+  String get swipePlayVideo;
+
+  /// No description provided for @swipeVideoUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t play this video'**
+  String get swipeVideoUnavailable;
+
   /// No description provided for @sessionSummaryTitle.
   ///
   /// In en, this message translates to:

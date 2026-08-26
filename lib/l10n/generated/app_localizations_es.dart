@@ -254,6 +254,12 @@ class AppLocalizationsEs extends AppLocalizations {
   String get swipeUndo => 'Deshacer';
 
   @override
+  String get swipePlayVideo => 'Reproducir vídeo';
+
+  @override
+  String get swipeVideoUnavailable => 'No se pudo reproducir este vídeo';
+
+  @override
   String get sessionSummaryTitle => '¡Listo!';
 
   @override

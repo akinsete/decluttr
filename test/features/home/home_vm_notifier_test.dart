@@ -116,6 +116,10 @@ class _PhotosBatchesRepository implements PhotosRepository {
 
   @override
   Future<Result<void>> deletePhotos(List<String> assetIds) async => const Success(null);
+
+  @override
+  Future<Result<String?>> resolvePlayablePath(String assetId) async =>
+      const Success(null);
 }
 
 class _MutableTrashRepository implements TrashRepository {
@@ -219,6 +223,10 @@ class _EmptyPhotosRepository implements PhotosRepository {
 
   @override
   Future<Result<void>> deletePhotos(List<String> assetIds) async => const Success(null);
+
+  @override
+  Future<Result<String?>> resolvePlayablePath(String assetId) async =>
+      const Success(null);
 }
 
 class _EmptyContactsRepository implements ContactsRepository {

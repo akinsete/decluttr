@@ -254,6 +254,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get swipeUndo => 'Undo';
 
   @override
+  String get swipePlayVideo => 'Play video';
+
+  @override
+  String get swipeVideoUnavailable => 'Couldn\'t play this video';
+
+  @override
   String get sessionSummaryTitle => 'All done!';
 
   @override

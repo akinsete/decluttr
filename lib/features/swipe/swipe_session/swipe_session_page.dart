@@ -3,6 +3,8 @@ import 'package:flutter/material.dart' hide Banner;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
+import '../../../../core/di/providers.dart';
+import '../../../../core/error/result.dart';
 import '../../../../core/testing/widget_keys.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
@@ -212,6 +214,7 @@ class _SwipeSessionPageState extends ConsumerState<SwipeSessionPage> {
 
   Widget _buildSwipeCard(BuildContext context, {WidgetRef? ref, required SwipeItem item, required bool isTop}) {
     final dt = context.decluttrTheme;
+    final l10n = context.l10n;
     final gradient = dt.batchPickerGradientAt(item.gradientIndex);
 
     return SwipeCard(
@@ -223,7 +226,12 @@ class _SwipeSessionPageState extends ConsumerState<SwipeSessionPage> {
       tagLabel: widget.isPhotos ? item.title : null,
       mediaBackground: widget.isPhotos ? PhotoAssetThumbnail(assetId: item.id, fallbackGradient: gradient) : null,
       isTop: isTop,
-            onSwipeKeep: isTop && ref != null
+      durationLabel: item.isVideo ? item.durationLabel : null,
+      playLabel: item.isVideo ? l10n.swipePlayVideo : null,
+      onPlay: isTop && ref != null && item.isVideo
+          ? () => _playVideo(ref, item.id)
+          : null,
+      onSwipeKeep: isTop && ref != null
           ? () => _onSwipeDecision(
                 () => ref.read(swipeSessionProvider(_args).notifier).keepCurrent(),
               )
@@ -234,6 +242,25 @@ class _SwipeSessionPageState extends ConsumerState<SwipeSessionPage> {
               )
           : null,
       onTap: isTop && ref != null ? () => _showDetail(context, ref, item) : null,
+    );
+  }
+
+  Future<void> _playVideo(WidgetRef ref, String assetId) async {
+    final l10n = context.l10n;
+    final result = await ref.read(photosRepositoryProvider).resolvePlayablePath(assetId);
+    if (!mounted) return;
+
+    final path = result is Success<String?> ? result.value : null;
+    if (path == null || path.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.swipeVideoUnavailable)),
+      );
+      return;
+    }
+
+    await showDialog<void>(
+      context: context,
+      builder: (_) => PhotoAssetVideoPlayerDialog(filePath: path),
     );
   }
 

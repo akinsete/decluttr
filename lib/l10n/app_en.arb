@@ -94,6 +94,8 @@
   "swipeKeep": "Keep",
   "swipeDelete": "Delete",
   "swipeUndo": "Undo",
+  "swipePlayVideo": "Play video",
+  "swipeVideoUnavailable": "Couldn't play this video",
   "sessionSummaryTitle": "All done!",
   "sessionSummarySubPhotos": "You reviewed every photo in this batch. Nice cleanup.",
   "sessionSummarySubContacts": "You reviewed every contact in this batch. Nice cleanup.",

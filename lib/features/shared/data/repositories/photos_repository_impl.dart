@@ -386,6 +386,9 @@ class PhotosRepositoryImpl implements PhotosRepository {
           subtitle: photoCardSubtitle(asset.createDateTime, sizeBytes),
           monthKey: batchId,
           isVideo: asset.type == AssetType.video,
+          durationLabel: asset.type == AssetType.video
+              ? formatVideoDurationSeconds(asset.duration)
+              : null,
           gradientIndex: (offset + photos.length) % 6,
           sizeBytes: sizeBytes,
         ),
@@ -463,6 +466,21 @@ class PhotosRepositoryImpl implements PhotosRepository {
       return const Success(null);
     } catch (e, st) {
       debugPrint('PhotosRepositoryImpl.deletePhotos: $e\n$st');
+      return FailureResult(PhotosLoadFailure(message: '$e'));
+    }
+  }
+
+  @override
+  Future<Result<String?>> resolvePlayablePath(String assetId) async {
+    try {
+      final entity = await AssetEntity.fromId(assetId);
+      if (entity == null || entity.type != AssetType.video) {
+        return const Success(null);
+      }
+      final file = await entity.file;
+      return Success(file?.path);
+    } catch (e, st) {
+      debugPrint('PhotosRepositoryImpl.resolvePlayablePath: $e\n$st');
       return FailureResult(PhotosLoadFailure(message: '$e'));
     }
   }

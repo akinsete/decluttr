@@ -62,6 +62,8 @@
   "swipeDismissTutorial": "Entendido",
   "swipeKeep": "Conservar",
   "swipeDelete": "Eliminar",
+  "swipePlayVideo": "Reproducir vídeo",
+  "swipeVideoUnavailable": "No se pudo reproducir este vídeo",
   "swipeUndo": "Deshacer",
   "sessionSummaryTitle": "¡Listo!",
   "sessionSummarySubPhotos": "Revisaste todas las fotos de este lote. Buena limpieza.",

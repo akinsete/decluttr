@@ -257,6 +257,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get swipeUndo => 'Annuler';
 
   @override
+  String get swipePlayVideo => 'Lire la vidéo';
+
+  @override
+  String get swipeVideoUnavailable => 'Impossible de lire cette vidéo';
+
+  @override
   String get sessionSummaryTitle => 'Terminé !';
 
   @override

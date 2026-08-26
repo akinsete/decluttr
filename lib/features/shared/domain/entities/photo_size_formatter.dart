@@ -17,3 +17,12 @@ String photoCardSubtitle(DateTime date, int sizeBytes, [String? localeName]) {
   if (sizeBytes <= 0) return monthLabel;
   return '$monthLabel · ${formatPhotoSizeBytes(sizeBytes, localeName)}';
 }
+
+/// Formats a video length in whole seconds as `m:ss` (e.g. `0:18`, `12:05`).
+String formatVideoDurationSeconds(int seconds) {
+  final safe = seconds < 0 ? 0 : seconds;
+  final minutes = safe ~/ 60;
+  final remainder = safe % 60;
+  final padded = remainder < 10 ? '0$remainder' : '$remainder';
+  return '$minutes:$padded';
+}

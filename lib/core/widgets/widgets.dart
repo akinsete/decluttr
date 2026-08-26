@@ -10,6 +10,7 @@ export 'empty_state.dart';
 export 'icon_tile.dart';
 export 'module_card.dart';
 export 'photo_asset_thumbnail.dart';
+export 'photo_asset_video_player_dialog.dart';
 export 'primary_button.dart';
 export 'progress_card.dart';
 export 'secondary_button.dart';

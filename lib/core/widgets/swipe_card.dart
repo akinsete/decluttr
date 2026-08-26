@@ -2,23 +2,33 @@ import '../../core/theme/theme.dart';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
-import '../theme/app_motion.dart';
+import '../testing/widget_keys.dart';
 
 /// Imperative handle for programmatic keep/delete swipes (e.g. action bar taps).
+///
+/// Bindings are owned by a single [State]. When a keyed [SwipeCard] is replaced,
+/// Flutter mounts the new card before disposing the old one — so [dispose] must
+/// only clear callbacks if this owner still holds the controller.
 class SwipeCardController {
   Future<void> Function()? _swipeKeep;
   Future<void> Function()? _swipeDelete;
+  Object? _owner;
 
   void _bind({
+    required Object owner,
     required Future<void> Function() swipeKeep,
     required Future<void> Function() swipeDelete,
   }) {
+    _owner = owner;
     _swipeKeep = swipeKeep;
     _swipeDelete = swipeDelete;
   }
 
-  void _unbind() {
+  void _unbind(Object owner) {
+    if (!identical(_owner, owner)) return;
+    _owner = null;
     _swipeKeep = null;
     _swipeDelete = null;
   }
@@ -40,6 +50,9 @@ class SwipeCard extends StatefulWidget {
     this.onSwipeKeep,
     this.onSwipeDelete,
     this.onTap,
+    this.onPlay,
+    this.playLabel,
+    this.durationLabel,
     this.isTop = true,
     this.deleteOnSwipeRight = false,
   });
@@ -53,6 +66,9 @@ class SwipeCard extends StatefulWidget {
   final Future<void> Function()? onSwipeKeep;
   final Future<void> Function()? onSwipeDelete;
   final VoidCallback? onTap;
+  final VoidCallback? onPlay;
+  final String? playLabel;
+  final String? durationLabel;
   final bool isTop;
   final bool deleteOnSwipeRight;
 
@@ -97,7 +113,7 @@ class _SwipeCardState extends State<SwipeCard> {
   void didUpdateWidget(SwipeCard oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.controller != widget.controller) {
-      oldWidget.controller?._unbind();
+      oldWidget.controller?._unbind(this);
       _bindController();
     }
     if (oldWidget.title != widget.title ||
@@ -113,7 +129,7 @@ class _SwipeCardState extends State<SwipeCard> {
 
   @override
   void dispose() {
-    widget.controller?._unbind();
+    widget.controller?._unbind(this);
     super.dispose();
   }
 
@@ -122,6 +138,7 @@ class _SwipeCardState extends State<SwipeCard> {
     final keepTarget = widget.deleteOnSwipeRight ? -620.0 : 620.0;
     final deleteTarget = widget.deleteOnSwipeRight ? 620.0 : -620.0;
     widget.controller?._bind(
+      owner: this,
       swipeKeep: () => _flyAway(keepTarget, widget.onSwipeKeep),
       swipeDelete: () => _flyAway(deleteTarget, widget.onSwipeDelete),
     );
@@ -238,6 +255,14 @@ class _SwipeCardState extends State<SwipeCard> {
                     ),
                   ),
                 if (_isPhotoCard) ...[
+                  if (widget.onPlay != null)
+                    Center(
+                      child: _VideoPlayButton(
+                        onPlay: widget.onPlay!,
+                        label: widget.playLabel,
+                        durationLabel: widget.durationLabel,
+                      ),
+                    ),
                   if (widget.tagLabel != null)
                     Positioned(
                       top: dt.x4 + dt.x1,
@@ -327,6 +352,76 @@ class _Stamp extends StatelessWidget {
         label,
         style: context.decluttrTypography.swipeStamp.copyWith(color: color),
       ),
+    );
+  }
+}
+
+class _VideoPlayButton extends StatelessWidget {
+  const _VideoPlayButton({
+    required this.onPlay,
+    this.label,
+    this.durationLabel,
+  });
+
+  final VoidCallback onPlay;
+  final String? label;
+  final String? durationLabel;
+
+  @override
+  Widget build(BuildContext context) {
+    final dt = context.decluttrTheme;
+    final typography = context.decluttrTypography;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Material(
+          color: Colors.transparent,
+          shape: const CircleBorder(),
+          child: InkWell(
+            key: WidgetKeys.swipePlayVideoButton,
+            onTap: onPlay,
+            customBorder: const CircleBorder(),
+            child: Ink(
+              width: dt.x11,
+              height: dt.x11,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: dt.ink.withValues(alpha: 0.48),
+                border: Border.all(
+                  color: dt.white.withValues(alpha: 0.85),
+                  width: dt.x1 - 1,
+                ),
+              ),
+              child: Icon(
+                PhosphorIconsFill.play,
+                color: dt.white,
+                size: dt.x7,
+                semanticLabel: label,
+              ),
+            ),
+          ),
+        ),
+        if (durationLabel != null) ...[
+          SizedBox(height: dt.x2),
+          DecoratedBox(
+            decoration: BoxDecoration(
+              color: dt.ink.withValues(alpha: 0.4),
+              borderRadius: BorderRadius.circular(dt.radiusFull),
+            ),
+            child: Padding(
+              padding: EdgeInsets.symmetric(
+                horizontal: dt.x3,
+                vertical: dt.x1,
+              ),
+              child: Text(
+                durationLabel!,
+                style: typography.moduleCardSubtitle.copyWith(color: dt.white),
+              ),
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

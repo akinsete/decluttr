@@ -14,4 +14,7 @@ abstract class PhotosRepository {
   Future<Result<bool>> requestPermission();
   Future<Result<bool>> hasPermission();
   Future<Result<void>> deletePhotos(List<String> assetIds);
+
+  /// Absolute path to a local file suitable for in-app video playback, or null.
+  Future<Result<String?>> resolvePlayablePath(String assetId);
 }

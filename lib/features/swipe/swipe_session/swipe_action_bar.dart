@@ -25,6 +25,7 @@ class SwipeActionBar extends StatelessWidget {
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _SwipeCircleButton(
           key: WidgetKeys.swipeUndoButton,
@@ -44,11 +45,11 @@ class SwipeActionBar extends StatelessWidget {
           icon: PhosphorIconsRegular.x,
           iconColor: dt.destructiveStrong,
           backgroundColor: dt.white,
-          shadows: const [
+          shadows: [
             BoxShadow(
-              color: Color(0x38FF4F6D),
-              blurRadius: 20,
-              offset: Offset(0, 8),
+              color: dt.destructiveStrong.withValues(alpha: 0.22),
+              blurRadius: dt.x5,
+              offset: Offset(0, dt.x2),
             ),
           ],
           onTap: onDelete,
@@ -65,11 +66,11 @@ class SwipeActionBar extends StatelessWidget {
             end: Alignment.bottomRight,
             colors: [dt.walkthroughKeep, _keepGradientEnd],
           ),
-          shadows: const [
+          shadows: [
             BoxShadow(
-              color: Color(0x4752C77B),
-              blurRadius: 20,
-              offset: Offset(0, 8),
+              color: dt.walkthroughKeep.withValues(alpha: 0.28),
+              blurRadius: dt.x5,
+              offset: Offset(0, dt.x2),
             ),
           ],
           onTap: onKeep,
@@ -118,25 +119,32 @@ class _SwipeCircleButton extends StatelessWidget {
     final dt = context.decluttrTheme;
     final bottomBleed = _shadowBleed(shadows, dt.x1);
 
-    return SizedBox(
-      width: size,
-      height: size + bottomBleed,
-      child: Material(
-        color: Colors.transparent,
-        clipBehavior: Clip.none,
-        child: InkWell(
-          onTap: onTap,
-          customBorder: const CircleBorder(),
-          child: Ink(
-            width: size,
-            height: size,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: backgroundColor,
-              gradient: gradient,
-              boxShadow: shadows,
+    // Shadow lives on a square circular DecoratedBox — not on [Ink] inside a
+    // taller Material — so the glow stays circular instead of a flat bar.
+    return Padding(
+      padding: EdgeInsets.only(bottom: bottomBleed),
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          boxShadow: shadows,
+        ),
+        child: Material(
+          color: Colors.transparent,
+          shape: const CircleBorder(),
+          clipBehavior: Clip.antiAlias,
+          child: InkWell(
+            onTap: onTap,
+            customBorder: const CircleBorder(),
+            child: Ink(
+              width: size,
+              height: size,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: backgroundColor,
+                gradient: gradient,
+              ),
+              child: Icon(icon, size: iconSize, color: iconColor),
             ),
-            child: Icon(icon, size: iconSize, color: iconColor),
           ),
         ),
       ),
