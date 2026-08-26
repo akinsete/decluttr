@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$SwipeSessionArgs {
 
- String get batchId; String get batchTitle; bool get isPhotos;
+ String get batchId; String get batchTitle; bool get isPhotos; int? get batchCount;
 /// Create a copy of SwipeSessionArgs
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $SwipeSessionArgsCopyWith<SwipeSessionArgs> get copyWith => _$SwipeSessionArgsCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SwipeSessionArgs&&(identical(other.batchId, batchId) || other.batchId == batchId)&&(identical(other.batchTitle, batchTitle) || other.batchTitle == batchTitle)&&(identical(other.isPhotos, isPhotos) || other.isPhotos == isPhotos));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SwipeSessionArgs&&(identical(other.batchId, batchId) || other.batchId == batchId)&&(identical(other.batchTitle, batchTitle) || other.batchTitle == batchTitle)&&(identical(other.isPhotos, isPhotos) || other.isPhotos == isPhotos)&&(identical(other.batchCount, batchCount) || other.batchCount == batchCount));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,batchId,batchTitle,isPhotos);
+int get hashCode => Object.hash(runtimeType,batchId,batchTitle,isPhotos,batchCount);
 
 @override
 String toString() {
-  return 'SwipeSessionArgs(batchId: $batchId, batchTitle: $batchTitle, isPhotos: $isPhotos)';
+  return 'SwipeSessionArgs(batchId: $batchId, batchTitle: $batchTitle, isPhotos: $isPhotos, batchCount: $batchCount)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $SwipeSessionArgsCopyWith<$Res>  {
   factory $SwipeSessionArgsCopyWith(SwipeSessionArgs value, $Res Function(SwipeSessionArgs) _then) = _$SwipeSessionArgsCopyWithImpl;
 @useResult
 $Res call({
- String batchId, String batchTitle, bool isPhotos
+ String batchId, String batchTitle, bool isPhotos, int? batchCount
 });
 
 
@@ -62,12 +62,13 @@ class _$SwipeSessionArgsCopyWithImpl<$Res>
 
 /// Create a copy of SwipeSessionArgs
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? batchId = null,Object? batchTitle = null,Object? isPhotos = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? batchId = null,Object? batchTitle = null,Object? isPhotos = null,Object? batchCount = freezed,}) {
   return _then(_self.copyWith(
 batchId: null == batchId ? _self.batchId : batchId // ignore: cast_nullable_to_non_nullable
 as String,batchTitle: null == batchTitle ? _self.batchTitle : batchTitle // ignore: cast_nullable_to_non_nullable
 as String,isPhotos: null == isPhotos ? _self.isPhotos : isPhotos // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,batchCount: freezed == batchCount ? _self.batchCount : batchCount // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -152,10 +153,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String batchId,  String batchTitle,  bool isPhotos)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String batchId,  String batchTitle,  bool isPhotos,  int? batchCount)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SwipeSessionArgs() when $default != null:
-return $default(_that.batchId,_that.batchTitle,_that.isPhotos);case _:
+return $default(_that.batchId,_that.batchTitle,_that.isPhotos,_that.batchCount);case _:
   return orElse();
 
 }
@@ -173,10 +174,10 @@ return $default(_that.batchId,_that.batchTitle,_that.isPhotos);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String batchId,  String batchTitle,  bool isPhotos)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String batchId,  String batchTitle,  bool isPhotos,  int? batchCount)  $default,) {final _that = this;
 switch (_that) {
 case _SwipeSessionArgs():
-return $default(_that.batchId,_that.batchTitle,_that.isPhotos);case _:
+return $default(_that.batchId,_that.batchTitle,_that.isPhotos,_that.batchCount);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -193,10 +194,10 @@ return $default(_that.batchId,_that.batchTitle,_that.isPhotos);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String batchId,  String batchTitle,  bool isPhotos)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String batchId,  String batchTitle,  bool isPhotos,  int? batchCount)?  $default,) {final _that = this;
 switch (_that) {
 case _SwipeSessionArgs() when $default != null:
-return $default(_that.batchId,_that.batchTitle,_that.isPhotos);case _:
+return $default(_that.batchId,_that.batchTitle,_that.isPhotos,_that.batchCount);case _:
   return null;
 
 }
@@ -208,12 +209,13 @@ return $default(_that.batchId,_that.batchTitle,_that.isPhotos);case _:
 
 
 class _SwipeSessionArgs implements SwipeSessionArgs {
-  const _SwipeSessionArgs({required this.batchId, required this.batchTitle, required this.isPhotos});
+  const _SwipeSessionArgs({required this.batchId, required this.batchTitle, required this.isPhotos, this.batchCount});
   
 
 @override final  String batchId;
 @override final  String batchTitle;
 @override final  bool isPhotos;
+@override final  int? batchCount;
 
 /// Create a copy of SwipeSessionArgs
 /// with the given fields replaced by the non-null parameter values.
@@ -225,16 +227,16 @@ _$SwipeSessionArgsCopyWith<_SwipeSessionArgs> get copyWith => __$SwipeSessionArg
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SwipeSessionArgs&&(identical(other.batchId, batchId) || other.batchId == batchId)&&(identical(other.batchTitle, batchTitle) || other.batchTitle == batchTitle)&&(identical(other.isPhotos, isPhotos) || other.isPhotos == isPhotos));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SwipeSessionArgs&&(identical(other.batchId, batchId) || other.batchId == batchId)&&(identical(other.batchTitle, batchTitle) || other.batchTitle == batchTitle)&&(identical(other.isPhotos, isPhotos) || other.isPhotos == isPhotos)&&(identical(other.batchCount, batchCount) || other.batchCount == batchCount));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,batchId,batchTitle,isPhotos);
+int get hashCode => Object.hash(runtimeType,batchId,batchTitle,isPhotos,batchCount);
 
 @override
 String toString() {
-  return 'SwipeSessionArgs(batchId: $batchId, batchTitle: $batchTitle, isPhotos: $isPhotos)';
+  return 'SwipeSessionArgs(batchId: $batchId, batchTitle: $batchTitle, isPhotos: $isPhotos, batchCount: $batchCount)';
 }
 
 
@@ -245,7 +247,7 @@ abstract mixin class _$SwipeSessionArgsCopyWith<$Res> implements $SwipeSessionAr
   factory _$SwipeSessionArgsCopyWith(_SwipeSessionArgs value, $Res Function(_SwipeSessionArgs) _then) = __$SwipeSessionArgsCopyWithImpl;
 @override @useResult
 $Res call({
- String batchId, String batchTitle, bool isPhotos
+ String batchId, String batchTitle, bool isPhotos, int? batchCount
 });
 
 
@@ -262,12 +264,13 @@ class __$SwipeSessionArgsCopyWithImpl<$Res>
 
 /// Create a copy of SwipeSessionArgs
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? batchId = null,Object? batchTitle = null,Object? isPhotos = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? batchId = null,Object? batchTitle = null,Object? isPhotos = null,Object? batchCount = freezed,}) {
   return _then(_SwipeSessionArgs(
 batchId: null == batchId ? _self.batchId : batchId // ignore: cast_nullable_to_non_nullable
 as String,batchTitle: null == batchTitle ? _self.batchTitle : batchTitle // ignore: cast_nullable_to_non_nullable
 as String,isPhotos: null == isPhotos ? _self.isPhotos : isPhotos // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,batchCount: freezed == batchCount ? _self.batchCount : batchCount // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -277,7 +280,7 @@ as bool,
 /// @nodoc
 mixin _$SwipeSessionState {
 
- List<SwipeItem> get items; int get currentIndex; int get kept; int get deleted; bool get isLoading; bool get showTutorial; String get batchId; String get batchTitle; bool get isPhotos;
+ List<SwipeItem> get items; int get currentIndex; int get kept; int get deleted; int get deletedBytes; bool get flushed; bool get isLoading; bool get isLoadingMore; bool get hasMore; int get totalCount; int get sourceOffset; bool get showTutorial; String get batchId; String get batchTitle; bool get isPhotos; DateTime? get startedAt;
 /// Create a copy of SwipeSessionState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -288,16 +291,16 @@ $SwipeSessionStateCopyWith<SwipeSessionState> get copyWith => _$SwipeSessionStat
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is SwipeSessionState&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.currentIndex, currentIndex) || other.currentIndex == currentIndex)&&(identical(other.kept, kept) || other.kept == kept)&&(identical(other.deleted, deleted) || other.deleted == deleted)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.showTutorial, showTutorial) || other.showTutorial == showTutorial)&&(identical(other.batchId, batchId) || other.batchId == batchId)&&(identical(other.batchTitle, batchTitle) || other.batchTitle == batchTitle)&&(identical(other.isPhotos, isPhotos) || other.isPhotos == isPhotos));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is SwipeSessionState&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.currentIndex, currentIndex) || other.currentIndex == currentIndex)&&(identical(other.kept, kept) || other.kept == kept)&&(identical(other.deleted, deleted) || other.deleted == deleted)&&(identical(other.deletedBytes, deletedBytes) || other.deletedBytes == deletedBytes)&&(identical(other.flushed, flushed) || other.flushed == flushed)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isLoadingMore, isLoadingMore) || other.isLoadingMore == isLoadingMore)&&(identical(other.hasMore, hasMore) || other.hasMore == hasMore)&&(identical(other.totalCount, totalCount) || other.totalCount == totalCount)&&(identical(other.sourceOffset, sourceOffset) || other.sourceOffset == sourceOffset)&&(identical(other.showTutorial, showTutorial) || other.showTutorial == showTutorial)&&(identical(other.batchId, batchId) || other.batchId == batchId)&&(identical(other.batchTitle, batchTitle) || other.batchTitle == batchTitle)&&(identical(other.isPhotos, isPhotos) || other.isPhotos == isPhotos)&&(identical(other.startedAt, startedAt) || other.startedAt == startedAt));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(items),currentIndex,kept,deleted,isLoading,showTutorial,batchId,batchTitle,isPhotos);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(items),currentIndex,kept,deleted,deletedBytes,flushed,isLoading,isLoadingMore,hasMore,totalCount,sourceOffset,showTutorial,batchId,batchTitle,isPhotos,startedAt);
 
 @override
 String toString() {
-  return 'SwipeSessionState(items: $items, currentIndex: $currentIndex, kept: $kept, deleted: $deleted, isLoading: $isLoading, showTutorial: $showTutorial, batchId: $batchId, batchTitle: $batchTitle, isPhotos: $isPhotos)';
+  return 'SwipeSessionState(items: $items, currentIndex: $currentIndex, kept: $kept, deleted: $deleted, deletedBytes: $deletedBytes, flushed: $flushed, isLoading: $isLoading, isLoadingMore: $isLoadingMore, hasMore: $hasMore, totalCount: $totalCount, sourceOffset: $sourceOffset, showTutorial: $showTutorial, batchId: $batchId, batchTitle: $batchTitle, isPhotos: $isPhotos, startedAt: $startedAt)';
 }
 
 
@@ -308,7 +311,7 @@ abstract mixin class $SwipeSessionStateCopyWith<$Res>  {
   factory $SwipeSessionStateCopyWith(SwipeSessionState value, $Res Function(SwipeSessionState) _then) = _$SwipeSessionStateCopyWithImpl;
 @useResult
 $Res call({
- List<SwipeItem> items, int currentIndex, int kept, int deleted, bool isLoading, bool showTutorial, String batchId, String batchTitle, bool isPhotos
+ List<SwipeItem> items, int currentIndex, int kept, int deleted, int deletedBytes, bool flushed, bool isLoading, bool isLoadingMore, bool hasMore, int totalCount, int sourceOffset, bool showTutorial, String batchId, String batchTitle, bool isPhotos, DateTime? startedAt
 });
 
 
@@ -325,18 +328,25 @@ class _$SwipeSessionStateCopyWithImpl<$Res>
 
 /// Create a copy of SwipeSessionState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? items = null,Object? currentIndex = null,Object? kept = null,Object? deleted = null,Object? isLoading = null,Object? showTutorial = null,Object? batchId = null,Object? batchTitle = null,Object? isPhotos = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? items = null,Object? currentIndex = null,Object? kept = null,Object? deleted = null,Object? deletedBytes = null,Object? flushed = null,Object? isLoading = null,Object? isLoadingMore = null,Object? hasMore = null,Object? totalCount = null,Object? sourceOffset = null,Object? showTutorial = null,Object? batchId = null,Object? batchTitle = null,Object? isPhotos = null,Object? startedAt = freezed,}) {
   return _then(_self.copyWith(
 items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
 as List<SwipeItem>,currentIndex: null == currentIndex ? _self.currentIndex : currentIndex // ignore: cast_nullable_to_non_nullable
 as int,kept: null == kept ? _self.kept : kept // ignore: cast_nullable_to_non_nullable
 as int,deleted: null == deleted ? _self.deleted : deleted // ignore: cast_nullable_to_non_nullable
-as int,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
-as bool,showTutorial: null == showTutorial ? _self.showTutorial : showTutorial // ignore: cast_nullable_to_non_nullable
+as int,deletedBytes: null == deletedBytes ? _self.deletedBytes : deletedBytes // ignore: cast_nullable_to_non_nullable
+as int,flushed: null == flushed ? _self.flushed : flushed // ignore: cast_nullable_to_non_nullable
+as bool,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+as bool,isLoadingMore: null == isLoadingMore ? _self.isLoadingMore : isLoadingMore // ignore: cast_nullable_to_non_nullable
+as bool,hasMore: null == hasMore ? _self.hasMore : hasMore // ignore: cast_nullable_to_non_nullable
+as bool,totalCount: null == totalCount ? _self.totalCount : totalCount // ignore: cast_nullable_to_non_nullable
+as int,sourceOffset: null == sourceOffset ? _self.sourceOffset : sourceOffset // ignore: cast_nullable_to_non_nullable
+as int,showTutorial: null == showTutorial ? _self.showTutorial : showTutorial // ignore: cast_nullable_to_non_nullable
 as bool,batchId: null == batchId ? _self.batchId : batchId // ignore: cast_nullable_to_non_nullable
 as String,batchTitle: null == batchTitle ? _self.batchTitle : batchTitle // ignore: cast_nullable_to_non_nullable
 as String,isPhotos: null == isPhotos ? _self.isPhotos : isPhotos // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,startedAt: freezed == startedAt ? _self.startedAt : startedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 
@@ -421,10 +431,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<SwipeItem> items,  int currentIndex,  int kept,  int deleted,  bool isLoading,  bool showTutorial,  String batchId,  String batchTitle,  bool isPhotos)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( List<SwipeItem> items,  int currentIndex,  int kept,  int deleted,  int deletedBytes,  bool flushed,  bool isLoading,  bool isLoadingMore,  bool hasMore,  int totalCount,  int sourceOffset,  bool showTutorial,  String batchId,  String batchTitle,  bool isPhotos,  DateTime? startedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _SwipeSessionState() when $default != null:
-return $default(_that.items,_that.currentIndex,_that.kept,_that.deleted,_that.isLoading,_that.showTutorial,_that.batchId,_that.batchTitle,_that.isPhotos);case _:
+return $default(_that.items,_that.currentIndex,_that.kept,_that.deleted,_that.deletedBytes,_that.flushed,_that.isLoading,_that.isLoadingMore,_that.hasMore,_that.totalCount,_that.sourceOffset,_that.showTutorial,_that.batchId,_that.batchTitle,_that.isPhotos,_that.startedAt);case _:
   return orElse();
 
 }
@@ -442,10 +452,10 @@ return $default(_that.items,_that.currentIndex,_that.kept,_that.deleted,_that.is
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<SwipeItem> items,  int currentIndex,  int kept,  int deleted,  bool isLoading,  bool showTutorial,  String batchId,  String batchTitle,  bool isPhotos)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( List<SwipeItem> items,  int currentIndex,  int kept,  int deleted,  int deletedBytes,  bool flushed,  bool isLoading,  bool isLoadingMore,  bool hasMore,  int totalCount,  int sourceOffset,  bool showTutorial,  String batchId,  String batchTitle,  bool isPhotos,  DateTime? startedAt)  $default,) {final _that = this;
 switch (_that) {
 case _SwipeSessionState():
-return $default(_that.items,_that.currentIndex,_that.kept,_that.deleted,_that.isLoading,_that.showTutorial,_that.batchId,_that.batchTitle,_that.isPhotos);case _:
+return $default(_that.items,_that.currentIndex,_that.kept,_that.deleted,_that.deletedBytes,_that.flushed,_that.isLoading,_that.isLoadingMore,_that.hasMore,_that.totalCount,_that.sourceOffset,_that.showTutorial,_that.batchId,_that.batchTitle,_that.isPhotos,_that.startedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -462,10 +472,10 @@ return $default(_that.items,_that.currentIndex,_that.kept,_that.deleted,_that.is
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<SwipeItem> items,  int currentIndex,  int kept,  int deleted,  bool isLoading,  bool showTutorial,  String batchId,  String batchTitle,  bool isPhotos)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( List<SwipeItem> items,  int currentIndex,  int kept,  int deleted,  int deletedBytes,  bool flushed,  bool isLoading,  bool isLoadingMore,  bool hasMore,  int totalCount,  int sourceOffset,  bool showTutorial,  String batchId,  String batchTitle,  bool isPhotos,  DateTime? startedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _SwipeSessionState() when $default != null:
-return $default(_that.items,_that.currentIndex,_that.kept,_that.deleted,_that.isLoading,_that.showTutorial,_that.batchId,_that.batchTitle,_that.isPhotos);case _:
+return $default(_that.items,_that.currentIndex,_that.kept,_that.deleted,_that.deletedBytes,_that.flushed,_that.isLoading,_that.isLoadingMore,_that.hasMore,_that.totalCount,_that.sourceOffset,_that.showTutorial,_that.batchId,_that.batchTitle,_that.isPhotos,_that.startedAt);case _:
   return null;
 
 }
@@ -477,7 +487,7 @@ return $default(_that.items,_that.currentIndex,_that.kept,_that.deleted,_that.is
 
 
 class _SwipeSessionState extends SwipeSessionState {
-  const _SwipeSessionState({final  List<SwipeItem> items = const <SwipeItem>[], this.currentIndex = 0, this.kept = 0, this.deleted = 0, this.isLoading = true, this.showTutorial = false, this.batchId = '', this.batchTitle = '', this.isPhotos = true}): _items = items,super._();
+  const _SwipeSessionState({final  List<SwipeItem> items = const <SwipeItem>[], this.currentIndex = 0, this.kept = 0, this.deleted = 0, this.deletedBytes = 0, this.flushed = false, this.isLoading = true, this.isLoadingMore = false, this.hasMore = false, this.totalCount = 0, this.sourceOffset = 0, this.showTutorial = false, this.batchId = '', this.batchTitle = '', this.isPhotos = true, this.startedAt}): _items = items,super._();
   
 
  final  List<SwipeItem> _items;
@@ -490,11 +500,18 @@ class _SwipeSessionState extends SwipeSessionState {
 @override@JsonKey() final  int currentIndex;
 @override@JsonKey() final  int kept;
 @override@JsonKey() final  int deleted;
+@override@JsonKey() final  int deletedBytes;
+@override@JsonKey() final  bool flushed;
 @override@JsonKey() final  bool isLoading;
+@override@JsonKey() final  bool isLoadingMore;
+@override@JsonKey() final  bool hasMore;
+@override@JsonKey() final  int totalCount;
+@override@JsonKey() final  int sourceOffset;
 @override@JsonKey() final  bool showTutorial;
 @override@JsonKey() final  String batchId;
 @override@JsonKey() final  String batchTitle;
 @override@JsonKey() final  bool isPhotos;
+@override final  DateTime? startedAt;
 
 /// Create a copy of SwipeSessionState
 /// with the given fields replaced by the non-null parameter values.
@@ -506,16 +523,16 @@ _$SwipeSessionStateCopyWith<_SwipeSessionState> get copyWith => __$SwipeSessionS
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SwipeSessionState&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.currentIndex, currentIndex) || other.currentIndex == currentIndex)&&(identical(other.kept, kept) || other.kept == kept)&&(identical(other.deleted, deleted) || other.deleted == deleted)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.showTutorial, showTutorial) || other.showTutorial == showTutorial)&&(identical(other.batchId, batchId) || other.batchId == batchId)&&(identical(other.batchTitle, batchTitle) || other.batchTitle == batchTitle)&&(identical(other.isPhotos, isPhotos) || other.isPhotos == isPhotos));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _SwipeSessionState&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.currentIndex, currentIndex) || other.currentIndex == currentIndex)&&(identical(other.kept, kept) || other.kept == kept)&&(identical(other.deleted, deleted) || other.deleted == deleted)&&(identical(other.deletedBytes, deletedBytes) || other.deletedBytes == deletedBytes)&&(identical(other.flushed, flushed) || other.flushed == flushed)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isLoadingMore, isLoadingMore) || other.isLoadingMore == isLoadingMore)&&(identical(other.hasMore, hasMore) || other.hasMore == hasMore)&&(identical(other.totalCount, totalCount) || other.totalCount == totalCount)&&(identical(other.sourceOffset, sourceOffset) || other.sourceOffset == sourceOffset)&&(identical(other.showTutorial, showTutorial) || other.showTutorial == showTutorial)&&(identical(other.batchId, batchId) || other.batchId == batchId)&&(identical(other.batchTitle, batchTitle) || other.batchTitle == batchTitle)&&(identical(other.isPhotos, isPhotos) || other.isPhotos == isPhotos)&&(identical(other.startedAt, startedAt) || other.startedAt == startedAt));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_items),currentIndex,kept,deleted,isLoading,showTutorial,batchId,batchTitle,isPhotos);
+int get hashCode => Object.hash(runtimeType,const DeepCollectionEquality().hash(_items),currentIndex,kept,deleted,deletedBytes,flushed,isLoading,isLoadingMore,hasMore,totalCount,sourceOffset,showTutorial,batchId,batchTitle,isPhotos,startedAt);
 
 @override
 String toString() {
-  return 'SwipeSessionState(items: $items, currentIndex: $currentIndex, kept: $kept, deleted: $deleted, isLoading: $isLoading, showTutorial: $showTutorial, batchId: $batchId, batchTitle: $batchTitle, isPhotos: $isPhotos)';
+  return 'SwipeSessionState(items: $items, currentIndex: $currentIndex, kept: $kept, deleted: $deleted, deletedBytes: $deletedBytes, flushed: $flushed, isLoading: $isLoading, isLoadingMore: $isLoadingMore, hasMore: $hasMore, totalCount: $totalCount, sourceOffset: $sourceOffset, showTutorial: $showTutorial, batchId: $batchId, batchTitle: $batchTitle, isPhotos: $isPhotos, startedAt: $startedAt)';
 }
 
 
@@ -526,7 +543,7 @@ abstract mixin class _$SwipeSessionStateCopyWith<$Res> implements $SwipeSessionS
   factory _$SwipeSessionStateCopyWith(_SwipeSessionState value, $Res Function(_SwipeSessionState) _then) = __$SwipeSessionStateCopyWithImpl;
 @override @useResult
 $Res call({
- List<SwipeItem> items, int currentIndex, int kept, int deleted, bool isLoading, bool showTutorial, String batchId, String batchTitle, bool isPhotos
+ List<SwipeItem> items, int currentIndex, int kept, int deleted, int deletedBytes, bool flushed, bool isLoading, bool isLoadingMore, bool hasMore, int totalCount, int sourceOffset, bool showTutorial, String batchId, String batchTitle, bool isPhotos, DateTime? startedAt
 });
 
 
@@ -543,18 +560,25 @@ class __$SwipeSessionStateCopyWithImpl<$Res>
 
 /// Create a copy of SwipeSessionState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? items = null,Object? currentIndex = null,Object? kept = null,Object? deleted = null,Object? isLoading = null,Object? showTutorial = null,Object? batchId = null,Object? batchTitle = null,Object? isPhotos = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? items = null,Object? currentIndex = null,Object? kept = null,Object? deleted = null,Object? deletedBytes = null,Object? flushed = null,Object? isLoading = null,Object? isLoadingMore = null,Object? hasMore = null,Object? totalCount = null,Object? sourceOffset = null,Object? showTutorial = null,Object? batchId = null,Object? batchTitle = null,Object? isPhotos = null,Object? startedAt = freezed,}) {
   return _then(_SwipeSessionState(
 items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
 as List<SwipeItem>,currentIndex: null == currentIndex ? _self.currentIndex : currentIndex // ignore: cast_nullable_to_non_nullable
 as int,kept: null == kept ? _self.kept : kept // ignore: cast_nullable_to_non_nullable
 as int,deleted: null == deleted ? _self.deleted : deleted // ignore: cast_nullable_to_non_nullable
-as int,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
-as bool,showTutorial: null == showTutorial ? _self.showTutorial : showTutorial // ignore: cast_nullable_to_non_nullable
+as int,deletedBytes: null == deletedBytes ? _self.deletedBytes : deletedBytes // ignore: cast_nullable_to_non_nullable
+as int,flushed: null == flushed ? _self.flushed : flushed // ignore: cast_nullable_to_non_nullable
+as bool,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
+as bool,isLoadingMore: null == isLoadingMore ? _self.isLoadingMore : isLoadingMore // ignore: cast_nullable_to_non_nullable
+as bool,hasMore: null == hasMore ? _self.hasMore : hasMore // ignore: cast_nullable_to_non_nullable
+as bool,totalCount: null == totalCount ? _self.totalCount : totalCount // ignore: cast_nullable_to_non_nullable
+as int,sourceOffset: null == sourceOffset ? _self.sourceOffset : sourceOffset // ignore: cast_nullable_to_non_nullable
+as int,showTutorial: null == showTutorial ? _self.showTutorial : showTutorial // ignore: cast_nullable_to_non_nullable
 as bool,batchId: null == batchId ? _self.batchId : batchId // ignore: cast_nullable_to_non_nullable
 as String,batchTitle: null == batchTitle ? _self.batchTitle : batchTitle // ignore: cast_nullable_to_non_nullable
 as String,isPhotos: null == isPhotos ? _self.isPhotos : isPhotos // ignore: cast_nullable_to_non_nullable
-as bool,
+as bool,startedAt: freezed == startedAt ? _self.startedAt : startedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 

@@ -9,162 +9,231 @@ import '../../../../core/widgets/widgets.dart';
 import '../../../../l10n/l10n.dart';
 import '../../../app/router/app_router.dart';
 import '../../shared/domain/entities/swipe_item.dart';
+import 'swipe_action_bar.dart';
+import 'swipe_progress_bar.dart';
 import 'swipe_session_notifier.dart';
 import 'swipe_session_state.dart';
+import 'swipe_session_loading_shimmer.dart';
+import 'swipe_tutorial_overlay.dart';
 
 @RoutePage()
-class SwipeSessionPage extends ConsumerWidget {
+class SwipeSessionPage extends ConsumerStatefulWidget {
   const SwipeSessionPage({
     super.key,
     @PathParam('batchId') this.batchId = '',
     this.batchTitle = '',
     @QueryParam('isPhotos') this.isPhotos = true,
+    @QueryParam('batchCount') this.batchCount,
   });
 
   final String batchId;
   final String batchTitle;
   final bool isPhotos;
-
-  SwipeSessionArgs get _args => SwipeSessionArgs(
-        batchId: batchId,
-        batchTitle: batchTitle,
-        isPhotos: isPhotos,
-      );
+  final int? batchCount;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<SwipeSessionPage> createState() => _SwipeSessionPageState();
+}
+
+class _SwipeSessionPageState extends ConsumerState<SwipeSessionPage> {
+  final _topCardController = SwipeCardController();
+  bool _completionHandled = false;
+
+  SwipeSessionArgs get _args => SwipeSessionArgs(
+        batchId: widget.batchId,
+        batchTitle: widget.batchTitle,
+        isPhotos: widget.isPhotos,
+        batchCount: widget.batchCount,
+      );
+
+  Future<void> _onSwipeDecision(Future<void> Function() decide) async {
+    await decide();
+    if (!mounted) return;
+    await ref.read(swipeSessionProvider(_args).notifier).loadMoreIfNeeded();
+    if (!mounted) return;
+    _handleSessionComplete(ref.read(swipeSessionProvider(_args)));
+  }
+
+  void _handleSessionComplete(SwipeSessionState state) {
+    if (!state.isComplete || _completionHandled) return;
+    _completionHandled = true;
+    _onSessionComplete(state);
+  }
+
+  Future<void> _triggerSwipe({required bool delete}) async {
+    if (delete) {
+      await _topCardController.swipeDelete();
+    } else {
+      await _topCardController.swipeKeep();
+    }
+    if (!mounted) return;
+    await ref.read(swipeSessionProvider(_args).notifier).loadMoreIfNeeded();
+    if (!mounted) return;
+    _handleSessionComplete(ref.read(swipeSessionProvider(_args)));
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = context.l10n;
     final state = ref.watch(swipeSessionProvider(_args));
 
     ref.listen(swipeSessionProvider(_args), (prev, next) {
-      if (next.isComplete && prev?.isComplete != true) {
-        context.router.replace(
-          SessionSummaryRoute(
-            kept: next.kept,
-            deleted: next.deleted,
-            batchId: batchId,
-            isPhotos: isPhotos,
-          ),
-        );
+      _handleSessionComplete(next);
+      if (next.shouldPrefetchMore) {
+        ref.read(swipeSessionProvider(_args).notifier).loadMoreIfNeeded();
       }
     });
 
-    if (state.isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+    if (state.isComplete) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        _handleSessionComplete(ref.read(swipeSessionProvider(_args)));
+      });
     }
 
-    final current = state.currentIndex + 1;
+    final current = state.displayedProgress;
     final total = state.total;
+    final dt = context.decluttrTheme;
+    final typography = context.decluttrTypography;
 
     return Scaffold(
       key: WidgetKeys.swipeSessionPage,
-      backgroundColor: context.decluttrTheme.canvas,
+      backgroundColor: dt.canvas,
       body: SafeArea(
         child: Padding(
-          padding: EdgeInsets.fromLTRB(
-            context.decluttrTheme.screenH,
-            context.decluttrTheme.x8,
-            context.decluttrTheme.screenH,
-            context.decluttrTheme.x7,
-          ),
+          padding: EdgeInsets.fromLTRB(dt.screenH, dt.x5, dt.screenH, 0),
           child: Column(
             children: [
               Row(
                 children: [
                   AppIconButton(
-                    icon: PhosphorIconsRegular.arrowLeft,
-                    onPressed: () => context.router.maybePop(),
+                    icon: PhosphorIconsRegular.x,
+                    size: dt.x9,
+                    onPressed: () => _exitSession(completed: false),
                   ),
-                  SizedBox(width: context.decluttrTheme.x4),
-                  Expanded(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(context.decluttrTheme.radiusFull),
-                      child: LinearProgressIndicator(
-                        value: total == 0 ? 0 : current / total,
-                        minHeight: 6,
-                        backgroundColor: context.decluttrTheme.surfaceCard,
-                        color: context.decluttrTheme.pinkHot,
-                      ),
+                  SizedBox(width: dt.x3 + dt.x1),
+                  Expanded(child: SwipeProgressBar(value: total == 0 ? 0 : current / total)),
+                  SizedBox(width: dt.x3 + dt.x1),
+                  SizedBox(
+                    width: dt.x10,
+                    child: Text(
+                      l10n.swipeProgress(current, total),
+                      textAlign: TextAlign.right,
+                      style: typography.statusPill.copyWith(color: dt.walkthroughMuted),
                     ),
                   ),
-                  SizedBox(width: context.decluttrTheme.x4),
-                  Text(l10n.swipeProgress(current, total)),
                 ],
               ),
-              SizedBox(height: context.decluttrTheme.x6),
+              SizedBox(height: dt.x5),
               Expanded(
-                child: Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    if (state.currentIndex + 1 < state.items.length)
-                      Opacity(
-                        opacity: 0.5,
-                        child: SwipeCard(
-                          title: state.items[state.currentIndex + 1].title,
-                          subtitle: state.items[state.currentIndex + 1].subtitle,
-                          isTop: false,
-                        ),
+                child: state.isLoading
+                    ? const SwipeSessionLoadingShimmer()
+                    : Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          if (state.currentIndex + 1 < state.items.length)
+                            Positioned.fill(
+                              child: Transform.translate(
+                                offset: Offset(0, context.decluttrTheme.x3),
+                                child: Transform.scale(
+                                  scale: 0.95,
+                                  child: Opacity(
+                                    opacity: 0.5,
+                                    child: _buildSwipeCard(
+                                      context,
+                                      item: state.items[state.currentIndex + 1],
+                                      isTop: false,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          if (state.currentItem != null)
+                            Positioned.fill(
+                              child: Stack(
+                                clipBehavior: Clip.antiAlias,
+                                children: [
+                                  _buildSwipeCard(
+                                    context,
+                                    ref: ref,
+                                    item: state.currentItem!,
+                                    isTop: true,
+                                  ),
+                                  if (state.showTutorial)
+                                    SwipeTutorialOverlay(
+                                      onDismiss: () =>
+                                          ref.read(swipeSessionProvider(_args).notifier).dismissTutorial(),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          if (state.isLoadingMore && state.currentItem == null)
+                            const Center(child: CircularProgressIndicator()),
+                        ],
                       ),
-                    if (state.currentItem != null)
-                      SwipeCard(
-                        title: state.currentItem!.title,
-                        subtitle: state.currentItem!.subtitle,
-                        gradientIndex: state.currentItem!.gradientIndex,
-                        onSwipeKeep: () => ref
-                            .read(swipeSessionProvider(_args).notifier)
-                            .keepCurrent(),
-                        onSwipeDelete: () => ref
-                            .read(swipeSessionProvider(_args).notifier)
-                            .deleteCurrent(),
-                        onTap: () => _showDetail(context, ref, state.currentItem!),
-                      ),
-                  ],
-                ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  _CircleAction(
-                    keyId: WidgetKeys.swipeDeleteButton,
-                    icon: PhosphorIconsRegular.trash,
-                    color: context.decluttrTheme.destructive,
-                    onTap: () =>
-                        ref.read(swipeSessionProvider(_args).notifier).deleteCurrent(),
-                  ),
-                  SecondaryButton(
-                    label: l10n.swipeUndo,
-                    expanded: false,
-                    onPressed: () =>
-                        ref.read(swipeSessionProvider(_args).notifier).undoLast(),
-                  ),
-                  _CircleAction(
-                    keyId: WidgetKeys.swipeKeepButton,
-                    icon: PhosphorIconsRegular.check,
-                    color: context.decluttrTheme.success,
-                    onTap: () =>
-                        ref.read(swipeSessionProvider(_args).notifier).keepCurrent(),
-                  ),
-                ],
+              SwipeActionBar(
+                onUndo: state.isLoading
+                    ? () {}
+                    : () => ref.read(swipeSessionProvider(_args).notifier).undoLast(),
+                onDelete: state.isLoading ? () {} : () => _triggerSwipe(delete: true),
+                onKeep: state.isLoading ? () {} : () => _triggerSwipe(delete: false),
               ),
-              if (state.showTutorial) ...[
-                SizedBox(height: context.decluttrTheme.x4),
-                Banner(
-                  message: l10n.swipeTutorial,
-                  actionLabel: l10n.swipeDismissTutorial,
-                  onAction: () => ref
-                      .read(swipeSessionProvider(_args).notifier)
-                      .dismissTutorial(),
-                  onDismiss: () => ref
-                      .read(swipeSessionProvider(_args).notifier)
-                      .dismissTutorial(),
-                ),
-              ],
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _onSessionComplete(SwipeSessionState next) async {
+    await ref.read(swipeSessionProvider(_args).notifier).flushSession(completed: true);
+    if (!mounted) return;
+    context.router.replace(
+      SessionSummaryRoute(
+        kept: next.kept,
+        deleted: next.deleted,
+        deletedBytes: next.deletedBytes,
+        batchId: widget.batchId,
+        isPhotos: widget.isPhotos,
+      ),
+    );
+  }
+
+  Future<void> _exitSession({required bool completed}) async {
+    await ref.read(swipeSessionProvider(_args).notifier).flushSession(completed: completed);
+    if (!mounted) return;
+    if (context.router.canPop()) {
+      context.router.pop();
+      return;
+    }
+    context.router.replace(const MainShellRoute());
+  }
+
+  Widget _buildSwipeCard(BuildContext context, {WidgetRef? ref, required SwipeItem item, required bool isTop}) {
+    final dt = context.decluttrTheme;
+    final gradient = dt.batchPickerGradientAt(item.gradientIndex);
+
+    return SwipeCard(
+      key: isTop ? ValueKey(item.id) : null,
+      controller: isTop ? _topCardController : null,
+      title: widget.isPhotos ? widget.batchTitle : item.title,
+      subtitle: item.subtitle,
+      gradientIndex: item.gradientIndex,
+      tagLabel: widget.isPhotos ? item.title : null,
+      mediaBackground: widget.isPhotos ? PhotoAssetThumbnail(assetId: item.id, fallbackGradient: gradient) : null,
+      isTop: isTop,
+            onSwipeKeep: isTop && ref != null
+          ? () => _onSwipeDecision(
+                () => ref.read(swipeSessionProvider(_args).notifier).keepCurrent(),
+              )
+          : null,
+      onSwipeDelete: isTop && ref != null
+          ? () => _onSwipeDecision(
+                () => ref.read(swipeSessionProvider(_args).notifier).deleteCurrent(),
+              )
+          : null,
+      onTap: isTop && ref != null ? () => _showDetail(context, ref, item) : null,
     );
   }
 
@@ -186,16 +255,13 @@ class SwipeSessionPage extends ConsumerWidget {
               Text(item.title, style: Theme.of(context).textTheme.headlineSmall),
               SizedBox(height: context.decluttrTheme.x2),
               Text(item.subtitle),
-              if (item.detailBody != null) ...[
-                SizedBox(height: context.decluttrTheme.x2),
-                Text(item.detailBody!),
-              ],
+              if (item.detailBody != null) ...[SizedBox(height: context.decluttrTheme.x2), Text(item.detailBody!)],
               SizedBox(height: context.decluttrTheme.x6),
               PrimaryButton(
                 label: l10n.swipeKeep,
                 onPressed: () {
                   Navigator.pop(context);
-                  ref.read(swipeSessionProvider(_args).notifier).keepCurrent();
+                  _topCardController.swipeKeep();
                 },
               ),
               SizedBox(height: context.decluttrTheme.x3),
@@ -203,46 +269,13 @@ class SwipeSessionPage extends ConsumerWidget {
                 label: l10n.swipeDelete,
                 onPressed: () {
                   Navigator.pop(context);
-                  ref.read(swipeSessionProvider(_args).notifier).deleteCurrent();
+                  _topCardController.swipeDelete();
                 },
               ),
             ],
           ),
         );
       },
-    );
-  }
-}
-
-class _CircleAction extends StatelessWidget {
-  const _CircleAction({
-    required this.icon,
-    required this.color,
-    required this.onTap,
-    this.keyId,
-  });
-
-  final IconData icon;
-  final Color color;
-  final VoidCallback onTap;
-  final Key? keyId;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      key: keyId,
-      color: context.decluttrTheme.white,
-      shape: const CircleBorder(),
-      elevation: 2,
-      child: InkWell(
-        onTap: onTap,
-        customBorder: const CircleBorder(),
-        child: SizedBox(
-          width: 56,
-          height: 56,
-          child: Icon(icon, color: color),
-        ),
-      ),
     );
   }
 }

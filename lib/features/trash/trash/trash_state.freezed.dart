@@ -14,7 +14,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$TrashUiState {
 
- TrashTab get tab; bool get selectMode; Set<String> get selectedIds; bool get isLoading; List<TrashItem> get items; String get reclaimableLabel;
+ TrashTab get tab; bool get selectMode; Set<String> get selectedIds; bool get isLoading; List<TrashItem> get items;
 /// Create a copy of TrashUiState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -25,16 +25,16 @@ $TrashUiStateCopyWith<TrashUiState> get copyWith => _$TrashUiStateCopyWithImpl<T
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TrashUiState&&(identical(other.tab, tab) || other.tab == tab)&&(identical(other.selectMode, selectMode) || other.selectMode == selectMode)&&const DeepCollectionEquality().equals(other.selectedIds, selectedIds)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&const DeepCollectionEquality().equals(other.items, items)&&(identical(other.reclaimableLabel, reclaimableLabel) || other.reclaimableLabel == reclaimableLabel));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TrashUiState&&(identical(other.tab, tab) || other.tab == tab)&&(identical(other.selectMode, selectMode) || other.selectMode == selectMode)&&const DeepCollectionEquality().equals(other.selectedIds, selectedIds)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&const DeepCollectionEquality().equals(other.items, items));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,tab,selectMode,const DeepCollectionEquality().hash(selectedIds),isLoading,const DeepCollectionEquality().hash(items),reclaimableLabel);
+int get hashCode => Object.hash(runtimeType,tab,selectMode,const DeepCollectionEquality().hash(selectedIds),isLoading,const DeepCollectionEquality().hash(items));
 
 @override
 String toString() {
-  return 'TrashUiState(tab: $tab, selectMode: $selectMode, selectedIds: $selectedIds, isLoading: $isLoading, items: $items, reclaimableLabel: $reclaimableLabel)';
+  return 'TrashUiState(tab: $tab, selectMode: $selectMode, selectedIds: $selectedIds, isLoading: $isLoading, items: $items)';
 }
 
 
@@ -45,7 +45,7 @@ abstract mixin class $TrashUiStateCopyWith<$Res>  {
   factory $TrashUiStateCopyWith(TrashUiState value, $Res Function(TrashUiState) _then) = _$TrashUiStateCopyWithImpl;
 @useResult
 $Res call({
- TrashTab tab, bool selectMode, Set<String> selectedIds, bool isLoading, List<TrashItem> items, String reclaimableLabel
+ TrashTab tab, bool selectMode, Set<String> selectedIds, bool isLoading, List<TrashItem> items
 });
 
 
@@ -62,15 +62,14 @@ class _$TrashUiStateCopyWithImpl<$Res>
 
 /// Create a copy of TrashUiState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? tab = null,Object? selectMode = null,Object? selectedIds = null,Object? isLoading = null,Object? items = null,Object? reclaimableLabel = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? tab = null,Object? selectMode = null,Object? selectedIds = null,Object? isLoading = null,Object? items = null,}) {
   return _then(_self.copyWith(
 tab: null == tab ? _self.tab : tab // ignore: cast_nullable_to_non_nullable
 as TrashTab,selectMode: null == selectMode ? _self.selectMode : selectMode // ignore: cast_nullable_to_non_nullable
 as bool,selectedIds: null == selectedIds ? _self.selectedIds : selectedIds // ignore: cast_nullable_to_non_nullable
 as Set<String>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,items: null == items ? _self.items : items // ignore: cast_nullable_to_non_nullable
-as List<TrashItem>,reclaimableLabel: null == reclaimableLabel ? _self.reclaimableLabel : reclaimableLabel // ignore: cast_nullable_to_non_nullable
-as String,
+as List<TrashItem>,
   ));
 }
 
@@ -155,10 +154,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( TrashTab tab,  bool selectMode,  Set<String> selectedIds,  bool isLoading,  List<TrashItem> items,  String reclaimableLabel)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( TrashTab tab,  bool selectMode,  Set<String> selectedIds,  bool isLoading,  List<TrashItem> items)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _TrashUiState() when $default != null:
-return $default(_that.tab,_that.selectMode,_that.selectedIds,_that.isLoading,_that.items,_that.reclaimableLabel);case _:
+return $default(_that.tab,_that.selectMode,_that.selectedIds,_that.isLoading,_that.items);case _:
   return orElse();
 
 }
@@ -176,10 +175,10 @@ return $default(_that.tab,_that.selectMode,_that.selectedIds,_that.isLoading,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( TrashTab tab,  bool selectMode,  Set<String> selectedIds,  bool isLoading,  List<TrashItem> items,  String reclaimableLabel)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( TrashTab tab,  bool selectMode,  Set<String> selectedIds,  bool isLoading,  List<TrashItem> items)  $default,) {final _that = this;
 switch (_that) {
 case _TrashUiState():
-return $default(_that.tab,_that.selectMode,_that.selectedIds,_that.isLoading,_that.items,_that.reclaimableLabel);case _:
+return $default(_that.tab,_that.selectMode,_that.selectedIds,_that.isLoading,_that.items);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -196,10 +195,10 @@ return $default(_that.tab,_that.selectMode,_that.selectedIds,_that.isLoading,_th
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( TrashTab tab,  bool selectMode,  Set<String> selectedIds,  bool isLoading,  List<TrashItem> items,  String reclaimableLabel)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( TrashTab tab,  bool selectMode,  Set<String> selectedIds,  bool isLoading,  List<TrashItem> items)?  $default,) {final _that = this;
 switch (_that) {
 case _TrashUiState() when $default != null:
-return $default(_that.tab,_that.selectMode,_that.selectedIds,_that.isLoading,_that.items,_that.reclaimableLabel);case _:
+return $default(_that.tab,_that.selectMode,_that.selectedIds,_that.isLoading,_that.items);case _:
   return null;
 
 }
@@ -211,7 +210,7 @@ return $default(_that.tab,_that.selectMode,_that.selectedIds,_that.isLoading,_th
 
 
 class _TrashUiState implements TrashUiState {
-  const _TrashUiState({this.tab = TrashTab.photos, this.selectMode = false, final  Set<String> selectedIds = const <String>{}, this.isLoading = true, final  List<TrashItem> items = const <TrashItem>[], this.reclaimableLabel = ''}): _selectedIds = selectedIds,_items = items;
+  const _TrashUiState({this.tab = TrashTab.photos, this.selectMode = false, final  Set<String> selectedIds = const <String>{}, this.isLoading = true, final  List<TrashItem> items = const <TrashItem>[]}): _selectedIds = selectedIds,_items = items;
   
 
 @override@JsonKey() final  TrashTab tab;
@@ -231,7 +230,6 @@ class _TrashUiState implements TrashUiState {
   return EqualUnmodifiableListView(_items);
 }
 
-@override@JsonKey() final  String reclaimableLabel;
 
 /// Create a copy of TrashUiState
 /// with the given fields replaced by the non-null parameter values.
@@ -243,16 +241,16 @@ _$TrashUiStateCopyWith<_TrashUiState> get copyWith => __$TrashUiStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TrashUiState&&(identical(other.tab, tab) || other.tab == tab)&&(identical(other.selectMode, selectMode) || other.selectMode == selectMode)&&const DeepCollectionEquality().equals(other._selectedIds, _selectedIds)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&const DeepCollectionEquality().equals(other._items, _items)&&(identical(other.reclaimableLabel, reclaimableLabel) || other.reclaimableLabel == reclaimableLabel));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _TrashUiState&&(identical(other.tab, tab) || other.tab == tab)&&(identical(other.selectMode, selectMode) || other.selectMode == selectMode)&&const DeepCollectionEquality().equals(other._selectedIds, _selectedIds)&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&const DeepCollectionEquality().equals(other._items, _items));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,tab,selectMode,const DeepCollectionEquality().hash(_selectedIds),isLoading,const DeepCollectionEquality().hash(_items),reclaimableLabel);
+int get hashCode => Object.hash(runtimeType,tab,selectMode,const DeepCollectionEquality().hash(_selectedIds),isLoading,const DeepCollectionEquality().hash(_items));
 
 @override
 String toString() {
-  return 'TrashUiState(tab: $tab, selectMode: $selectMode, selectedIds: $selectedIds, isLoading: $isLoading, items: $items, reclaimableLabel: $reclaimableLabel)';
+  return 'TrashUiState(tab: $tab, selectMode: $selectMode, selectedIds: $selectedIds, isLoading: $isLoading, items: $items)';
 }
 
 
@@ -263,7 +261,7 @@ abstract mixin class _$TrashUiStateCopyWith<$Res> implements $TrashUiStateCopyWi
   factory _$TrashUiStateCopyWith(_TrashUiState value, $Res Function(_TrashUiState) _then) = __$TrashUiStateCopyWithImpl;
 @override @useResult
 $Res call({
- TrashTab tab, bool selectMode, Set<String> selectedIds, bool isLoading, List<TrashItem> items, String reclaimableLabel
+ TrashTab tab, bool selectMode, Set<String> selectedIds, bool isLoading, List<TrashItem> items
 });
 
 
@@ -280,15 +278,14 @@ class __$TrashUiStateCopyWithImpl<$Res>
 
 /// Create a copy of TrashUiState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? tab = null,Object? selectMode = null,Object? selectedIds = null,Object? isLoading = null,Object? items = null,Object? reclaimableLabel = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? tab = null,Object? selectMode = null,Object? selectedIds = null,Object? isLoading = null,Object? items = null,}) {
   return _then(_TrashUiState(
 tab: null == tab ? _self.tab : tab // ignore: cast_nullable_to_non_nullable
 as TrashTab,selectMode: null == selectMode ? _self.selectMode : selectMode // ignore: cast_nullable_to_non_nullable
 as bool,selectedIds: null == selectedIds ? _self._selectedIds : selectedIds // ignore: cast_nullable_to_non_nullable
 as Set<String>,isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,items: null == items ? _self._items : items // ignore: cast_nullable_to_non_nullable
-as List<TrashItem>,reclaimableLabel: null == reclaimableLabel ? _self.reclaimableLabel : reclaimableLabel // ignore: cast_nullable_to_non_nullable
-as String,
+as List<TrashItem>,
   ));
 }
 

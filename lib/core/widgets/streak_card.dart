@@ -7,13 +7,13 @@ import 'package:decluttr/gen/assets.gen.dart';
 class StreakCard extends StatelessWidget {
   const StreakCard({
     super.key,
-    required this.streakDays,
+    required this.title,
     required this.subtitle,
     this.onTap,
     this.keyId,
   });
 
-  final int streakDays;
+  final String title;
   final String subtitle;
   final VoidCallback? onTap;
   final Key? keyId;
@@ -47,7 +47,7 @@ class StreakCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '$streakDays Day Streak',
+                      title,
                       style: theme.textTheme.titleLarge,
                     ),
                     Text(subtitle, style: theme.textTheme.bodyMedium),

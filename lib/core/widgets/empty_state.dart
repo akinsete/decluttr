@@ -23,34 +23,40 @@ class EmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return Center(
-      key: WidgetKeys.emptyState,
-      child: Padding(
-        padding: EdgeInsets.all(context.decluttrTheme.x8),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            if (illustration != null) ...[
-              illustration!,
-              SizedBox(height: context.decluttrTheme.x6),
-            ],
-            Text(
-              title,
-              style: theme.textTheme.headlineSmall,
-              textAlign: TextAlign.center,
-            ),
-            SizedBox(height: context.decluttrTheme.x3),
-            Text(
-              subtitle,
-              style: theme.textTheme.bodyMedium,
-              textAlign: TextAlign.center,
-            ),
-            if (actionLabel != null && onAction != null) ...[
-              SizedBox(height: context.decluttrTheme.x6),
-              PrimaryButton(label: actionLabel!, onPressed: onAction),
-            ],
+    final dt = context.decluttrTheme;
+
+    final content = Padding(
+      padding: EdgeInsets.all(dt.x8),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (illustration != null) ...[
+            illustration!,
+            SizedBox(height: dt.x6),
           ],
-        ),
+          Text(
+            title,
+            style: theme.textTheme.headlineSmall,
+            textAlign: TextAlign.center,
+          ),
+          SizedBox(height: dt.x3),
+          Text(
+            subtitle,
+            style: theme.textTheme.bodyMedium,
+            textAlign: TextAlign.center,
+          ),
+          if (actionLabel != null && onAction != null) ...[
+            SizedBox(height: dt.x6),
+            PrimaryButton(label: actionLabel!, onPressed: onAction),
+          ],
+        ],
+      ),
+    );
+
+    return SizedBox.expand(
+      child: Center(
+        key: WidgetKeys.emptyState,
+        child: content,
       ),
     );
   }

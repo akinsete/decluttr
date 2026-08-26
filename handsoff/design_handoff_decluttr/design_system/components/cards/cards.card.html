@@ -1,0 +1,25 @@
+<!-- @dsCard group="Components" viewport="700x420" name="Cards" subtitle="DashboardCard, StreakCard, ProgressCard, SwipeCard" -->
+<link rel="stylesheet" href="../../styles.css">
+<script src="../../_ds_bundle.js"></script>
+<div id="root" style="font-family:var(--font-sans); background:var(--bg-canvas); padding:18px; box-sizing:border-box; min-height:420px;"></div>
+<script type="text/babel">
+const { DashboardCard, StreakCard, ProgressCard, SwipeCard } = window.SwipeDeclutter;
+
+function Demo() {
+  const person = <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="#1A1A1A" strokeWidth="2"/><path d="M4 20c0-4.4 3.6-7 8-7s8 2.6 8 7" stroke="#1A1A1A" strokeWidth="2" strokeLinecap="round"/></svg>;
+  return (
+    <div style={{ display: 'flex', gap: 18 }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 14 }}>
+        <DashboardCard background="var(--accent-blue)" icon={person} title="Contacts" subtitle="128 left to review" />
+        <StreakCard streakDays={4} supportingText="Longest: 9 days" />
+        <ProgressCard keptCount={42} deletedCount={18} itemsRemaining={64} pct={0.62} />
+      </div>
+      <div style={{ width: 200, height: 380, position: 'relative' }}>
+        <div style={{ position: 'absolute', inset: '14px 6px', borderRadius: 26, background: 'var(--surface-card)' }}></div>
+        <SwipeCard type="photo" photo={{ tag: 'Beach trip · IMG_0142', batchLabel: 'June 2026', gradient: 'var(--gradient-yellow-pink-160)' }} interactive={false} />
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script>

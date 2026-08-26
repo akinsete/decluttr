@@ -1,0 +1,27 @@
+<!-- @dsCard group="Components" viewport="700x220" name="Forms" subtitle="Toggle, SegmentedControl, TextField" -->
+<link rel="stylesheet" href="../../styles.css">
+<script src="../../_ds_bundle.js"></script>
+<div id="root" style="font-family:var(--font-sans); background:var(--bg-canvas); padding:18px; box-sizing:border-box; min-height:220px;"></div>
+<script type="text/babel">
+const { Toggle, SegmentedControl, TextField } = window.SwipeDeclutter;
+function Demo() {
+  const [on, setOn] = React.useState(true);
+  const [size, setSize] = React.useState('20');
+  const [email, setEmail] = React.useState('');
+  return (
+    <div style={{ display: 'flex', gap: 24, alignItems: 'flex-start' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <Toggle checked={on} onChange={setOn} />
+        <SegmentedControl options={['10','20','30','50']} value={size} onChange={setSize} />
+      </div>
+      <div style={{ width: 240 }}>
+        <TextField label="Email" value={email} onChange={setEmail} placeholder="you@example.com" />
+      </div>
+      <div style={{ width: 240 }}>
+        <TextField label="Password" value="short" onChange={() => {}} error="At least 8 characters" />
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script>

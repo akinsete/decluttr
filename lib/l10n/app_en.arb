@@ -34,61 +34,87 @@
   "homeHeroAccent": "cleanup?",
   "homeHeroSub": "Swipe through photos and contacts in minutes.",
   "homeStreakSubtitle": "Keep your momentum going!",
+  "homeStreakTitle": "{days} Day Streak",
+  "@homeStreakTitle": {
+    "placeholders": {
+      "days": { "type": "int", "format": "decimalPattern" }
+    }
+  },
   "homeContactsTitle": "Contacts",
   "homePhotosTitle": "Photos & Videos",
   "homeTapToStart": "Tap to get started",
   "homeContactsWaiting": "{count} waiting for you",
   "@homeContactsWaiting": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": { "type": "int", "format": "decimalPattern" }
     }
   },
   "homePhotosWaiting": "{count} waiting for you",
   "@homePhotosWaiting": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": { "type": "int", "format": "decimalPattern" }
     }
   },
   "homeProgressTitle": "Your progress",
-  "homeProgressStats": "{kept} kept · {deleted} cleared",
-  "@homeProgressStats": {
-    "placeholders": {
-      "kept": { "type": "int" },
-      "deleted": { "type": "int" }
-    }
-  },
+  "homeProgressViewAll": "View all stats ›",
+  "homeProgressItemsRemaining": "items remaining",
   "dockHome": "Home",
   "dockTrash": "Trash",
   "dockSettings": "Settings",
-  "batchPhotosTitle": "Photos & Videos",
+  "batchPhotosTitle": "Photos",
+  "batchPhotosSubtitle": "Select what you want to clean.",
+  "batchChooseSection": "Choose a batch",
+  "batchPhotoCount": "{count, plural, =1{1 photo} other{{count} photos}}",
+  "@batchPhotoCount": {
+    "placeholders": {
+      "count": { "type": "int", "format": "decimalPattern" }
+    }
+  },
+  "batchDuplicatesTitle": "Duplicates",
+  "batchDuplicatesPhotosHint": "{count, plural, =1{1 photo looks similar} other{{count} photos look similar}}",
+  "@batchDuplicatesPhotosHint": {
+    "placeholders": {
+      "count": { "type": "int", "format": "decimalPattern" }
+    }
+  },
   "batchContactsTitle": "Contacts",
   "batchEmptyTitle": "All caught up ✓",
   "batchEmptyPhotosSub": "You have cleared every photo batch for now.",
   "batchEmptyContactsSub": "You have cleared every contact group for now.",
-  "swipeProgress": "{current} / {total}",
+  "swipeProgress": "{current}/{total}",
   "@swipeProgress": {
     "placeholders": {
-      "current": { "type": "int" },
-      "total": { "type": "int" }
+      "current": { "type": "int", "format": "decimalPattern" },
+      "total": { "type": "int", "format": "decimalPattern" }
     }
   },
-  "swipeTutorial": "Swipe right to keep, left to delete",
+  "swipeTutorialTitle": "Here's how it works",
+  "swipeTutorial": "Swipe left to delete, right to keep",
   "swipeDismissTutorial": "Got it",
   "swipeKeep": "Keep",
   "swipeDelete": "Delete",
   "swipeUndo": "Undo",
-  "sessionSummaryTitle": "Nice work!",
-  "sessionSummarySub": "You reviewed everything in this batch.",
+  "sessionSummaryTitle": "All done!",
+  "sessionSummarySubPhotos": "You reviewed every photo in this batch. Nice cleanup.",
+  "sessionSummarySubContacts": "You reviewed every contact in this batch. Nice cleanup.",
+  "sessionSummaryKeptLabel": "Kept",
+  "sessionSummaryDeletedLabel": "Deleted",
+  "sessionSummaryDeletedSize": "{size} deleted",
+  "@sessionSummaryDeletedSize": {
+    "placeholders": {
+      "size": { "type": "String" }
+    }
+  },
   "sessionSummaryKept": "{count} kept",
   "@sessionSummaryKept": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": { "type": "int", "format": "decimalPattern" }
     }
   },
   "sessionSummaryDeleted": "{count} deleted",
   "@sessionSummaryDeleted": {
     "placeholders": {
-      "count": { "type": "int" }
+      "count": { "type": "int", "format": "decimalPattern" }
     }
   },
   "sessionSummaryBack": "Back to batches",
@@ -96,8 +122,8 @@
   "duplicatesProgress": "{current} of {total}",
   "@duplicatesProgress": {
     "placeholders": {
-      "current": { "type": "int" },
-      "total": { "type": "int" }
+      "current": { "type": "int", "format": "decimalPattern" },
+      "total": { "type": "int", "format": "decimalPattern" }
     }
   },
   "duplicatesAfterMerge": "After merge",
@@ -108,6 +134,7 @@
   "duplicatesReasonSameEmail": "Same email address",
   "duplicatesReasonSimilarName": "Similar name",
   "trashTitle": "Trash",
+  "trashSubtitle": "Review before deleting forever.",
   "trashReclaimable": "{size} reclaimable",
   "@trashReclaimable": {
     "placeholders": {
@@ -116,37 +143,113 @@
   },
   "trashTabPhotos": "Photos",
   "trashTabContacts": "Contacts",
+  "trashTabPhotosCount": "Photos ({count})",
+  "@trashTabPhotosCount": {
+    "placeholders": {
+      "count": { "type": "int", "format": "decimalPattern" }
+    }
+  },
+  "trashTabContactsCount": "Contacts ({count})",
+  "@trashTabContactsCount": {
+    "placeholders": {
+      "count": { "type": "int", "format": "decimalPattern" }
+    }
+  },
   "trashEmpty": "Trash is empty",
+  "trashEmptyPhotosSub": "Items you swipe away during cleanup land here until you delete them forever.",
+  "trashEmptyContactsTitle": "No contacts in trash",
+  "trashEmptyContactsSub": "Contacts you remove during cleanup will appear here.",
+  "trashSelect": "Select",
+  "trashSelectAll": "Select all",
+  "trashDeselectAll": "Deselect all",
+  "trashCancel": "Cancel",
+  "trashItemsCount": "{count, plural, =1{1 item} other{{count} items}}",
+  "@trashItemsCount": {
+    "placeholders": {
+      "count": { "type": "int", "format": "decimalPattern" }
+    }
+  },
+  "trashSelectedCount": "{count, plural, =1{1 selected} other{{count} selected}}",
+  "@trashSelectedCount": {
+    "placeholders": {
+      "count": { "type": "int", "format": "decimalPattern" }
+    }
+  },
+  "trashDeleteSelected": "Delete selected",
   "trashPurgesIn": "Purges in {days} days",
   "@trashPurgesIn": {
     "placeholders": {
-      "days": { "type": "int" }
+      "days": { "type": "int", "format": "decimalPattern" }
     }
   },
   "trashRestore": "Restore",
   "trashDeleteForever": "Delete forever",
+  "trashDockBadgeA11y": "{count, plural, =0{No items in trash} =1{1 item in trash} other{{count} items in trash}}",
+  "@trashDockBadgeA11y": {
+    "placeholders": {
+      "count": { "type": "int", "format": "decimalPattern" }
+    }
+  },
   "trashSelectMode": "Select items",
+  "insightsTitle": "Insights",
+  "insightsStorageFreed": "Storage freed",
+  "insightsThisWeek": "This week",
+  "insightsWeekCleaned": "+{count} cleaned",
+  "@insightsWeekCleaned": {
+    "placeholders": {
+      "count": { "type": "int", "format": "decimalPattern" }
+    }
+  },
+  "insightsCleanedByType": "Cleaned by type",
+  "insightsPhotosVideos": "Photos & videos",
+  "insightsContacts": "Contacts",
+  "insightsStreakSummary": "{current} day streak · {longest} best",
+  "@insightsStreakSummary": {
+    "placeholders": {
+      "current": { "type": "int", "format": "decimalPattern" },
+      "longest": { "type": "int", "format": "decimalPattern" }
+    }
+  },
+  "insightsStreakSubtitle": "See your full streak history",
   "streakTitle": "Your streak",
   "streakCurrent": "{days} day streak",
   "@streakCurrent": {
     "placeholders": {
-      "days": { "type": "int" }
+      "days": { "type": "int", "format": "decimalPattern" }
     }
   },
+  "streakDayStreakLabel": "Day Streak",
+  "streakKeepGoing": "Keep it going!",
+  "streakWeekdayMon": "M",
+  "streakWeekdayTue": "T",
+  "streakWeekdayWed": "W",
+  "streakWeekdayThu": "T",
+  "streakWeekdayFri": "F",
+  "streakWeekdaySat": "S",
+  "streakWeekdaySun": "S",
   "streakLastWeeks": "Last 5 weeks",
+  "streakWeekRangeHint": "Mon → Sun",
   "streakLegendLess": "Less",
   "streakLegendMore": "More",
+  "streakLongest": "Longest streak",
+  "streakItemsCleaned": "Items cleaned",
+  "streakKeepCleaning": "Keep cleaning",
   "settingsTitle": "Settings",
-  "settingsPremiumTitle": "Go Premium",
-  "settingsPremiumSub": "Unlock unlimited batches and cloud backup.",
+  "settingsPremiumTitle": "Go premium",
+  "settingsPremiumSub": "Unlock unlimited cleaning and more.",
+  "settingsSignInSub": "Sync your cleanups across devices",
   "settingsPreferences": "Preferences",
   "settingsAppearance": "Appearance",
   "settingsAppearanceValue": "Light",
-  "settingsHaptic": "Haptic feedback",
+  "settingsHaptic": "Haptic Feedback",
   "settingsNotifications": "Notifications",
-  "settingsAccount": "Account",
+  "settingsPrivacyPermissions": "Privacy & Permissions",
+  "settingsPhotosAccess": "Photos Access",
+  "settingsContactsAccess": "Contacts Access",
+  "settingsAccessFull": "Full Access",
+  "settingsAccessDenied": "Not allowed",
+  "settingsMore": "More",
   "settingsSignIn": "Sign in",
-  "settingsDeleteAccount": "Delete account",
   "settingsRate": "Rate Decluttr",
   "settingsShare": "Share Decluttr",
   "signInTitle": "Sign in",

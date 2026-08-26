@@ -12,4 +12,5 @@ abstract class ContactsRepository {
   Future<Result<void>> mergeDuplicateGroup(String groupId);
   Future<Result<void>> keepBothDuplicateGroup(String groupId);
   Future<Result<void>> deleteOneFromDuplicateGroup(String groupId);
+  Future<Result<void>> deleteContact(String contactId);
 }

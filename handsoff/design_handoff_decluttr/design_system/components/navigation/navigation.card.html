@@ -1,0 +1,17 @@
+<!-- @dsCard group="Components" viewport="700x140" name="Navigation" subtitle="Floating frosted bottom dock" -->
+<link rel="stylesheet" href="../../styles.css">
+<script src="../../_ds_bundle.js"></script>
+<div id="root" style="font-family:var(--font-sans); background:linear-gradient(160deg,#8FD0FF,#CBB8FF); padding:18px; box-sizing:border-box; min-height:140px; display:flex; align-items:center; justify-content:center; gap:24px;"></div>
+<script type="text/babel">
+const { Dock } = window.SwipeDeclutter;
+function Demo() {
+  const [active, setActive] = React.useState('home');
+  return (
+    <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
+      <Dock active={active} onNavigate={setActive} showLabels={true} />
+      <Dock active="trash" showLabels={false} />
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+</script>

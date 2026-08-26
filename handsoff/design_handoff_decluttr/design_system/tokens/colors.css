@@ -1,0 +1,59 @@
+/* Swipe Declutter — Color tokens
+   Ground truth: exact hex/alpha values pulled from the shipped prototype
+   (Swipe Declutter.dc.html). Values are close to, but more precise than,
+   the original written brief — see readme.md "Visual foundations". */
+
+:root {
+  /* Backgrounds & surfaces */
+  --bg-canvas: #FBF6ED;        /* app canvas, warm off-white */
+  --surface-card: #F4EEE2;     /* neutral card fill */
+  --surface-white: #FFFFFF;
+  --divider: rgba(26, 26, 26, 0.08);
+  --divider-hairline: rgba(0, 0, 0, 0.06);
+
+  /* Text (ink at full opacity, secondary via alpha steps) */
+  --text-primary: #1A1A1A;
+  --text-secondary-65: rgba(26, 26, 26, 0.65);
+  --text-secondary-60: rgba(26, 26, 26, 0.6);
+  --text-secondary-55: rgba(26, 26, 26, 0.55);
+  --text-secondary-50: rgba(26, 26, 26, 0.5);
+  --text-secondary-45: rgba(26, 26, 26, 0.45);
+  --text-secondary-40: rgba(26, 26, 26, 0.4);
+  --text-secondary-35: rgba(26, 26, 26, 0.35);
+  --text-on-dark: #FFFFFF;
+  --text-on-dark-65: rgba(255, 255, 255, 0.65);
+
+  /* Primary / accent palette — pastel, used as flat fills and gradient stops.
+     Each accent also owns a product meaning. */
+  --accent-blue: #8FD0FF;      /* Contacts */
+  --accent-pink: #FF9EC0;      /* Photos & Videos */
+  --accent-lavender: #CBB8FF;
+  --accent-yellow: #FFD666;
+  --accent-mint: #A9E4B8;
+
+  /* Semantic */
+  --success: #4CAF6B;
+  --success-text: #2E8B4F;
+  --success-bg: rgba(76, 175, 107, 0.14);
+  --destructive: #E85B4D;          /* buttons, badges, KEEP/DELETE stamp */
+  --destructive-strong: #C0392B;   /* danger-zone headings/icons */
+  --destructive-text: #A83A2E;     /* inline error copy */
+  --destructive-bg: #FFE4E0;
+  --destructive-bg-soft: #FFDAD3;
+  --destructive-bg-softer: #FFF0EE;
+  --warning-bg: #FFF3D6;
+  --warning-text: #8A6A16;
+  --ios-system-blue: #0B84FF;      /* native alert "OK" only */
+
+  /* Gradients — cards favor a subtle gradient over a flat fill */
+  --gradient-hero: linear-gradient(145deg, #FFD666 0%, #FF9EC0 48%, #CBB8FF 100%);
+  --gradient-blue-lavender: linear-gradient(145deg, #8FD0FF, #CBB8FF);
+  --gradient-mint-blue: linear-gradient(145deg, #A9E4B8, #8FD0FF);
+  --gradient-yellow-pink-160: linear-gradient(160deg, #FFD666, #FF9EC0);
+  --gradient-blue-lavender-160: linear-gradient(160deg, #8FD0FF, #CBB8FF);
+  --gradient-mint-blue-160: linear-gradient(160deg, #A9E4B8, #8FD0FF);
+  --gradient-pink-lavender-160: linear-gradient(160deg, #FF9EC0, #CBB8FF);
+  --gradient-yellow-mint-160: linear-gradient(160deg, #FFD666, #A9E4B8);
+  --gradient-progress-ring: linear-gradient(135deg, #5C9BFF, #FF6FA8);
+  --gradient-dark-scrim: linear-gradient(0deg, rgba(0,0,0,0.38), transparent 60%);
+}

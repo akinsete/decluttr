@@ -50,3 +50,4 @@ app.*.map.json
 
 # FVM local SDK symlink (keep .fvm/fvm_config.json)
 .fvm/flutter_sdk
+.aider*

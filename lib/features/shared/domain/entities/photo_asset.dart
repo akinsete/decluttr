@@ -7,6 +7,7 @@ class PhotoAsset {
     this.isVideo = false,
     this.durationLabel,
     this.gradientIndex = 0,
+    this.sizeBytes = 0,
   });
 
   final String id;
@@ -16,4 +17,5 @@ class PhotoAsset {
   final bool isVideo;
   final String? durationLabel;
   final int gradientIndex;
+  final int sizeBytes;
 }

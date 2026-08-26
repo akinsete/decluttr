@@ -7,6 +7,7 @@ class SwipeItem {
     required this.subtitle,
     this.gradientIndex = 0,
     this.detailBody,
+    this.sizeBytes = 0,
   });
 
   final String id;
@@ -14,12 +15,14 @@ class SwipeItem {
   final String subtitle;
   final int gradientIndex;
   final String? detailBody;
+  final int sizeBytes;
 
   SwipeItem copyWith({
     String? title,
     String? subtitle,
     int? gradientIndex,
     String? detailBody,
+    int? sizeBytes,
   }) {
     return SwipeItem(
       id: id,
@@ -27,6 +30,7 @@ class SwipeItem {
       subtitle: subtitle ?? this.subtitle,
       gradientIndex: gradientIndex ?? this.gradientIndex,
       detailBody: detailBody ?? this.detailBody,
+      sizeBytes: sizeBytes ?? this.sizeBytes,
     );
   }
 }

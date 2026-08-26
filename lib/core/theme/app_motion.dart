@@ -8,6 +8,7 @@ abstract final class AppMotion {
   static const morph = Duration(milliseconds: 380);
   static const swipeRelease = Duration(milliseconds: 340);
   static const swipeFly = Duration(milliseconds: 260);
+  static const confettiCycle = Duration(milliseconds: 5200);
 
   static const standardCurve = Cubic(0.2, 0.8, 0.2, 1);
   static const bouncyCurve = Cubic(0.34, 1.4, 0.64, 1);

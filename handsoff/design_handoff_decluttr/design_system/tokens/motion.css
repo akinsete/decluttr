@@ -1,0 +1,12 @@
+/* Swipe Declutter — Motion tokens.
+   Spring-flavored easing throughout; never linear. */
+:root {
+  --ease-spring-standard: cubic-bezier(.2, .8, .2, 1);   /* swipe-card spring-back */
+  --ease-spring-bouncy: cubic-bezier(.34, 1.4, .64, 1);  /* dock pill indicator */
+  --ease-spring-swift: cubic-bezier(.25, 1, .4, 1);      /* card → full-screen morph */
+
+  --duration-fast: 0.2s;
+  --duration-standard: 0.28s;
+  --duration-card: 0.32s;
+  --duration-morph: 0.38s;
+}

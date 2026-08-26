@@ -11,6 +11,8 @@ class TrashItem {
     this.initial,
     this.isVideo = false,
     this.durationLabel,
+    this.sizeBytes = 0,
+    this.gradientIndex = 0,
   });
 
   final String id;
@@ -22,6 +24,8 @@ class TrashItem {
   final String? initial;
   final bool isVideo;
   final String? durationLabel;
+  final int sizeBytes;
+  final int gradientIndex;
 
   int daysUntilPurge({DateTime? now}) {
     final current = now ?? DateTime.now();

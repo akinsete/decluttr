@@ -7,6 +7,7 @@ import '../../features/duplicates/duplicate_contacts/duplicate_contacts_page.dar
 import '../../features/errors/error/error_page.dart';
 import '../../features/errors/error/error_variant.dart';
 import '../../features/home/home/home_page.dart';
+import '../../features/insights/insights/insights_page.dart';
 import '../../features/onboarding/splash/splash_page.dart';
 import '../../features/onboarding/walkthrough/walkthrough_page.dart';
 import '../../features/onboarding/welcome/welcome_page.dart';
@@ -48,6 +49,7 @@ class AppRouter extends RootStackRouter {
         AutoRoute(page: SwipeSessionRoute.page),
         AutoRoute(page: SessionSummaryRoute.page),
         AutoRoute(page: DuplicateContactsRoute.page),
+        AutoRoute(page: InsightsRoute.page),
         AutoRoute(page: StreakRoute.page),
         AutoRoute(page: SignInRoute.page),
         AutoRoute(page: ErrorRoute.page),

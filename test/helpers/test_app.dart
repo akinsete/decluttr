@@ -112,7 +112,7 @@ Future<void> runThemedGolden(
     if (settle) {
       await tester.pumpAndSettle();
     } else {
-      await tester.pump();
+      await pumpCaptureFrames(tester);
     }
 
     await expectLater(

@@ -69,7 +69,10 @@ class _SignInPageState extends ConsumerState<SignInPage> {
               label: l10n.signInButton,
               isLoading: isLoading,
               onPressed: () async {
-                await ref.read(signInLoadingProvider.notifier).signIn();
+                await ref.read(signInLoadingProvider.notifier).signIn(
+                      email: _emailController.text.trim(),
+                      password: _passwordController.text,
+                    );
                 if (context.mounted) context.router.maybePop();
               },
             ),

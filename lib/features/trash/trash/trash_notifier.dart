@@ -1,24 +1,37 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/di/trash_dock_badge_providers.dart';
 import '../../../../core/di/providers.dart';
+import '../../shared/data/photos/photo_load_log.dart';
+import '../../../../core/di/trash_dock_badge_providers.dart';
+import '../../../../core/error/result.dart';
+import '../../shared/domain/entities/photo_size_formatter.dart';
 import '../../shared/domain/entities/trash_item.dart';
+import 'trash_month_grouper.dart';
 import 'trash_state.dart';
 
 class TrashUiNotifier extends Notifier<TrashUiState> {
   @override
   TrashUiState build() {
-    Future.microtask(_load);
+    ref.listen(trashRevisionProvider, (previous, next) {
+      if (previous != next) {
+        Future.microtask(refresh);
+      }
+    });
+    Future.microtask(refresh);
     return const TrashUiState();
   }
 
-  Future<void> _load() async {
+  Future<void> refresh() async {
+    photoLoadLog('TrashUi.refresh start count=${state.items.length}');
     final repo = ref.read(trashRepositoryProvider);
     final items = await repo.fetchAll();
-    final bytes = await repo.reclaimableBytes();
     state = state.copyWith(
       items: items,
       isLoading: false,
-      reclaimableLabel: _formatBytes(bytes),
+    );
+    photoLoadLog(
+      'TrashUi.refresh done photos=$photoCount contacts=$contactCount',
     );
   }
 
@@ -26,8 +39,29 @@ class TrashUiNotifier extends Notifier<TrashUiState> {
     state = state.copyWith(tab: tab, selectMode: false, selectedIds: {});
   }
 
-  void toggleSelectMode() {
-    state = state.copyWith(selectMode: !state.selectMode, selectedIds: {});
+  void enterSelectMode() {
+    state = state.copyWith(selectMode: true, selectedIds: {});
+  }
+
+  void selectAllFiltered() {
+    state = state.copyWith(
+      selectMode: true,
+      selectedIds: filteredItems.map((item) => item.id).toSet(),
+    );
+  }
+
+  void deselectAllFiltered() {
+    state = state.copyWith(selectedIds: {});
+  }
+
+  bool get allFilteredSelected {
+    final items = filteredItems;
+    if (items.isEmpty) return false;
+    return items.every((item) => state.selectedIds.contains(item.id));
+  }
+
+  void exitSelectMode() {
+    state = state.copyWith(selectMode: false, selectedIds: {});
   }
 
   void toggleSelection(String id) {
@@ -43,17 +77,37 @@ class TrashUiNotifier extends Notifier<TrashUiState> {
   Future<void> restoreSelected() async {
     if (state.selectedIds.isEmpty) return;
     await ref.read(trashRepositoryProvider).restore(state.selectedIds.toList());
-    await _load();
+    bumpTrashDockBadge(ref);
+    await refresh();
     state = state.copyWith(selectMode: false, selectedIds: {});
   }
 
-  Future<void> deleteForeverSelected() async {
+  Future<bool> deleteForeverSelected() async {
     final ids = state.selectedIds.isEmpty
         ? filteredItems.map((i) => i.id).toList()
         : state.selectedIds.toList();
+    if (ids.isEmpty) return true;
+
+    final items = state.items.where((item) => ids.contains(item.id)).toList();
+    final photoItems = items.where((item) => item.type == TrashItemType.photo).toList();
+    final photoIds = photoItems.map((item) => item.id).toList();
+    if (photoIds.isNotEmpty) {
+      final result = await ref.read(photosRepositoryProvider).deletePhotos(photoIds);
+      if (result is FailureResult<void>) return false;
+      final committedBytes = photoItems.fold<int>(0, (sum, item) => sum + item.sizeBytes);
+      await ref.read(swipeStatsRepositoryProvider).recordCommittedDeletedBytes(committedBytes);
+    }
+
+    for (final contact in items.where((item) => item.type == TrashItemType.contact)) {
+      final result = await ref.read(contactsRepositoryProvider).deleteContact(contact.id);
+      if (result is FailureResult<void>) return false;
+    }
+
     await ref.read(trashRepositoryProvider).deleteForever(ids);
-    await _load();
+    bumpTrashDockBadge(ref);
+    await refresh();
     state = state.copyWith(selectMode: false, selectedIds: {});
+    return true;
   }
 
   List<TrashItem> get filteredItems {
@@ -63,12 +117,25 @@ class TrashUiNotifier extends Notifier<TrashUiState> {
     return state.items.where((i) => i.type == type).toList();
   }
 
-  String _formatBytes(int bytes) {
-    if (bytes < 1000000) {
-      return '${(bytes / 1000).toStringAsFixed(1)} KB';
-    }
-    return '${(bytes / 1000000).toStringAsFixed(1)} MB';
-  }
+  int get photoCount =>
+      state.items.where((item) => item.type == TrashItemType.photo).length;
+
+  int get contactCount =>
+      state.items.where((item) => item.type == TrashItemType.contact).length;
+
+  List<TrashMonthGroup> get photoGroups =>
+      groupTrashPhotosByMonth(state.items.where((i) => i.type == TrashItemType.photo).toList());
+
+  List<TrashMonthGroup> get contactGroups =>
+      groupTrashContactsByMonth(state.items.where((i) => i.type == TrashItemType.contact).toList());
+
+  int get tabReclaimableBytes => filteredItems.fold<int>(
+        0,
+        (sum, item) => sum + item.sizeBytes,
+      );
+
+  String tabReclaimableLabel([String? localeName]) =>
+      formatPhotoSizeBytes(tabReclaimableBytes, localeName);
 }
 
 final trashUiProvider = NotifierProvider<TrashUiNotifier, TrashUiState>(

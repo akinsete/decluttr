@@ -1,10 +1,15 @@
+import 'dart:async';
+
 import 'package:decluttr/core/di/providers.dart';
 import 'package:decluttr/core/testing/widget_keys.dart';
 import 'package:decluttr/features/home/home/home_page.dart';
 import 'package:decluttr/features/home/home/home_vm_notifier.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../helpers/test_app.dart';
+
+final _loadingHomeVmCompleter = Completer<HomeScreenVm>();
 
 void main() {
   testWidgets('home shows module cards for first visit', (tester) async {
@@ -26,6 +31,32 @@ void main() {
     expect(find.byKey(WidgetKeys.homePhotosCard), findsOneWidget);
     expect(find.text('Tap to get started'), findsNWidgets(2));
   });
+
+  testWidgets('home shows shimmer while loading', (tester) async {
+    final prefs = await initTestPrefs();
+    await tester.pumpWidget(
+      buildTestApp(
+        prefs: prefs,
+        overrides: [
+          appStateProvider.overrideWith(_FirstVisitAppState.new),
+          homeScreenVmProvider.overrideWith(_LoadingHomeVm.new),
+        ],
+        child: const HomePage(),
+      ),
+    );
+    await tester.pump();
+
+    expect(find.byKey(WidgetKeys.homeLoadingShimmer), findsOneWidget);
+    expect(find.textContaining('Ready for a'), findsOneWidget);
+    expect(find.text('Welcome 👋'), findsOneWidget);
+    expect(find.byKey(WidgetKeys.homePage), findsNothing);
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+  });
+}
+
+class _LoadingHomeVm extends HomeScreenVmNotifier {
+  @override
+  Future<HomeScreenVm> build() => _loadingHomeVmCompleter.future;
 }
 
 class _FirstVisitAppState extends AppStateNotifier {
@@ -41,6 +72,7 @@ class _FirstVisitHomeVm extends HomeScreenVmNotifier {
       streakDays: 0,
       contactsCount: 11,
       photosCount: 95,
+      itemsRemaining: 106,
       progress: 0,
       kept: 0,
       deleted: 0,

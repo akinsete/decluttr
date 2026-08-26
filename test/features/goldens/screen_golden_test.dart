@@ -25,7 +25,11 @@ import 'package:decluttr/features/shared/domain/entities/contact_record.dart';
 import 'package:decluttr/features/shared/domain/entities/duplicate_group.dart';
 import 'package:decluttr/features/shared/domain/entities/swipe_item.dart';
 import 'package:decluttr/features/shared/domain/entities/trash_item.dart';
+import 'package:decluttr/features/insights/insights/insights_page.dart';
+import 'package:decluttr/features/insights/insights/insights_vm.dart';
+import 'package:decluttr/features/insights/insights/insights_vm_notifier.dart';
 import 'package:decluttr/features/streak/streak/streak_page.dart';
+import 'package:decluttr/features/streak/streak/streak_vm.dart';
 import 'package:decluttr/features/streak/streak/streak_vm_notifier.dart';
 import 'package:decluttr/features/swipe/session_summary/session_summary_page.dart';
 import 'package:decluttr/features/swipe/swipe_session/swipe_session_notifier.dart';
@@ -163,7 +167,7 @@ void main() {
         baseName: 'session_summary',
         prefs: prefs,
         settle: false,
-        builder: (_) => const SessionSummaryPage(kept: 5, deleted: 2),
+        builder: (_) => const SessionSummaryPage(kept: 5, deleted: 2, deletedBytes: 4800000),
       );
     }, tags: ['golden']);
   });
@@ -295,17 +299,6 @@ void main() {
       );
     }, tags: ['golden']);
 
-    testWidgets('main shell trash', (tester) async {
-      final prefs = await initTestPrefs();
-      await runRouterGolden(
-        tester,
-        baseName: 'main_shell_trash',
-        prefs: prefs,
-        route: const MainShellRoute(children: [TrashRoute()]),
-        overrides: _shellHomeOverrides(),
-      );
-    }, tags: ['golden']);
-
     testWidgets('main shell settings', (tester) async {
       final prefs = await initTestPrefs();
       await runRouterGolden(
@@ -321,6 +314,19 @@ void main() {
     }, tags: ['golden']);
   });
 
+  group('insights goldens', () {
+    testWidgets('insights', (tester) async {
+      final prefs = await initTestPrefs();
+      await runThemedGolden(
+        tester,
+        baseName: 'insights_page',
+        prefs: prefs,
+        overrides: [insightsVmProvider.overrideWith(_SampleInsightsVm.new)],
+        builder: (_) => const InsightsPage(),
+      );
+    }, tags: ['golden']);
+  });
+
   group('streak goldens', () {
     testWidgets('streak', (tester) async {
       final prefs = await initTestPrefs();
@@ -328,6 +334,7 @@ void main() {
         tester,
         baseName: 'streak_page',
         prefs: prefs,
+        settle: false,
         overrides: [streakVmProvider.overrideWith(_SampleStreakVm.new)],
         builder: (_) => const StreakPage(),
       );
@@ -372,6 +379,8 @@ class _ReturningAppState extends AppStateNotifier {
   AppState build() => const AppState(
         isLoading: false,
         hasActivity: true,
+        photosGranted: true,
+        contactsGranted: true,
         hapticOn: true,
         notifOn: true,
       );
@@ -385,6 +394,7 @@ class _FirstVisitHomeVm extends HomeScreenVmNotifier {
       streakDays: 0,
       contactsCount: 11,
       photosCount: 95,
+      itemsRemaining: 106,
       progress: 0,
       kept: 0,
       deleted: 0,
@@ -401,7 +411,8 @@ class _ReturningHomeVm extends HomeScreenVmNotifier {
       streakDays: 4,
       contactsCount: 11,
       photosCount: 95,
-      progress: 0.42,
+      itemsRemaining: 106,
+      progress: 192 / 298,
       kept: 128,
       deleted: 64,
       isLoading: false,
@@ -428,19 +439,35 @@ class _SampleBatchPhotos extends BatchPhotosNotifier {
   @override
   Future<List<BatchItem>> build() async => const [
         BatchItem(
-          id: '1',
+          id: 'dup',
           kind: BatchKind.photos,
-          title: 'June 2025',
-          subtitle: '42 photos',
-          count: 42,
+          title: 'Duplicates',
+          subtitle: '11 similar',
+          count: 11,
+          isDuplicates: true,
         ),
         BatchItem(
-          id: '2',
+          id: '2026-05',
           kind: BatchKind.photos,
-          title: 'May 2025',
-          subtitle: '38 photos',
-          count: 38,
+          title: 'May 2026',
+          subtitle: '7 photos',
+          count: 7,
+        ),
+        BatchItem(
+          id: '2026-04',
+          kind: BatchKind.photos,
+          title: 'April 2026',
+          subtitle: '6 photos',
+          count: 6,
           gradientIndex: 1,
+        ),
+        BatchItem(
+          id: '2026-03',
+          kind: BatchKind.photos,
+          title: 'March 2026',
+          subtitle: '7 photos',
+          count: 7,
+          gradientIndex: 2,
         ),
       ];
 }
@@ -504,25 +531,47 @@ class _PopulatedTrashUi extends TrashUiNotifier {
   TrashUiState build() {
     return TrashUiState(
       isLoading: false,
-      reclaimableLabel: '24.5 MB',
       items: [
+        for (var i = 0; i < 9; i++)
+          TrashItem(
+            id: 't$i',
+            type: TrashItemType.photo,
+            title: 'Photo $i',
+            subtitle: '2.4 MB',
+            deletedAt: DateTime(2024, 5, 28 - i),
+            monthKey: '2024-05',
+            sizeBytes: 2400000,
+            gradientIndex: i % 6,
+            isVideo: i == 1 || i == 4,
+            durationLabel: i == 1 ? '0:18' : i == 4 ? '0:07' : null,
+          ),
         TrashItem(
-          id: 't1',
-          type: TrashItemType.photo,
-          title: 'Beach sunset',
-          subtitle: '2.4 MB',
-          deletedAt: DateTime(2025, 6, 1),
-          monthKey: '2025-06',
-        ),
-        TrashItem(
-          id: 't2',
-          type: TrashItemType.photo,
-          title: 'Coffee shop',
-          subtitle: '1.1 MB',
-          deletedAt: DateTime(2025, 6, 2),
-          monthKey: '2025-06',
+          id: 'c1',
+          type: TrashItemType.contact,
+          title: 'Alex Morgan',
+          subtitle: '555-0100',
+          deletedAt: DateTime(2024, 5, 10),
+          initial: 'A',
+          gradientIndex: 2,
         ),
       ],
+    );
+  }
+}
+
+class _SampleInsightsVm extends InsightsVmNotifier {
+  @override
+  Future<InsightsVm> build() async {
+    return const InsightsVm(
+      totalKept: 2914,
+      totalDeleted: 1248,
+      committedDeletedBytes: 240000000,
+      photosDeleted: 1032,
+      contactsDeleted: 216,
+      weekCleanedCounts: [40, 52, 36, 80, 104, 0, 0],
+      todayWeekdayIndex: 4,
+      currentStreak: 4,
+      longestStreak: 12,
     );
   }
 }
@@ -532,14 +581,18 @@ class _SampleStreakVm extends StreakVmNotifier {
   Future<StreakVm> build() async {
     return const StreakVm(
       currentStreak: 4,
-      weekActivity: [true, true, false, true, true, false, false],
+      longestStreak: 12,
+      itemsCleaned: 1248,
+      weekActivity: [true, true, true, true, false, false, false],
       heatmap: [
-        2, 1, 0, 3, 1, 0, 2,
-        1, 0, 2, 1, 0, 0, 1,
-        0, 1, 0, 2, 1, 0, 0,
-        1, 0, 0, 1, 2, 0, 1,
-        0, 0, 1, 0, 0, 0, 0,
+        2, 4, 1, 5, 3, 0, 2,
+        4, 3, 1, 5, 2, 4, 3,
+        2, 1, 4, 5, 3, 2, 1,
+        0, 3, 4, 2, 5, 3, 1,
+        4, 2, 3, 5, 1, 2, 4,
       ],
+      todayWeekdayIndex: 3,
+      heatmapTodayIndex: 31,
     );
   }
 }

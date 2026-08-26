@@ -6,11 +6,18 @@ class SignInLoadingNotifier extends Notifier<bool> {
   @override
   bool build() => false;
 
-  Future<void> signIn() async {
+  Future<void> signIn({required String email, required String password}) async {
     state = true;
-    await Future<void>.delayed(const Duration(milliseconds: 400));
-    await ref.read(appStateProvider.notifier).setSignedIn(true);
-    state = false;
+    try {
+      await ref.read(authRepositoryProvider).linkWithEmail(
+            email: email,
+            password: password,
+          );
+      await ref.read(appStateProvider.notifier).setSignedIn(true);
+      await ref.read(swipeStatsRepositoryProvider).syncPendingSessions();
+    } finally {
+      state = false;
+    }
   }
 }
 

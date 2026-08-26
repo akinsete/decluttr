@@ -14,6 +14,5 @@ abstract class TrashUiState with _$TrashUiState {
     @Default(<String>{}) Set<String> selectedIds,
     @Default(true) bool isLoading,
     @Default(<TrashItem>[]) List<TrashItem> items,
-    @Default('') String reclaimableLabel,
   }) = _TrashUiState;
 }

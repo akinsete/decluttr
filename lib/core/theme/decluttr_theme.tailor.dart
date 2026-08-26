@@ -14,6 +14,11 @@ mixin _$DecluttrThemeTailorMixin on ThemeExtension<DecluttrTheme> {
   LinearGradient get contactsCardGradient;
   LinearGradient get photosCardGradient;
   LinearGradient get progressRingGradient;
+  Color get progressRingTrack;
+  Color get keptStatCircleFill;
+  Color get deletedStatCircleFill;
+  Color get trashBarFill;
+  Color get trashBarSizeText;
   LinearGradient get primaryCtaGradient;
   LinearGradient get headlinePinkGradient;
   LinearGradient get walkthroughFrontGradient;
@@ -26,6 +31,25 @@ mixin _$DecluttrThemeTailorMixin on ThemeExtension<DecluttrTheme> {
   List<BoxShadow> get shadowHero;
   List<BoxShadow> get shadowCardActive;
   List<BoxShadow> get shadowDock;
+  Color get dockHairlineBorder;
+  List<BoxShadow> get shadowDockFloating;
+  double get batchPickerCardHeight;
+  double get batchStackOverlap;
+  LinearGradient get duplicatesPickerGradient;
+  Color get duplicatesPickerIconSurface;
+  List<LinearGradient> get batchPickerGradients;
+  LinearGradient get settingsPremiumGradient;
+  Color get settingsPremiumSubtitle;
+  Color get settingsPremiumChevron;
+  Color get settingsSignInAvatarBg;
+  Color get settingsRowDivider;
+  Color get settingsValueMuted;
+  Color get settingsChevronMuted;
+  Color get settingsRateStar;
+  Color get settingsPremiumCrown;
+  List<BoxShadow> get settingsCardShadow;
+  List<BoxShadow> get batchPickerCardShadow;
+  LinearGradient get dockIndicatorGradient;
   List<BoxShadow> get shadowSheet;
   Color get canvas;
   Color get canvasAlt;
@@ -86,6 +110,11 @@ mixin _$DecluttrThemeTailorMixin on ThemeExtension<DecluttrTheme> {
     LinearGradient? contactsCardGradient,
     LinearGradient? photosCardGradient,
     LinearGradient? progressRingGradient,
+    Color? progressRingTrack,
+    Color? keptStatCircleFill,
+    Color? deletedStatCircleFill,
+    Color? trashBarFill,
+    Color? trashBarSizeText,
     LinearGradient? primaryCtaGradient,
     LinearGradient? headlinePinkGradient,
     LinearGradient? walkthroughFrontGradient,
@@ -98,6 +127,25 @@ mixin _$DecluttrThemeTailorMixin on ThemeExtension<DecluttrTheme> {
     List<BoxShadow>? shadowHero,
     List<BoxShadow>? shadowCardActive,
     List<BoxShadow>? shadowDock,
+    Color? dockHairlineBorder,
+    List<BoxShadow>? shadowDockFloating,
+    double? batchPickerCardHeight,
+    double? batchStackOverlap,
+    LinearGradient? duplicatesPickerGradient,
+    Color? duplicatesPickerIconSurface,
+    List<LinearGradient>? batchPickerGradients,
+    LinearGradient? settingsPremiumGradient,
+    Color? settingsPremiumSubtitle,
+    Color? settingsPremiumChevron,
+    Color? settingsSignInAvatarBg,
+    Color? settingsRowDivider,
+    Color? settingsValueMuted,
+    Color? settingsChevronMuted,
+    Color? settingsRateStar,
+    Color? settingsPremiumCrown,
+    List<BoxShadow>? settingsCardShadow,
+    List<BoxShadow>? batchPickerCardShadow,
+    LinearGradient? dockIndicatorGradient,
     List<BoxShadow>? shadowSheet,
     Color? canvas,
     Color? canvasAlt,
@@ -301,6 +349,26 @@ mixin _$DecluttrThemeTailorMixin on ThemeExtension<DecluttrTheme> {
               other.progressRingGradient,
             ) &&
             const DeepCollectionEquality().equals(
+              progressRingTrack,
+              other.progressRingTrack,
+            ) &&
+            const DeepCollectionEquality().equals(
+              keptStatCircleFill,
+              other.keptStatCircleFill,
+            ) &&
+            const DeepCollectionEquality().equals(
+              deletedStatCircleFill,
+              other.deletedStatCircleFill,
+            ) &&
+            const DeepCollectionEquality().equals(
+              trashBarFill,
+              other.trashBarFill,
+            ) &&
+            const DeepCollectionEquality().equals(
+              trashBarSizeText,
+              other.trashBarSizeText,
+            ) &&
+            const DeepCollectionEquality().equals(
               primaryCtaGradient,
               other.primaryCtaGradient,
             ) &&
@@ -338,6 +406,82 @@ mixin _$DecluttrThemeTailorMixin on ThemeExtension<DecluttrTheme> {
             const DeepCollectionEquality().equals(
               shadowDock,
               other.shadowDock,
+            ) &&
+            const DeepCollectionEquality().equals(
+              dockHairlineBorder,
+              other.dockHairlineBorder,
+            ) &&
+            const DeepCollectionEquality().equals(
+              shadowDockFloating,
+              other.shadowDockFloating,
+            ) &&
+            const DeepCollectionEquality().equals(
+              batchPickerCardHeight,
+              other.batchPickerCardHeight,
+            ) &&
+            const DeepCollectionEquality().equals(
+              batchStackOverlap,
+              other.batchStackOverlap,
+            ) &&
+            const DeepCollectionEquality().equals(
+              duplicatesPickerGradient,
+              other.duplicatesPickerGradient,
+            ) &&
+            const DeepCollectionEquality().equals(
+              duplicatesPickerIconSurface,
+              other.duplicatesPickerIconSurface,
+            ) &&
+            const DeepCollectionEquality().equals(
+              batchPickerGradients,
+              other.batchPickerGradients,
+            ) &&
+            const DeepCollectionEquality().equals(
+              settingsPremiumGradient,
+              other.settingsPremiumGradient,
+            ) &&
+            const DeepCollectionEquality().equals(
+              settingsPremiumSubtitle,
+              other.settingsPremiumSubtitle,
+            ) &&
+            const DeepCollectionEquality().equals(
+              settingsPremiumChevron,
+              other.settingsPremiumChevron,
+            ) &&
+            const DeepCollectionEquality().equals(
+              settingsSignInAvatarBg,
+              other.settingsSignInAvatarBg,
+            ) &&
+            const DeepCollectionEquality().equals(
+              settingsRowDivider,
+              other.settingsRowDivider,
+            ) &&
+            const DeepCollectionEquality().equals(
+              settingsValueMuted,
+              other.settingsValueMuted,
+            ) &&
+            const DeepCollectionEquality().equals(
+              settingsChevronMuted,
+              other.settingsChevronMuted,
+            ) &&
+            const DeepCollectionEquality().equals(
+              settingsRateStar,
+              other.settingsRateStar,
+            ) &&
+            const DeepCollectionEquality().equals(
+              settingsPremiumCrown,
+              other.settingsPremiumCrown,
+            ) &&
+            const DeepCollectionEquality().equals(
+              settingsCardShadow,
+              other.settingsCardShadow,
+            ) &&
+            const DeepCollectionEquality().equals(
+              batchPickerCardShadow,
+              other.batchPickerCardShadow,
+            ) &&
+            const DeepCollectionEquality().equals(
+              dockIndicatorGradient,
+              other.dockIndicatorGradient,
             ) &&
             const DeepCollectionEquality().equals(
               shadowSheet,
@@ -468,6 +612,11 @@ mixin _$DecluttrThemeTailorMixin on ThemeExtension<DecluttrTheme> {
       const DeepCollectionEquality().hash(contactsCardGradient),
       const DeepCollectionEquality().hash(photosCardGradient),
       const DeepCollectionEquality().hash(progressRingGradient),
+      const DeepCollectionEquality().hash(progressRingTrack),
+      const DeepCollectionEquality().hash(keptStatCircleFill),
+      const DeepCollectionEquality().hash(deletedStatCircleFill),
+      const DeepCollectionEquality().hash(trashBarFill),
+      const DeepCollectionEquality().hash(trashBarSizeText),
       const DeepCollectionEquality().hash(primaryCtaGradient),
       const DeepCollectionEquality().hash(headlinePinkGradient),
       const DeepCollectionEquality().hash(walkthroughFrontGradient),
@@ -480,6 +629,25 @@ mixin _$DecluttrThemeTailorMixin on ThemeExtension<DecluttrTheme> {
       const DeepCollectionEquality().hash(shadowHero),
       const DeepCollectionEquality().hash(shadowCardActive),
       const DeepCollectionEquality().hash(shadowDock),
+      const DeepCollectionEquality().hash(dockHairlineBorder),
+      const DeepCollectionEquality().hash(shadowDockFloating),
+      const DeepCollectionEquality().hash(batchPickerCardHeight),
+      const DeepCollectionEquality().hash(batchStackOverlap),
+      const DeepCollectionEquality().hash(duplicatesPickerGradient),
+      const DeepCollectionEquality().hash(duplicatesPickerIconSurface),
+      const DeepCollectionEquality().hash(batchPickerGradients),
+      const DeepCollectionEquality().hash(settingsPremiumGradient),
+      const DeepCollectionEquality().hash(settingsPremiumSubtitle),
+      const DeepCollectionEquality().hash(settingsPremiumChevron),
+      const DeepCollectionEquality().hash(settingsSignInAvatarBg),
+      const DeepCollectionEquality().hash(settingsRowDivider),
+      const DeepCollectionEquality().hash(settingsValueMuted),
+      const DeepCollectionEquality().hash(settingsChevronMuted),
+      const DeepCollectionEquality().hash(settingsRateStar),
+      const DeepCollectionEquality().hash(settingsPremiumCrown),
+      const DeepCollectionEquality().hash(settingsCardShadow),
+      const DeepCollectionEquality().hash(batchPickerCardShadow),
+      const DeepCollectionEquality().hash(dockIndicatorGradient),
       const DeepCollectionEquality().hash(shadowSheet),
       const DeepCollectionEquality().hash(canvas),
       const DeepCollectionEquality().hash(canvasAlt),

@@ -5,25 +5,56 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_motion.dart';
 
+/// Imperative handle for programmatic keep/delete swipes (e.g. action bar taps).
+class SwipeCardController {
+  Future<void> Function()? _swipeKeep;
+  Future<void> Function()? _swipeDelete;
+
+  void _bind({
+    required Future<void> Function() swipeKeep,
+    required Future<void> Function() swipeDelete,
+  }) {
+    _swipeKeep = swipeKeep;
+    _swipeDelete = swipeDelete;
+  }
+
+  void _unbind() {
+    _swipeKeep = null;
+    _swipeDelete = null;
+  }
+
+  Future<void> swipeKeep() => _swipeKeep?.call() ?? Future<void>.value();
+
+  Future<void> swipeDelete() => _swipeDelete?.call() ?? Future<void>.value();
+}
+
 class SwipeCard extends StatefulWidget {
   const SwipeCard({
     super.key,
     required this.title,
     required this.subtitle,
     this.gradientIndex = 0,
+    this.mediaBackground,
+    this.tagLabel,
+    this.controller,
     this.onSwipeKeep,
     this.onSwipeDelete,
     this.onTap,
     this.isTop = true,
+    this.deleteOnSwipeRight = false,
   });
 
   final String title;
   final String subtitle;
   final int gradientIndex;
-  final VoidCallback? onSwipeKeep;
-  final VoidCallback? onSwipeDelete;
+  final Widget? mediaBackground;
+  final String? tagLabel;
+  final SwipeCardController? controller;
+  final Future<void> Function()? onSwipeKeep;
+  final Future<void> Function()? onSwipeDelete;
   final VoidCallback? onTap;
   final bool isTop;
+  final bool deleteOnSwipeRight;
 
   @override
   State<SwipeCard> createState() => _SwipeCardState();
@@ -54,6 +85,48 @@ class _SwipeCardState extends State<SwipeCard> {
     );
   }
 
+  bool get _isPhotoCard => widget.mediaBackground != null;
+
+  @override
+  void initState() {
+    super.initState();
+    _bindController();
+  }
+
+  @override
+  void didUpdateWidget(SwipeCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller) {
+      oldWidget.controller?._unbind();
+      _bindController();
+    }
+    if (oldWidget.title != widget.title ||
+        oldWidget.subtitle != widget.subtitle ||
+        oldWidget.tagLabel != widget.tagLabel ||
+        oldWidget.deleteOnSwipeRight != widget.deleteOnSwipeRight) {
+      _dx = 0;
+      _dy = 0;
+      _animating = false;
+      _bindController();
+    }
+  }
+
+  @override
+  void dispose() {
+    widget.controller?._unbind();
+    super.dispose();
+  }
+
+  void _bindController() {
+    if (!widget.isTop) return;
+    final keepTarget = widget.deleteOnSwipeRight ? -620.0 : 620.0;
+    final deleteTarget = widget.deleteOnSwipeRight ? 620.0 : -620.0;
+    widget.controller?._bind(
+      swipeKeep: () => _flyAway(keepTarget, widget.onSwipeKeep),
+      swipeDelete: () => _flyAway(deleteTarget, widget.onSwipeDelete),
+    );
+  }
+
   void _onPanUpdate(DragUpdateDetails details) {
     if (!widget.isTop || _animating) return;
     setState(() {
@@ -66,9 +139,15 @@ class _SwipeCardState extends State<SwipeCard> {
     if (!widget.isTop || _animating) return;
 
     if (_dx > _threshold) {
-      await _flyAway(620, widget.onSwipeKeep);
+      final target = 620.0;
+      final callback =
+          widget.deleteOnSwipeRight ? widget.onSwipeDelete : widget.onSwipeKeep;
+      await _flyAway(target, callback);
     } else if (_dx < -_threshold) {
-      await _flyAway(-620, widget.onSwipeDelete);
+      final target = -620.0;
+      final callback =
+          widget.deleteOnSwipeRight ? widget.onSwipeKeep : widget.onSwipeDelete;
+      await _flyAway(target, callback);
     } else if (_dx.abs() < 20 && _dy.abs() < 20) {
       widget.onTap?.call();
       _reset();
@@ -77,27 +156,30 @@ class _SwipeCardState extends State<SwipeCard> {
     }
   }
 
-  Future<void> _flyAway(double target, VoidCallback? callback) async {
+  Future<void> _flyAway(double target, Future<void> Function()? callback) async {
+    if (!widget.isTop || _animating) return;
     setState(() => _animating = true);
     final start = _dx;
     const steps = 12;
-    for (var i = 1; i <= steps; i++) {
-      await Future<void>.delayed(
-        AppMotion.swipeFly ~/ steps,
-      );
-      if (!mounted) return;
-      setState(() {
-        _dx = start + (target - start) * (i / steps);
-      });
+    try {
+      for (var i = 1; i <= steps; i++) {
+        await Future<void>.delayed(
+          AppMotion.swipeFly ~/ steps,
+        );
+        if (!mounted) break;
+        setState(() {
+          _dx = start + (target - start) * (i / steps);
+        });
+      }
+    } finally {
+      await (callback?.call() ?? Future<void>.value());
     }
-    callback?.call();
-    if (mounted) {
-      setState(() {
-        _dx = 0;
-        _dy = 0;
-        _animating = false;
-      });
-    }
+    if (!mounted) return;
+    setState(() {
+      _dx = 0;
+      _dy = 0;
+      _animating = false;
+    });
   }
 
   void _reset() {
@@ -107,15 +189,17 @@ class _SwipeCardState extends State<SwipeCard> {
     });
   }
 
-  void swipeKeep() => _flyAway(620, widget.onSwipeKeep);
-  void swipeDelete() => _flyAway(-620, widget.onSwipeDelete);
-
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final dt = context.decluttrTheme;
+    final typography = context.decluttrTypography;
     final rotation = _dx / 18 * math.pi / 180;
-    final keepOpacity = (_dx / _threshold).clamp(0.0, 1.0);
-    final deleteOpacity = (-_dx / _threshold).clamp(0.0, 1.0);
+    final keepOpacity = widget.deleteOnSwipeRight
+        ? (-_dx / _threshold).clamp(0.0, 1.0)
+        : (_dx / _threshold).clamp(0.0, 1.0);
+    final deleteOpacity = widget.deleteOnSwipeRight
+        ? (_dx / _threshold).clamp(0.0, 1.0)
+        : (-_dx / _threshold).clamp(0.0, 1.0);
 
     return Transform.translate(
       offset: Offset(_dx, _dy),
@@ -128,40 +212,89 @@ class _SwipeCardState extends State<SwipeCard> {
           child: AnimatedContainer(
             duration: _animating ? AppMotion.swipeFly : AppMotion.swipeRelease,
             curve: AppMotion.standardCurve,
-            height: 420,
+            width: double.infinity,
+            height: double.infinity,
+            clipBehavior: Clip.antiAlias,
             decoration: BoxDecoration(
-              gradient: _gradient,
-              borderRadius: BorderRadius.circular(context.decluttrTheme.radiusCard),
-              boxShadow: widget.isTop ? context.decluttrTheme.shadowCardActive : context.decluttrTheme.shadowStack,
+              gradient: _isPhotoCard ? null : _gradient,
+              borderRadius: BorderRadius.circular(dt.radiusCard),
+              boxShadow: widget.isTop ? dt.shadowCardActive : dt.shadowStack,
             ),
             child: Stack(
+              fit: StackFit.expand,
               children: [
-                Padding(
-                  padding: EdgeInsets.all(context.decluttrTheme.x6),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Spacer(),
-                      Text(widget.title, style: theme.textTheme.headlineSmall),
-                      SizedBox(height: context.decluttrTheme.x2),
-                      Text(widget.subtitle, style: theme.textTheme.bodyMedium),
-                    ],
+                if (_isPhotoCard) widget.mediaBackground!,
+                if (!_isPhotoCard)
+                  Padding(
+                    padding: EdgeInsets.all(dt.x6),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Spacer(),
+                        Text(widget.title, style: Theme.of(context).textTheme.headlineSmall),
+                        SizedBox(height: dt.x2),
+                        Text(widget.subtitle, style: Theme.of(context).textTheme.bodyMedium),
+                      ],
+                    ),
                   ),
-                ),
+                if (_isPhotoCard) ...[
+                  if (widget.tagLabel != null)
+                    Positioned(
+                      top: dt.x4 + dt.x1,
+                      left: dt.x4 + dt.x1,
+                      child: DecoratedBox(
+                        decoration: BoxDecoration(
+                          color: dt.white.withValues(alpha: 0.9),
+                          borderRadius: BorderRadius.circular(dt.radiusFull),
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: dt.x3 + dt.x1,
+                            vertical: dt.x1 + dt.x1,
+                          ),
+                          child: Text(
+                            widget.tagLabel!,
+                            style: typography.walkthroughDemoLabel,
+                          ),
+                        ),
+                      ),
+                    ),
+                  Positioned(
+                    left: dt.x5,
+                    right: dt.x5,
+                    bottom: dt.x5,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.title,
+                          style: typography.moduleCardTitle.copyWith(color: dt.white),
+                        ),
+                        SizedBox(height: dt.x1),
+                        Text(
+                          widget.subtitle,
+                          style: typography.moduleCardSubtitle.copyWith(
+                            color: dt.white.withValues(alpha: 0.82),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 Positioned(
-                  top: context.decluttrTheme.x6,
-                  left: context.decluttrTheme.x6,
+                  top: dt.x6,
+                  left: dt.x6,
                   child: Opacity(
                     opacity: keepOpacity,
-                    child: _Stamp(label: 'KEEP', color: context.decluttrTheme.success),
+                    child: _Stamp(label: 'KEEP', color: dt.success),
                   ),
                 ),
                 Positioned(
-                  top: context.decluttrTheme.x6,
-                  right: context.decluttrTheme.x6,
+                  top: dt.x6,
+                  right: dt.x6,
                   child: Opacity(
                     opacity: deleteOpacity,
-                    child: _Stamp(label: 'DELETE', color: context.decluttrTheme.destructive),
+                    child: _Stamp(label: 'DELETE', color: dt.destructive),
                   ),
                 ),
               ],

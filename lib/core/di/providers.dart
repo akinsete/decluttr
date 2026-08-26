@@ -1,16 +1,22 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../error/result.dart';
 
+import '../../features/shared/data/repositories/auth_repository_impl.dart';
 import '../../features/shared/data/repositories/contacts_repository_impl.dart';
 import '../../features/shared/data/repositories/photos_repository_impl.dart';
 import '../../features/shared/data/repositories/streak_repository_impl.dart';
+import '../../features/shared/data/repositories/swipe_stats_repository_impl.dart';
 import '../../features/shared/data/repositories/trash_repository_impl.dart';
 import '../../features/shared/domain/repositories/app_preferences_repository.dart';
+import '../../features/shared/domain/repositories/auth_repository.dart';
 import '../../features/shared/domain/repositories/contacts_repository.dart';
 import '../../features/shared/domain/repositories/photos_repository.dart';
 import '../../features/shared/domain/repositories/streak_repository.dart';
+import '../../features/shared/domain/repositories/swipe_stats_repository.dart';
 import '../../features/shared/domain/repositories/trash_repository.dart';
 import 'app_state.dart';
 import 'permissions_state.dart';
@@ -39,7 +45,18 @@ final photosRepositoryProvider = Provider<PhotosRepository>(
 );
 
 final trashRepositoryProvider = Provider<TrashRepository>(
-  (ref) => TrashRepositoryImpl(),
+  (ref) => TrashRepositoryImpl(prefs: ref.watch(sharedPreferencesProvider)),
+);
+
+final authRepositoryProvider = Provider<AuthRepository>(
+  (ref) => AuthRepositoryImpl(),
+);
+
+final swipeStatsRepositoryProvider = Provider<SwipeStatsRepository>(
+  (ref) => SwipeStatsRepositoryImpl(
+    prefs: ref.watch(sharedPreferencesProvider),
+    authRepository: ref.watch(authRepositoryProvider),
+  ),
 );
 
 final streakRepositoryProvider = Provider<StreakRepository>(
@@ -58,6 +75,9 @@ class AppStateNotifier extends Notifier<AppState> {
       ref.read(appPreferencesRepositoryProvider);
 
   Future<void> _load() async {
+    await ref.read(authRepositoryProvider).ensureAnonymousUser();
+    unawaited(ref.read(swipeStatsRepositoryProvider).syncPendingSessions());
+
     state = state.copyWith(
       onboardingComplete: await _prefs.onboardingComplete(),
       tutorialSeen: await _prefs.tutorialSeen(),

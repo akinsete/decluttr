@@ -304,6 +304,12 @@ abstract class AppLocalizations {
   /// **'Keep your momentum going!'**
   String get homeStreakSubtitle;
 
+  /// No description provided for @homeStreakTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} Day Streak'**
+  String homeStreakTitle(int days);
+
   /// No description provided for @homeContactsTitle.
   ///
   /// In en, this message translates to:
@@ -340,11 +346,17 @@ abstract class AppLocalizations {
   /// **'Your progress'**
   String get homeProgressTitle;
 
-  /// No description provided for @homeProgressStats.
+  /// No description provided for @homeProgressViewAll.
   ///
   /// In en, this message translates to:
-  /// **'{kept} kept · {deleted} cleared'**
-  String homeProgressStats(int kept, int deleted);
+  /// **'View all stats ›'**
+  String get homeProgressViewAll;
+
+  /// No description provided for @homeProgressItemsRemaining.
+  ///
+  /// In en, this message translates to:
+  /// **'items remaining'**
+  String get homeProgressItemsRemaining;
 
   /// No description provided for @dockHome.
   ///
@@ -367,8 +379,38 @@ abstract class AppLocalizations {
   /// No description provided for @batchPhotosTitle.
   ///
   /// In en, this message translates to:
-  /// **'Photos & Videos'**
+  /// **'Photos'**
   String get batchPhotosTitle;
+
+  /// No description provided for @batchPhotosSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Select what you want to clean.'**
+  String get batchPhotosSubtitle;
+
+  /// No description provided for @batchChooseSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a batch'**
+  String get batchChooseSection;
+
+  /// No description provided for @batchPhotoCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 photo} other{{count} photos}}'**
+  String batchPhotoCount(int count);
+
+  /// No description provided for @batchDuplicatesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicates'**
+  String get batchDuplicatesTitle;
+
+  /// No description provided for @batchDuplicatesPhotosHint.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 photo looks similar} other{{count} photos look similar}}'**
+  String batchDuplicatesPhotosHint(int count);
 
   /// No description provided for @batchContactsTitle.
   ///
@@ -397,13 +439,19 @@ abstract class AppLocalizations {
   /// No description provided for @swipeProgress.
   ///
   /// In en, this message translates to:
-  /// **'{current} / {total}'**
+  /// **'{current}/{total}'**
   String swipeProgress(int current, int total);
+
+  /// No description provided for @swipeTutorialTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Here\'s how it works'**
+  String get swipeTutorialTitle;
 
   /// No description provided for @swipeTutorial.
   ///
   /// In en, this message translates to:
-  /// **'Swipe right to keep, left to delete'**
+  /// **'Swipe left to delete, right to keep'**
   String get swipeTutorial;
 
   /// No description provided for @swipeDismissTutorial.
@@ -433,14 +481,38 @@ abstract class AppLocalizations {
   /// No description provided for @sessionSummaryTitle.
   ///
   /// In en, this message translates to:
-  /// **'Nice work!'**
+  /// **'All done!'**
   String get sessionSummaryTitle;
 
-  /// No description provided for @sessionSummarySub.
+  /// No description provided for @sessionSummarySubPhotos.
   ///
   /// In en, this message translates to:
-  /// **'You reviewed everything in this batch.'**
-  String get sessionSummarySub;
+  /// **'You reviewed every photo in this batch. Nice cleanup.'**
+  String get sessionSummarySubPhotos;
+
+  /// No description provided for @sessionSummarySubContacts.
+  ///
+  /// In en, this message translates to:
+  /// **'You reviewed every contact in this batch. Nice cleanup.'**
+  String get sessionSummarySubContacts;
+
+  /// No description provided for @sessionSummaryKeptLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Kept'**
+  String get sessionSummaryKeptLabel;
+
+  /// No description provided for @sessionSummaryDeletedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted'**
+  String get sessionSummaryDeletedLabel;
+
+  /// No description provided for @sessionSummaryDeletedSize.
+  ///
+  /// In en, this message translates to:
+  /// **'{size} deleted'**
+  String sessionSummaryDeletedSize(String size);
 
   /// No description provided for @sessionSummaryKept.
   ///
@@ -520,6 +592,12 @@ abstract class AppLocalizations {
   /// **'Trash'**
   String get trashTitle;
 
+  /// No description provided for @trashSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Review before deleting forever.'**
+  String get trashSubtitle;
+
   /// No description provided for @trashReclaimable.
   ///
   /// In en, this message translates to:
@@ -538,11 +616,83 @@ abstract class AppLocalizations {
   /// **'Contacts'**
   String get trashTabContacts;
 
+  /// No description provided for @trashTabPhotosCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos ({count})'**
+  String trashTabPhotosCount(int count);
+
+  /// No description provided for @trashTabContactsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts ({count})'**
+  String trashTabContactsCount(int count);
+
   /// No description provided for @trashEmpty.
   ///
   /// In en, this message translates to:
   /// **'Trash is empty'**
   String get trashEmpty;
+
+  /// No description provided for @trashEmptyPhotosSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Items you swipe away during cleanup land here until you delete them forever.'**
+  String get trashEmptyPhotosSub;
+
+  /// No description provided for @trashEmptyContactsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No contacts in trash'**
+  String get trashEmptyContactsTitle;
+
+  /// No description provided for @trashEmptyContactsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts you remove during cleanup will appear here.'**
+  String get trashEmptyContactsSub;
+
+  /// No description provided for @trashSelect.
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get trashSelect;
+
+  /// No description provided for @trashSelectAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Select all'**
+  String get trashSelectAll;
+
+  /// No description provided for @trashDeselectAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Deselect all'**
+  String get trashDeselectAll;
+
+  /// No description provided for @trashCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get trashCancel;
+
+  /// No description provided for @trashItemsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 item} other{{count} items}}'**
+  String trashItemsCount(int count);
+
+  /// No description provided for @trashSelectedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 selected} other{{count} selected}}'**
+  String trashSelectedCount(int count);
+
+  /// No description provided for @trashDeleteSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete selected'**
+  String get trashDeleteSelected;
 
   /// No description provided for @trashPurgesIn.
   ///
@@ -562,11 +712,71 @@ abstract class AppLocalizations {
   /// **'Delete forever'**
   String get trashDeleteForever;
 
+  /// No description provided for @trashDockBadgeA11y.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No items in trash} =1{1 item in trash} other{{count} items in trash}}'**
+  String trashDockBadgeA11y(int count);
+
   /// No description provided for @trashSelectMode.
   ///
   /// In en, this message translates to:
   /// **'Select items'**
   String get trashSelectMode;
+
+  /// No description provided for @insightsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Insights'**
+  String get insightsTitle;
+
+  /// No description provided for @insightsStorageFreed.
+  ///
+  /// In en, this message translates to:
+  /// **'Storage freed'**
+  String get insightsStorageFreed;
+
+  /// No description provided for @insightsThisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get insightsThisWeek;
+
+  /// No description provided for @insightsWeekCleaned.
+  ///
+  /// In en, this message translates to:
+  /// **'+{count} cleaned'**
+  String insightsWeekCleaned(int count);
+
+  /// No description provided for @insightsCleanedByType.
+  ///
+  /// In en, this message translates to:
+  /// **'Cleaned by type'**
+  String get insightsCleanedByType;
+
+  /// No description provided for @insightsPhotosVideos.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos & videos'**
+  String get insightsPhotosVideos;
+
+  /// No description provided for @insightsContacts.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts'**
+  String get insightsContacts;
+
+  /// No description provided for @insightsStreakSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{current} day streak · {longest} best'**
+  String insightsStreakSummary(int current, int longest);
+
+  /// No description provided for @insightsStreakSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'See your full streak history'**
+  String get insightsStreakSubtitle;
 
   /// No description provided for @streakTitle.
   ///
@@ -580,11 +790,71 @@ abstract class AppLocalizations {
   /// **'{days} day streak'**
   String streakCurrent(int days);
 
+  /// No description provided for @streakDayStreakLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Day Streak'**
+  String get streakDayStreakLabel;
+
+  /// No description provided for @streakKeepGoing.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep it going!'**
+  String get streakKeepGoing;
+
+  /// No description provided for @streakWeekdayMon.
+  ///
+  /// In en, this message translates to:
+  /// **'M'**
+  String get streakWeekdayMon;
+
+  /// No description provided for @streakWeekdayTue.
+  ///
+  /// In en, this message translates to:
+  /// **'T'**
+  String get streakWeekdayTue;
+
+  /// No description provided for @streakWeekdayWed.
+  ///
+  /// In en, this message translates to:
+  /// **'W'**
+  String get streakWeekdayWed;
+
+  /// No description provided for @streakWeekdayThu.
+  ///
+  /// In en, this message translates to:
+  /// **'T'**
+  String get streakWeekdayThu;
+
+  /// No description provided for @streakWeekdayFri.
+  ///
+  /// In en, this message translates to:
+  /// **'F'**
+  String get streakWeekdayFri;
+
+  /// No description provided for @streakWeekdaySat.
+  ///
+  /// In en, this message translates to:
+  /// **'S'**
+  String get streakWeekdaySat;
+
+  /// No description provided for @streakWeekdaySun.
+  ///
+  /// In en, this message translates to:
+  /// **'S'**
+  String get streakWeekdaySun;
+
   /// No description provided for @streakLastWeeks.
   ///
   /// In en, this message translates to:
   /// **'Last 5 weeks'**
   String get streakLastWeeks;
+
+  /// No description provided for @streakWeekRangeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Mon → Sun'**
+  String get streakWeekRangeHint;
 
   /// No description provided for @streakLegendLess.
   ///
@@ -598,6 +868,24 @@ abstract class AppLocalizations {
   /// **'More'**
   String get streakLegendMore;
 
+  /// No description provided for @streakLongest.
+  ///
+  /// In en, this message translates to:
+  /// **'Longest streak'**
+  String get streakLongest;
+
+  /// No description provided for @streakItemsCleaned.
+  ///
+  /// In en, this message translates to:
+  /// **'Items cleaned'**
+  String get streakItemsCleaned;
+
+  /// No description provided for @streakKeepCleaning.
+  ///
+  /// In en, this message translates to:
+  /// **'Keep cleaning'**
+  String get streakKeepCleaning;
+
   /// No description provided for @settingsTitle.
   ///
   /// In en, this message translates to:
@@ -607,14 +895,20 @@ abstract class AppLocalizations {
   /// No description provided for @settingsPremiumTitle.
   ///
   /// In en, this message translates to:
-  /// **'Go Premium'**
+  /// **'Go premium'**
   String get settingsPremiumTitle;
 
   /// No description provided for @settingsPremiumSub.
   ///
   /// In en, this message translates to:
-  /// **'Unlock unlimited batches and cloud backup.'**
+  /// **'Unlock unlimited cleaning and more.'**
   String get settingsPremiumSub;
+
+  /// No description provided for @settingsSignInSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Sync your cleanups across devices'**
+  String get settingsSignInSub;
 
   /// No description provided for @settingsPreferences.
   ///
@@ -637,7 +931,7 @@ abstract class AppLocalizations {
   /// No description provided for @settingsHaptic.
   ///
   /// In en, this message translates to:
-  /// **'Haptic feedback'**
+  /// **'Haptic Feedback'**
   String get settingsHaptic;
 
   /// No description provided for @settingsNotifications.
@@ -646,23 +940,47 @@ abstract class AppLocalizations {
   /// **'Notifications'**
   String get settingsNotifications;
 
-  /// No description provided for @settingsAccount.
+  /// No description provided for @settingsPrivacyPermissions.
   ///
   /// In en, this message translates to:
-  /// **'Account'**
-  String get settingsAccount;
+  /// **'Privacy & Permissions'**
+  String get settingsPrivacyPermissions;
+
+  /// No description provided for @settingsPhotosAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos Access'**
+  String get settingsPhotosAccess;
+
+  /// No description provided for @settingsContactsAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Contacts Access'**
+  String get settingsContactsAccess;
+
+  /// No description provided for @settingsAccessFull.
+  ///
+  /// In en, this message translates to:
+  /// **'Full Access'**
+  String get settingsAccessFull;
+
+  /// No description provided for @settingsAccessDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Not allowed'**
+  String get settingsAccessDenied;
+
+  /// No description provided for @settingsMore.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get settingsMore;
 
   /// No description provided for @settingsSignIn.
   ///
   /// In en, this message translates to:
   /// **'Sign in'**
   String get settingsSignIn;
-
-  /// No description provided for @settingsDeleteAccount.
-  ///
-  /// In en, this message translates to:
-  /// **'Delete account'**
-  String get settingsDeleteAccount;
 
   /// No description provided for @settingsRate.
   ///

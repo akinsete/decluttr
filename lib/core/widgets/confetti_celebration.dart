@@ -22,18 +22,18 @@ class _ConfettiCelebrationState extends State<ConfettiCelebration>
     super.initState();
     final random = Random(42);
     final confetti = Assets.handoff.confetti.values;
-    _pieces = List.generate(24, (i) {
+    _pieces = List.generate(44, (i) {
       return _ConfettiPiece(
         asset: confetti[i % confetti.length],
         leftFactor: random.nextDouble(),
-        delay: random.nextDouble() * 0.35,
+        delay: random.nextDouble(),
         size: 14 + random.nextDouble() * 18,
         drift: (random.nextDouble() - 0.5) * 40,
       );
     });
     _controller = AnimationController(
       vsync: this,
-      duration: const Duration(milliseconds: 2400),
+      duration: AppMotion.confettiCycle,
     )..repeat();
   }
 
@@ -99,7 +99,7 @@ class _ConfettiTile extends StatelessWidget {
       child: Opacity(
         opacity: (1 - progress).clamp(0.3, 1),
         child: Transform.rotate(
-          angle: progress * pi * 2,
+          angle: progress * pi * 1.25,
           child: piece.asset.image(
             width: piece.size,
             height: piece.size,

@@ -140,6 +140,22 @@ class HomeRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [InsightsPage]
+class InsightsRoute extends PageRouteInfo<void> {
+  const InsightsRoute({List<PageRouteInfo>? children})
+    : super(InsightsRoute.name, initialChildren: children);
+
+  static const String name = 'InsightsRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const InsightsPage();
+    },
+  );
+}
+
+/// generated route for
 /// [MainShellPage]
 class MainShellRoute extends PageRouteInfo<void> {
   const MainShellRoute({List<PageRouteInfo>? children})
@@ -178,6 +194,7 @@ class SessionSummaryRoute extends PageRouteInfo<SessionSummaryRouteArgs> {
     Key? key,
     int kept = 0,
     int deleted = 0,
+    int deletedBytes = 0,
     String batchId = '',
     bool isPhotos = true,
     List<PageRouteInfo>? children,
@@ -187,6 +204,7 @@ class SessionSummaryRoute extends PageRouteInfo<SessionSummaryRouteArgs> {
            key: key,
            kept: kept,
            deleted: deleted,
+           deletedBytes: deletedBytes,
            batchId: batchId,
            isPhotos: isPhotos,
          ),
@@ -205,6 +223,7 @@ class SessionSummaryRoute extends PageRouteInfo<SessionSummaryRouteArgs> {
         key: args.key,
         kept: args.kept,
         deleted: args.deleted,
+        deletedBytes: args.deletedBytes,
         batchId: args.batchId,
         isPhotos: args.isPhotos,
       );
@@ -217,6 +236,7 @@ class SessionSummaryRouteArgs {
     this.key,
     this.kept = 0,
     this.deleted = 0,
+    this.deletedBytes = 0,
     this.batchId = '',
     this.isPhotos = true,
   });
@@ -227,13 +247,15 @@ class SessionSummaryRouteArgs {
 
   final int deleted;
 
+  final int deletedBytes;
+
   final String batchId;
 
   final bool isPhotos;
 
   @override
   String toString() {
-    return 'SessionSummaryRouteArgs{key: $key, kept: $kept, deleted: $deleted, batchId: $batchId, isPhotos: $isPhotos}';
+    return 'SessionSummaryRouteArgs{key: $key, kept: $kept, deleted: $deleted, deletedBytes: $deletedBytes, batchId: $batchId, isPhotos: $isPhotos}';
   }
 
   @override
@@ -243,6 +265,7 @@ class SessionSummaryRouteArgs {
     return key == other.key &&
         kept == other.kept &&
         deleted == other.deleted &&
+        deletedBytes == other.deletedBytes &&
         batchId == other.batchId &&
         isPhotos == other.isPhotos;
   }
@@ -252,6 +275,7 @@ class SessionSummaryRouteArgs {
       key.hashCode ^
       kept.hashCode ^
       deleted.hashCode ^
+      deletedBytes.hashCode ^
       batchId.hashCode ^
       isPhotos.hashCode;
 }
@@ -328,6 +352,7 @@ class SwipeSessionRoute extends PageRouteInfo<SwipeSessionRouteArgs> {
     String batchId = '',
     String batchTitle = '',
     bool isPhotos = true,
+    int? batchCount,
     List<PageRouteInfo>? children,
   }) : super(
          SwipeSessionRoute.name,
@@ -336,9 +361,10 @@ class SwipeSessionRoute extends PageRouteInfo<SwipeSessionRouteArgs> {
            batchId: batchId,
            batchTitle: batchTitle,
            isPhotos: isPhotos,
+           batchCount: batchCount,
          ),
          rawPathParams: {'batchId': batchId},
-         rawQueryParams: {'isPhotos': isPhotos},
+         rawQueryParams: {'isPhotos': isPhotos, 'batchCount': batchCount},
          initialChildren: children,
        );
 
@@ -353,6 +379,7 @@ class SwipeSessionRoute extends PageRouteInfo<SwipeSessionRouteArgs> {
         orElse: () => SwipeSessionRouteArgs(
           batchId: pathParams.getString('batchId', ''),
           isPhotos: queryParams.getBool('isPhotos', true),
+          batchCount: queryParams.optInt('batchCount'),
         ),
       );
       return SwipeSessionPage(
@@ -360,6 +387,7 @@ class SwipeSessionRoute extends PageRouteInfo<SwipeSessionRouteArgs> {
         batchId: args.batchId,
         batchTitle: args.batchTitle,
         isPhotos: args.isPhotos,
+        batchCount: args.batchCount,
       );
     },
   );
@@ -371,6 +399,7 @@ class SwipeSessionRouteArgs {
     this.batchId = '',
     this.batchTitle = '',
     this.isPhotos = true,
+    this.batchCount,
   });
 
   final Key? key;
@@ -381,9 +410,11 @@ class SwipeSessionRouteArgs {
 
   final bool isPhotos;
 
+  final int? batchCount;
+
   @override
   String toString() {
-    return 'SwipeSessionRouteArgs{key: $key, batchId: $batchId, batchTitle: $batchTitle, isPhotos: $isPhotos}';
+    return 'SwipeSessionRouteArgs{key: $key, batchId: $batchId, batchTitle: $batchTitle, isPhotos: $isPhotos, batchCount: $batchCount}';
   }
 
   @override
@@ -393,12 +424,17 @@ class SwipeSessionRouteArgs {
     return key == other.key &&
         batchId == other.batchId &&
         batchTitle == other.batchTitle &&
-        isPhotos == other.isPhotos;
+        isPhotos == other.isPhotos &&
+        batchCount == other.batchCount;
   }
 
   @override
   int get hashCode =>
-      key.hashCode ^ batchId.hashCode ^ batchTitle.hashCode ^ isPhotos.hashCode;
+      key.hashCode ^
+      batchId.hashCode ^
+      batchTitle.hashCode ^
+      isPhotos.hashCode ^
+      batchCount.hashCode;
 }
 
 /// generated route for

@@ -9,7 +9,9 @@ class BatchPhotosNotifier extends AsyncNotifier<List<BatchItem>> {
   Future<List<BatchItem>> build() async {
     final result = await ref.read(photosRepositoryProvider).fetchBatches();
     if (result is Success<List<BatchItem>>) {
-      return result.value.where((b) => !b.cleared).toList();
+      return result.value
+          .where((b) => !b.cleared && (b.isDuplicates || b.count > 0))
+          .toList();
     }
     return const [];
   }

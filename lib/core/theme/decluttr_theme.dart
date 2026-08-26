@@ -202,8 +202,18 @@ class DecluttrTheme extends ThemeExtension<DecluttrTheme> with _$DecluttrThemeTa
       );
 
   LinearGradient get progressRingGradient => const LinearGradient(
-        colors: [Color(0xFF5C9BFF), Color(0xFFFF6FA8)],
+        colors: [Color(0xFF66A8FF), Color(0xFFFF7BB0)],
       );
+
+  Color get progressRingTrack => const Color(0xFFF0EAF0);
+
+  Color get keptStatCircleFill => const Color(0xFFE4F0FF);
+
+  Color get deletedStatCircleFill => const Color(0xFFFFE4EF);
+
+  Color get trashBarFill => const Color(0xFFFBE3EE);
+
+  Color get trashBarSizeText => const Color(0xFFC08199);
 
   LinearGradient get primaryCtaGradient => const LinearGradient(
         begin: Alignment(-0.05, -1),
@@ -300,6 +310,92 @@ class DecluttrTheme extends ThemeExtension<DecluttrTheme> with _$DecluttrThemeTa
           color: Color(0x33B48296),
           blurRadius: 32,
           offset: Offset(0, 12),
+        ),
+      ];
+
+  /// Batch picker — stacked month card height (prototype handoff).
+  double get batchPickerCardHeight => 104;
+
+  /// Batch picker — vertical overlap between stacked month cards.
+  double get batchStackOverlap => 28;
+
+  /// Duplicates row on the photos batch picker.
+  LinearGradient get duplicatesPickerGradient => const LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [Color(0xFFFFF0C2), Color(0xFFFFE08A)],
+      );
+
+  Color get duplicatesPickerIconSurface => const Color(0xFFFFF6DD);
+
+  /// Pastel gradients cycling monthly photo batches (`batchColors` in handoff).
+  List<LinearGradient> get batchPickerGradients => const [
+        LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFFFF0C2), Color(0xFFFFE08A)],
+        ),
+        LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFFEDBEC), Color(0xFFFFB9D8)],
+        ),
+        LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFD6EEFF), Color(0xFFA7D6FF)],
+        ),
+        LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFDBF4E1), Color(0xFFB4E8C3)],
+        ),
+        LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [Color(0xFFEBE2FF), Color(0xFFD2C1FF)],
+        ),
+      ];
+
+  LinearGradient batchPickerGradientAt(int index) =>
+      batchPickerGradients[index % batchPickerGradients.length];
+
+  /// Settings — Go premium upsell card.
+  LinearGradient get settingsPremiumGradient => const LinearGradient(
+        begin: Alignment(-0.87, -0.5),
+        end: Alignment(0.87, 0.5),
+        colors: [Color(0xFFFDEFCF), Color(0xFFF8DFA6)],
+      );
+
+  Color get settingsPremiumSubtitle => const Color(0xFFA9822F);
+
+  Color get settingsPremiumChevron => const Color(0xFFB98C36);
+
+  Color get settingsSignInAvatarBg => const Color(0xFFF0EBE3);
+
+  Color get settingsRowDivider => const Color(0xFFF1ECE4);
+
+  Color get settingsValueMuted => const Color(0xFF9A9088);
+
+  Color get settingsChevronMuted => const Color(0xFFC7BDB2);
+
+  Color get settingsRateStar => const Color(0xFFFFB020);
+
+  Color get settingsPremiumCrown => const Color(0xFFF0A63A);
+
+  List<BoxShadow> get settingsCardShadow => const [
+        BoxShadow(
+          color: Color(0x0D8C786E),
+          blurRadius: 14,
+          offset: Offset(0, 4),
+        ),
+      ];
+
+  List<BoxShadow> get batchPickerCardShadow => const [
+        BoxShadow(
+          color: Color(0x0D000000),
+          blurRadius: 14,
+          offset: Offset(0, -3),
         ),
       ];
 

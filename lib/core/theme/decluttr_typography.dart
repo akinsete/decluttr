@@ -37,6 +37,18 @@ class DecluttrTypography extends ThemeExtension<DecluttrTypography> {
     required this.segmentedLabelSelected,
     required this.segmentedLabelUnselected,
     required this.swipeStamp,
+    required this.homeProgressRingNumber,
+    required this.homeProgressRingCaption,
+    required this.homeProgressSideCount,
+    required this.sessionSummaryStatCount,
+    required this.streakHeroNumber,
+    required this.streakDayStreakLabel,
+    required this.streakKeepGoing,
+    required this.streakWeekdayLetter,
+    required this.streakHeatmapMeta,
+    required this.streakStatCount,
+    required this.streakStatLabel,
+    required this.streakLegendLabel,
   });
 
   /// Home eyebrow — 12 / w700 / pinkHot.
@@ -119,6 +131,42 @@ class DecluttrTypography extends ThemeExtension<DecluttrTypography> {
 
   /// Swipe session stamp — 15 / w700; color applied per action.
   final TextStyle swipeStamp;
+
+  /// Home progress ring center value — 34 / w800 / ink.
+  final TextStyle homeProgressRingNumber;
+
+  /// Home progress ring caption — 11 / w700 / walkthroughMuted.
+  final TextStyle homeProgressRingCaption;
+
+  /// Home progress side stat count — 22 / w800 / ink.
+  final TextStyle homeProgressSideCount;
+
+  /// Session summary kept/deleted count — 34 / w800.
+  final TextStyle sessionSummaryStatCount;
+
+  /// Streak hero count — 44 / w800 / ink.
+  final TextStyle streakHeroNumber;
+
+  /// Streak "Day Streak" label — 21 / w800 / ink.
+  final TextStyle streakDayStreakLabel;
+
+  /// Streak encouragement line — 13 / w500 / walkthroughMuted.
+  final TextStyle streakKeepGoing;
+
+  /// Streak weekday letter — 12 / w700 / walkthroughMuted.
+  final TextStyle streakWeekdayLetter;
+
+  /// Streak heatmap section meta — 11 / w600 / walkthroughMuted.
+  final TextStyle streakHeatmapMeta;
+
+  /// Streak stat card count — 20 / w800 / ink.
+  final TextStyle streakStatCount;
+
+  /// Streak stat card label — 11.5 / w700 / walkthroughMuted.
+  final TextStyle streakStatLabel;
+
+  /// Streak heatmap legend — 10 / w600 / walkthroughMuted.
+  final TextStyle streakLegendLabel;
 
   static DecluttrTypography resolve({required DecluttrTheme brand}) {
     TextStyle sans(
@@ -235,6 +283,54 @@ class DecluttrTypography extends ThemeExtension<DecluttrTypography> {
       swipeStamp: sans(
         const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
       ),
+      homeProgressRingNumber: sans(
+        const TextStyle(fontSize: 34, fontWeight: FontWeight.w800, height: 1),
+        color: brand.ink,
+      ),
+      homeProgressRingCaption: sans(
+        const TextStyle(fontSize: 11, fontWeight: FontWeight.w700, height: 1.15),
+        color: brand.walkthroughMuted,
+      ),
+      homeProgressSideCount: sans(
+        const TextStyle(fontSize: 22, fontWeight: FontWeight.w800, height: 1),
+        color: brand.ink,
+      ),
+      sessionSummaryStatCount: sans(
+        const TextStyle(fontSize: 34, fontWeight: FontWeight.w800, height: 1),
+        color: brand.ink,
+      ),
+      streakHeroNumber: sans(
+        const TextStyle(fontSize: 44, fontWeight: FontWeight.w800, height: 1, letterSpacing: -1),
+        color: brand.ink,
+      ),
+      streakDayStreakLabel: sans(
+        const TextStyle(fontSize: 21, fontWeight: FontWeight.w800, height: 1.1),
+        color: brand.ink,
+      ),
+      streakKeepGoing: sans(
+        const TextStyle(fontSize: 13, fontWeight: FontWeight.w500, height: 1.3),
+        color: brand.walkthroughMuted,
+      ),
+      streakWeekdayLetter: sans(
+        const TextStyle(fontSize: 12, fontWeight: FontWeight.w700, height: 1),
+        color: brand.walkthroughMuted,
+      ),
+      streakHeatmapMeta: sans(
+        const TextStyle(fontSize: 11, fontWeight: FontWeight.w600, height: 1.2),
+        color: brand.walkthroughMuted,
+      ),
+      streakStatCount: sans(
+        const TextStyle(fontSize: 20, fontWeight: FontWeight.w800, height: 1),
+        color: brand.ink,
+      ),
+      streakStatLabel: sans(
+        const TextStyle(fontSize: 11.5, fontWeight: FontWeight.w700, height: 1.2),
+        color: brand.walkthroughMuted,
+      ),
+      streakLegendLabel: sans(
+        const TextStyle(fontSize: 10, fontWeight: FontWeight.w600, height: 1),
+        color: brand.walkthroughMuted,
+      ),
     );
   }
 
@@ -267,6 +363,18 @@ class DecluttrTypography extends ThemeExtension<DecluttrTypography> {
     TextStyle? segmentedLabelSelected,
     TextStyle? segmentedLabelUnselected,
     TextStyle? swipeStamp,
+    TextStyle? homeProgressRingNumber,
+    TextStyle? homeProgressRingCaption,
+    TextStyle? homeProgressSideCount,
+    TextStyle? sessionSummaryStatCount,
+    TextStyle? streakHeroNumber,
+    TextStyle? streakDayStreakLabel,
+    TextStyle? streakKeepGoing,
+    TextStyle? streakWeekdayLetter,
+    TextStyle? streakHeatmapMeta,
+    TextStyle? streakStatCount,
+    TextStyle? streakStatLabel,
+    TextStyle? streakLegendLabel,
   }) {
     return DecluttrTypography(
       homeEyebrow: homeEyebrow ?? this.homeEyebrow,
@@ -296,6 +404,18 @@ class DecluttrTypography extends ThemeExtension<DecluttrTypography> {
       segmentedLabelSelected: segmentedLabelSelected ?? this.segmentedLabelSelected,
       segmentedLabelUnselected: segmentedLabelUnselected ?? this.segmentedLabelUnselected,
       swipeStamp: swipeStamp ?? this.swipeStamp,
+      homeProgressRingNumber: homeProgressRingNumber ?? this.homeProgressRingNumber,
+      homeProgressRingCaption: homeProgressRingCaption ?? this.homeProgressRingCaption,
+      homeProgressSideCount: homeProgressSideCount ?? this.homeProgressSideCount,
+      sessionSummaryStatCount: sessionSummaryStatCount ?? this.sessionSummaryStatCount,
+      streakHeroNumber: streakHeroNumber ?? this.streakHeroNumber,
+      streakDayStreakLabel: streakDayStreakLabel ?? this.streakDayStreakLabel,
+      streakKeepGoing: streakKeepGoing ?? this.streakKeepGoing,
+      streakWeekdayLetter: streakWeekdayLetter ?? this.streakWeekdayLetter,
+      streakHeatmapMeta: streakHeatmapMeta ?? this.streakHeatmapMeta,
+      streakStatCount: streakStatCount ?? this.streakStatCount,
+      streakStatLabel: streakStatLabel ?? this.streakStatLabel,
+      streakLegendLabel: streakLegendLabel ?? this.streakLegendLabel,
     );
   }
 
@@ -395,6 +515,66 @@ class DecluttrTypography extends ThemeExtension<DecluttrTypography> {
         t,
       ),
       swipeStamp: _blend(swipeStamp, _styleFrom(o, (x) => x.swipeStamp, swipeStamp), t),
+      homeProgressRingNumber: _blend(
+        homeProgressRingNumber,
+        _styleFrom(o, (x) => x.homeProgressRingNumber, homeProgressRingNumber),
+        t,
+      ),
+      homeProgressRingCaption: _blend(
+        homeProgressRingCaption,
+        _styleFrom(o, (x) => x.homeProgressRingCaption, homeProgressRingCaption),
+        t,
+      ),
+      homeProgressSideCount: _blend(
+        homeProgressSideCount,
+        _styleFrom(o, (x) => x.homeProgressSideCount, homeProgressSideCount),
+        t,
+      ),
+      sessionSummaryStatCount: _blend(
+        sessionSummaryStatCount,
+        _styleFrom(o, (x) => x.sessionSummaryStatCount, sessionSummaryStatCount),
+        t,
+      ),
+      streakHeroNumber: _blend(
+        streakHeroNumber,
+        _styleFrom(o, (x) => x.streakHeroNumber, streakHeroNumber),
+        t,
+      ),
+      streakDayStreakLabel: _blend(
+        streakDayStreakLabel,
+        _styleFrom(o, (x) => x.streakDayStreakLabel, streakDayStreakLabel),
+        t,
+      ),
+      streakKeepGoing: _blend(
+        streakKeepGoing,
+        _styleFrom(o, (x) => x.streakKeepGoing, streakKeepGoing),
+        t,
+      ),
+      streakWeekdayLetter: _blend(
+        streakWeekdayLetter,
+        _styleFrom(o, (x) => x.streakWeekdayLetter, streakWeekdayLetter),
+        t,
+      ),
+      streakHeatmapMeta: _blend(
+        streakHeatmapMeta,
+        _styleFrom(o, (x) => x.streakHeatmapMeta, streakHeatmapMeta),
+        t,
+      ),
+      streakStatCount: _blend(
+        streakStatCount,
+        _styleFrom(o, (x) => x.streakStatCount, streakStatCount),
+        t,
+      ),
+      streakStatLabel: _blend(
+        streakStatLabel,
+        _styleFrom(o, (x) => x.streakStatLabel, streakStatLabel),
+        t,
+      ),
+      streakLegendLabel: _blend(
+        streakLegendLabel,
+        _styleFrom(o, (x) => x.streakLegendLabel, streakLegendLabel),
+        t,
+      ),
     );
   }
 }

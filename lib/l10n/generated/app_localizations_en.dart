@@ -113,6 +113,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeStreakSubtitle => 'Keep your momentum going!';
 
   @override
+  String homeStreakTitle(int days) {
+    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String daysString = daysNumberFormat.format(days);
+
+    return '$daysString Day Streak';
+  }
+
+  @override
   String get homeContactsTitle => 'Contacts';
 
   @override
@@ -123,21 +133,30 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String homeContactsWaiting(int count) {
-    return '$count waiting for you';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString waiting for you';
   }
 
   @override
   String homePhotosWaiting(int count) {
-    return '$count waiting for you';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString waiting for you';
   }
 
   @override
   String get homeProgressTitle => 'Your progress';
 
   @override
-  String homeProgressStats(int kept, int deleted) {
-    return '$kept kept · $deleted cleared';
-  }
+  String get homeProgressViewAll => 'View all stats ›';
+
+  @override
+  String get homeProgressItemsRemaining => 'items remaining';
 
   @override
   String get dockHome => 'Home';
@@ -149,7 +168,46 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dockSettings => 'Settings';
 
   @override
-  String get batchPhotosTitle => 'Photos & Videos';
+  String get batchPhotosTitle => 'Photos';
+
+  @override
+  String get batchPhotosSubtitle => 'Select what you want to clean.';
+
+  @override
+  String get batchChooseSection => 'Choose a batch';
+
+  @override
+  String batchPhotoCount(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString photos',
+      one: '1 photo',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get batchDuplicatesTitle => 'Duplicates';
+
+  @override
+  String batchDuplicatesPhotosHint(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString photos look similar',
+      one: '1 photo looks similar',
+    );
+    return '$_temp0';
+  }
 
   @override
   String get batchContactsTitle => 'Contacts';
@@ -167,11 +225,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String swipeProgress(int current, int total) {
-    return '$current / $total';
+    final intl.NumberFormat currentNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String currentString = currentNumberFormat.format(current);
+    final intl.NumberFormat totalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String totalString = totalNumberFormat.format(total);
+
+    return '$currentString/$totalString';
   }
 
   @override
-  String get swipeTutorial => 'Swipe right to keep, left to delete';
+  String get swipeTutorialTitle => 'Here\'s how it works';
+
+  @override
+  String get swipeTutorial => 'Swipe left to delete, right to keep';
 
   @override
   String get swipeDismissTutorial => 'Got it';
@@ -186,19 +254,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get swipeUndo => 'Undo';
 
   @override
-  String get sessionSummaryTitle => 'Nice work!';
+  String get sessionSummaryTitle => 'All done!';
 
   @override
-  String get sessionSummarySub => 'You reviewed everything in this batch.';
+  String get sessionSummarySubPhotos =>
+      'You reviewed every photo in this batch. Nice cleanup.';
+
+  @override
+  String get sessionSummarySubContacts =>
+      'You reviewed every contact in this batch. Nice cleanup.';
+
+  @override
+  String get sessionSummaryKeptLabel => 'Kept';
+
+  @override
+  String get sessionSummaryDeletedLabel => 'Deleted';
+
+  @override
+  String sessionSummaryDeletedSize(String size) {
+    return '$size deleted';
+  }
 
   @override
   String sessionSummaryKept(int count) {
-    return '$count kept';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString kept';
   }
 
   @override
   String sessionSummaryDeleted(int count) {
-    return '$count deleted';
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '$countString deleted';
   }
 
   @override
@@ -209,7 +301,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String duplicatesProgress(int current, int total) {
-    return '$current of $total';
+    final intl.NumberFormat currentNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String currentString = currentNumberFormat.format(current);
+    final intl.NumberFormat totalNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String totalString = totalNumberFormat.format(total);
+
+    return '$currentString of $totalString';
   }
 
   @override
@@ -237,6 +336,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trashTitle => 'Trash';
 
   @override
+  String get trashSubtitle => 'Review before deleting forever.';
+
+  @override
   String trashReclaimable(String size) {
     return '$size reclaimable';
   }
@@ -248,11 +350,90 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trashTabContacts => 'Contacts';
 
   @override
+  String trashTabPhotosCount(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return 'Photos ($countString)';
+  }
+
+  @override
+  String trashTabContactsCount(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return 'Contacts ($countString)';
+  }
+
+  @override
   String get trashEmpty => 'Trash is empty';
 
   @override
+  String get trashEmptyPhotosSub =>
+      'Items you swipe away during cleanup land here until you delete them forever.';
+
+  @override
+  String get trashEmptyContactsTitle => 'No contacts in trash';
+
+  @override
+  String get trashEmptyContactsSub =>
+      'Contacts you remove during cleanup will appear here.';
+
+  @override
+  String get trashSelect => 'Select';
+
+  @override
+  String get trashSelectAll => 'Select all';
+
+  @override
+  String get trashDeselectAll => 'Deselect all';
+
+  @override
+  String get trashCancel => 'Cancel';
+
+  @override
+  String trashItemsCount(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString items',
+      one: '1 item',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String trashSelectedCount(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString selected',
+      one: '1 selected',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get trashDeleteSelected => 'Delete selected';
+
+  @override
   String trashPurgesIn(int days) {
-    return 'Purges in $days days';
+    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String daysString = daysNumberFormat.format(days);
+
+    return 'Purges in $daysString days';
   }
 
   @override
@@ -262,18 +443,111 @@ class AppLocalizationsEn extends AppLocalizations {
   String get trashDeleteForever => 'Delete forever';
 
   @override
+  String trashDockBadgeA11y(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$countString items in trash',
+      one: '1 item in trash',
+      zero: 'No items in trash',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get trashSelectMode => 'Select items';
+
+  @override
+  String get insightsTitle => 'Insights';
+
+  @override
+  String get insightsStorageFreed => 'Storage freed';
+
+  @override
+  String get insightsThisWeek => 'This week';
+
+  @override
+  String insightsWeekCleaned(int count) {
+    final intl.NumberFormat countNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String countString = countNumberFormat.format(count);
+
+    return '+$countString cleaned';
+  }
+
+  @override
+  String get insightsCleanedByType => 'Cleaned by type';
+
+  @override
+  String get insightsPhotosVideos => 'Photos & videos';
+
+  @override
+  String get insightsContacts => 'Contacts';
+
+  @override
+  String insightsStreakSummary(int current, int longest) {
+    final intl.NumberFormat currentNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String currentString = currentNumberFormat.format(current);
+    final intl.NumberFormat longestNumberFormat =
+        intl.NumberFormat.decimalPattern(localeName);
+    final String longestString = longestNumberFormat.format(longest);
+
+    return '$currentString day streak · $longestString best';
+  }
+
+  @override
+  String get insightsStreakSubtitle => 'See your full streak history';
 
   @override
   String get streakTitle => 'Your streak';
 
   @override
   String streakCurrent(int days) {
-    return '$days day streak';
+    final intl.NumberFormat daysNumberFormat = intl.NumberFormat.decimalPattern(
+      localeName,
+    );
+    final String daysString = daysNumberFormat.format(days);
+
+    return '$daysString day streak';
   }
 
   @override
+  String get streakDayStreakLabel => 'Day Streak';
+
+  @override
+  String get streakKeepGoing => 'Keep it going!';
+
+  @override
+  String get streakWeekdayMon => 'M';
+
+  @override
+  String get streakWeekdayTue => 'T';
+
+  @override
+  String get streakWeekdayWed => 'W';
+
+  @override
+  String get streakWeekdayThu => 'T';
+
+  @override
+  String get streakWeekdayFri => 'F';
+
+  @override
+  String get streakWeekdaySat => 'S';
+
+  @override
+  String get streakWeekdaySun => 'S';
+
+  @override
   String get streakLastWeeks => 'Last 5 weeks';
+
+  @override
+  String get streakWeekRangeHint => 'Mon → Sun';
 
   @override
   String get streakLegendLess => 'Less';
@@ -282,13 +556,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get streakLegendMore => 'More';
 
   @override
+  String get streakLongest => 'Longest streak';
+
+  @override
+  String get streakItemsCleaned => 'Items cleaned';
+
+  @override
+  String get streakKeepCleaning => 'Keep cleaning';
+
+  @override
   String get settingsTitle => 'Settings';
 
   @override
-  String get settingsPremiumTitle => 'Go Premium';
+  String get settingsPremiumTitle => 'Go premium';
 
   @override
-  String get settingsPremiumSub => 'Unlock unlimited batches and cloud backup.';
+  String get settingsPremiumSub => 'Unlock unlimited cleaning and more.';
+
+  @override
+  String get settingsSignInSub => 'Sync your cleanups across devices';
 
   @override
   String get settingsPreferences => 'Preferences';
@@ -300,19 +586,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsAppearanceValue => 'Light';
 
   @override
-  String get settingsHaptic => 'Haptic feedback';
+  String get settingsHaptic => 'Haptic Feedback';
 
   @override
   String get settingsNotifications => 'Notifications';
 
   @override
-  String get settingsAccount => 'Account';
+  String get settingsPrivacyPermissions => 'Privacy & Permissions';
+
+  @override
+  String get settingsPhotosAccess => 'Photos Access';
+
+  @override
+  String get settingsContactsAccess => 'Contacts Access';
+
+  @override
+  String get settingsAccessFull => 'Full Access';
+
+  @override
+  String get settingsAccessDenied => 'Not allowed';
+
+  @override
+  String get settingsMore => 'More';
 
   @override
   String get settingsSignIn => 'Sign in';
-
-  @override
-  String get settingsDeleteAccount => 'Delete account';
 
   @override
   String get settingsRate => 'Rate Decluttr';

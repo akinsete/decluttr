@@ -43,17 +43,9 @@ class PhotosPermissionPage extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Text(
-                l10n.permPhotosTitle,
-                style: typography.permissionTitle,
-                textAlign: TextAlign.center,
-              ),
+              Text(l10n.permPhotosTitle, style: typography.permissionTitle, textAlign: TextAlign.center),
               SizedBox(height: dt.x3),
-              Text(
-                l10n.permPhotosSubtitle,
-                style: typography.permissionSubtitle,
-                textAlign: TextAlign.center,
-              ),
+              Text(l10n.permPhotosSubtitle, style: typography.permissionSubtitle, textAlign: TextAlign.center),
               SizedBox(height: 10),
               Column(
                 children: [
@@ -119,13 +111,11 @@ class _Bullet extends StatelessWidget {
         Container(
           width: 5,
           height: 5,
+
           decoration: const BoxDecoration(color: _permBulletDot, shape: BoxShape.circle),
         ),
         SizedBox(width: 11),
-        Text(
-          text,
-          style: typography.permissionBullet,
-        ),
+        Text(text, style: typography.permissionBullet),
       ],
     );
   }

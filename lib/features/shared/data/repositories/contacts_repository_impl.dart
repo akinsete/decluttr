@@ -233,6 +233,17 @@ class ContactsRepositoryImpl implements ContactsRepository {
     return const Success(null);
   }
 
+  @override
+  Future<Result<void>> deleteContact(String contactId) async {
+    try {
+      await FlutterContacts.delete(contactId);
+      return const Success(null);
+    } catch (e, st) {
+      debugPrint('ContactsRepositoryImpl.deleteContact: $e\n$st');
+      return FailureResult(ContactsLoadFailure(message: '$e'));
+    }
+  }
+
   ContactRecord _mapContact(Contact contact) {
     final phone = contact.phones.isNotEmpty ? contact.phones.first.number : null;
     final email = contact.emails.isNotEmpty ? contact.emails.first.address : null;

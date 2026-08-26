@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:decluttr/gen/assets.gen.dart';
+import '../../../../core/formatting/display_number_formatter.dart';
 import '../../../../core/testing/widget_keys.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
@@ -58,7 +59,7 @@ class BatchContactsPage extends ConsumerWidget {
                 title: Text(batch.title, style: Theme.of(context).textTheme.titleLarge),
                 subtitle: Text(batch.subtitle),
                 trailing: batch.isDuplicates
-                    ? StatusPill(label: '${batch.count}')
+                    ? StatusPill(label: context.formatDisplayCount(batch.count))
                     : null,
                 onTap: () {
                   if (batch.isDuplicates) {

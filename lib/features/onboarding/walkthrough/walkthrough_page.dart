@@ -59,15 +59,15 @@ class WalkthroughPage extends ConsumerWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           _WalkthroughHintRow(
-                            circleColor: context.decluttrTheme.walkthroughKeep,
-                            icon: PhosphorIconsRegular.arrowRight,
-                            label: l10n.walkthroughKeepHint,
-                          ),
-                          SizedBox(height: 11),
-                          _WalkthroughHintRow(
                             circleColor: context.decluttrTheme.walkthroughDelete,
                             icon: PhosphorIconsRegular.arrowLeft,
                             label: l10n.walkthroughDeleteHint,
+                          ),
+                          SizedBox(height: 11),
+                          _WalkthroughHintRow(
+                            circleColor: context.decluttrTheme.walkthroughKeep,
+                            icon: PhosphorIconsRegular.arrowRight,
+                            label: l10n.walkthroughKeepHint,
                           ),
                           SizedBox(height: 11),
                           _WalkthroughHintRow(

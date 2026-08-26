@@ -4,6 +4,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:decluttr/gen/assets.gen.dart';
+import '../../../../core/di/providers.dart';
 import '../../../../core/testing/widget_keys.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/splash_cluster_hero.dart';
@@ -45,12 +46,24 @@ class _SplashPageState extends ConsumerState<SplashPage>
       curve: Curves.easeOut,
     ));
     _entryController.forward();
-    _timer = Timer(const Duration(milliseconds: 2200), _goNext);
+    _timer = Timer(const Duration(milliseconds: 2200), () => unawaited(_goNext()));
   }
 
-  void _goNext() {
+  Future<void> _goNext() async {
     if (!mounted) return;
-    context.router.replace(const WelcomeRoute());
+
+    final deadline = DateTime.now().add(const Duration(seconds: 5));
+    while (mounted && ref.read(appStateProvider).isLoading) {
+      if (DateTime.now().isAfter(deadline)) break;
+      await Future<void>.delayed(const Duration(milliseconds: 50));
+    }
+    if (!mounted) return;
+
+    if (ref.read(appStateProvider).onboardingComplete) {
+      context.router.replaceAll([const MainShellRoute()]);
+    } else {
+      context.router.replace(const WelcomeRoute());
+    }
   }
 
   @override
@@ -64,6 +77,7 @@ class _SplashPageState extends ConsumerState<SplashPage>
   Widget build(BuildContext context) {
     final l10n = context.l10n;
     final typography = context.decluttrTypography;
+    ref.watch(appStateProvider);
     final progress = ref.watch(splashProgressProvider);
 
     return Scaffold(

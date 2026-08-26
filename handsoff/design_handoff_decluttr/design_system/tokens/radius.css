@@ -1,0 +1,13 @@
+/* Swipe Declutter — Corner radius tokens.
+   Brief names Small/Medium/Large/Capsule (16/24/32/999); the shipped app
+   uses a slightly finer-grained scale in between — both are captured here. */
+:root {
+  --radius-xs: 12px;   /* small icon tiles */
+  --radius-sm: 14px;   /* inputs, small chips */
+  --radius-md: 16px;   /* = brief "Small" */
+  --radius-lg: 20px;   /* cards */
+  --radius-xl: 24px;   /* = brief "Medium"; big cards */
+  --radius-2xl: 28px;  /* pill buttons */
+  --radius-3xl: 32px;  /* = brief "Large"; hero card */
+  --radius-full: 999px; /* = brief "Capsule"; avatars, dock, badges */
+}

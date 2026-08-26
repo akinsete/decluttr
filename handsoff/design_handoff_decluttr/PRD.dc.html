@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    doc-page:not(:defined){visibility:hidden}
+    body{margin:0}
+  </style>
+</helmet>
+<x-import component-from-global-scope="doc-page" from="./doc-page.js" size="letter" margin="0.85in" hint-size="816,1056" style="font-family:'Plus Jakarta Sans',system-ui,sans-serif; color:#1A1A1A; line-height:1.6;">
+
+  <!-- ============ COVER ============ -->
+  <div style="border-bottom:3px solid #1A1A1A; padding-bottom:26px; margin-bottom:34px;">
+    <div style="display:flex; align-items:center; gap:10px; margin-bottom:40px;">
+      <img src="assets/declutter-logo.svg" alt="Decluttr" style="height:30px; width:auto;" />
+    </div>
+    <p style="margin:0 0 10px; font-size:12px; font-weight:800; letter-spacing:2px; text-transform:uppercase; color:#F84F93;">Product Requirements Document</p>
+    <h1 style="margin:0 0 14px; font-size:52px; font-weight:800; line-height:1.02; letter-spacing:-1.5px;">Decluttr</h1>
+    <p style="margin:0; font-size:19px; font-weight:500; color:rgba(26,26,26,0.6); max-width:60ch;">Clean up your contacts and photos, one swipe at a time — nothing leaves your phone.</p>
+    <div style="display:flex; gap:34px; margin-top:30px; flex-wrap:wrap;">
+      <div><p style="margin:0; font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:rgba(26,26,26,0.4);">Version</p><p style="margin:2px 0 0; font-size:15px; font-weight:700;">1.0</p></div>
+      <div><p style="margin:0; font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:rgba(26,26,26,0.4);">Platform</p><p style="margin:2px 0 0; font-size:15px; font-weight:700;">Flutter · iOS + Android</p></div>
+      <div><p style="margin:0; font-size:10px; font-weight:800; letter-spacing:1px; text-transform:uppercase; color:rgba(26,26,26,0.4);">Status</p><p style="margin:2px 0 0; font-size:15px; font-weight:700;">Ready for build</p></div>
+    </div>
+  </div>
+
+  <!-- ============ SUMMARY ============ -->
+  <h2 style="font-size:15px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:#F84F93; margin:0 0 12px;">1 · Summary</h2>
+  <p style="margin:0 0 14px; font-size:15.5px;">Decluttr is a mobile app for cleaning up a phone's <strong>Contacts</strong> and <strong>Photos</strong> libraries using a Tinder-style swipe gesture: <strong>swipe right to keep, swipe left to delete</strong>. The experience is fast, playful, and reassuring — nothing is ever deleted permanently on the first pass; everything routes through a 30-day Trash the user can restore from.</p>
+  <p style="margin:0 0 30px; font-size:15.5px;">One product, one job: reduce the friction of tidying a phone from an hours-long chore to a series of 30-second sessions the user can do while waiting in line.</p>
+
+  <!-- ============ GOALS ============ -->
+  <h2 style="font-size:15px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:#F84F93; margin:0 0 12px;">2 · Goals &amp; non-goals</h2>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:18px; margin-bottom:30px;">
+    <div style="background:#F1F8F2; border-radius:16px; padding:18px 20px;">
+      <p style="margin:0 0 10px; font-size:13px; font-weight:800; color:#2E8B4F;">GOALS</p>
+      <ul style="margin:0; padding-left:18px; font-size:13.5px; line-height:1.65;">
+        <li>Make decluttering fast and satisfying — swipe deck, streaks, progress, confetti payoff.</li>
+        <li>Make destructive actions safe &amp; reversible — 30-day Trash, undo, "purges in N days".</li>
+        <li>Privacy-first framing: on-device, "nothing leaves your phone".</li>
+        <li>Handle duplicate contacts with a real merge flow.</li>
+        <li>Cover the full lifecycle: onboarding → core loop → trash → stats → settings → errors.</li>
+      </ul>
+    </div>
+    <div style="background:#FFF1F6; border-radius:16px; padding:18px 20px;">
+      <p style="margin:0 0 10px; font-size:13px; font-weight:800; color:#A83A2E;">NON-GOALS (v1)</p>
+      <ul style="margin:0; padding-left:18px; font-size:13.5px; line-height:1.65;">
+        <li>No cloud backup / cross-device sync.</li>
+        <li>No real account system beyond an optional sign-in stub (billing out of scope).</li>
+        <li>No desktop / web / tablet layouts — phone only (~402pt canvas).</li>
+        <li>No social sharing of activity.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ============ PRINCIPLES ============ -->
+  <h2 style="font-size:15px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:#F84F93; margin:0 0 12px;">3 · Design principles</h2>
+  <ol style="margin:0 0 30px; padding-left:20px; font-size:14.5px; line-height:1.7;">
+    <li><strong>Reversible by default.</strong> Every delete goes to Trash first; every swipe can be undone.</li>
+    <li><strong>Numbers over adjectives.</strong> "11 waiting for you", not "some contacts need review".</li>
+    <li><strong>Calm, playful, pastel.</strong> Warm canvas, soft accents, rounded everything, spring motion.</li>
+    <li><strong>One primary action per screen.</strong> Generous whitespace; the next step is obvious.</li>
+    <li><strong>Touch-first.</strong> No hover; press = subtle scale(0.92). Hit targets ≥ 44pt.</li>
+    <li><strong>Sentence case</strong> everywhere except tracked uppercase eyebrows and KEEP/DELETE stamps.</li>
+  </ol>
+
+  <!-- ============ CORE LOOP ============ -->
+  <h2 style="font-size:15px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:#F84F93; margin:0 0 12px;">4 · The core loop</h2>
+  <div style="display:flex; align-items:stretch; gap:8px; margin-bottom:14px; flex-wrap:wrap;">
+    <div style="flex:1; min-width:120px; background:linear-gradient(135deg,#E9F3FF,#CFE6FF); border-radius:14px; padding:14px 16px;"><p style="margin:0; font-size:11px; font-weight:800; color:rgba(26,26,26,0.45);">STEP 1</p><p style="margin:4px 0 0; font-size:14px; font-weight:700;">Pick a batch</p><p style="margin:2px 0 0; font-size:12px; color:rgba(26,26,26,0.55);">a photo month or contact group</p></div>
+    <div style="flex:1; min-width:120px; background:linear-gradient(135deg,#FFF0F6,#FBD3E4); border-radius:14px; padding:14px 16px;"><p style="margin:0; font-size:11px; font-weight:800; color:rgba(26,26,26,0.45);">STEP 2</p><p style="margin:4px 0 0; font-size:14px; font-weight:700;">Swipe</p><p style="margin:2px 0 0; font-size:12px; color:rgba(26,26,26,0.55);">right = keep · left = delete · tap = detail</p></div>
+    <div style="flex:1; min-width:120px; background:linear-gradient(135deg,#EBE2FF,#D2C1FF); border-radius:14px; padding:14px 16px;"><p style="margin:0; font-size:11px; font-weight:800; color:rgba(26,26,26,0.45);">STEP 3</p><p style="margin:4px 0 0; font-size:14px; font-weight:700;">Summary</p><p style="margin:2px 0 0; font-size:12px; color:rgba(26,26,26,0.55);">confetti + kept/deleted counts</p></div>
+  </div>
+  <p style="margin:0 0 30px; font-size:14px; color:rgba(26,26,26,0.65);">Deleted items land in <strong>Trash</strong> (restore or purge). Completed sessions build a <strong>streak</strong> and feed the <strong>progress</strong> stats on Home.</p>
+
+  <!-- ============ FEATURES ============ -->
+  <h2 style="font-size:15px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:#F84F93; margin:0 0 16px;">5 · Feature requirements</h2>
+
+  <div style="display:flex; flex-direction:column; gap:16px; margin-bottom:30px;">
+    <div style="break-inside:avoid;"><p style="margin:0 0 4px; font-size:15px; font-weight:800;">Onboarding</p><p style="margin:0; font-size:13.5px; color:rgba(26,26,26,0.7);">Splash → Welcome → Get started → single "How it works" walkthrough (animated demo card + keep/delete/tap hints) → Home. Permissions are <strong>lazy</strong> — requested on first use of a Home card, not up front.</p></div>
+    <div style="break-inside:avoid;"><p style="margin:0 0 4px; font-size:15px; font-weight:800;">Home</p><p style="margin:0; font-size:13.5px; color:rgba(26,26,26,0.7);">Greeting (first-time vs returning), hero heading, two module cards (Contacts blue, Photos pink) with count subtitles, plus streak + progress cards for returning users. Frosted bottom dock: Home · Trash · Settings.</p></div>
+    <div style="break-inside:avoid;"><p style="margin:0 0 4px; font-size:15px; font-weight:800;">Permissions</p><p style="margin:0; font-size:13.5px; color:rgba(26,26,26,0.7);">Dedicated Contacts/Photos screens: floating illustration, bulleted rationale, "Allow access" → batch picker, "Not now" → Home. Denials route to the matching error state.</p></div>
+    <div style="break-inside:avoid;"><p style="margin:0 0 4px; font-size:15px; font-weight:800;">Batch picker</p><p style="margin:0; font-size:13.5px; color:rgba(26,26,26,0.7);">Photos grouped by month; contacts by smart group (Recently Added, No Phone, No Email, <strong>Duplicates</strong>, Old, Unknown Names, Work, Family &amp; Friends). Tap starts a session; Duplicates opens the merge flow. Cleared tabs show an empty state.</p></div>
+    <div style="break-inside:avoid;"><p style="margin:0 0 4px; font-size:15px; font-weight:800;">Swipe session</p><p style="margin:0; font-size:13.5px; color:rgba(26,26,26,0.7);">Draggable card deck with live KEEP/DELETE stamps (threshold ±110px), tap-for-detail sheet, circular Keep/Delete buttons + Undo, progress bar and N/total counter. Empty deck → summary.</p></div>
+    <div style="break-inside:avoid;"><p style="margin:0 0 4px; font-size:15px; font-weight:800;">Duplicate contacts — merge review <span style="font-weight:700; color:#F84F93;">(key feature)</span></p><p style="margin:0; font-size:13.5px; color:rgba(26,26,26,0.7);">Distinct from keep/delete. Shows the two source records side by side (iPhone / iCloud / Google / Work) with a reason chip and an "After merge" preview (union of phone + emails). Three actions: <strong>Merge</strong>, <strong>Keep both</strong>, <strong>Delete one</strong>. Progress "N of M" → summary "X merged · Y kept · Z removed".</p></div>
+    <div style="break-inside:avoid;"><p style="margin:0 0 4px; font-size:15px; font-weight:800;">Trash</p><p style="margin:0; font-size:13.5px; color:rgba(26,26,26,0.7);">Photos + Contacts tabs, count &amp; reclaimable storage, multi-select → Restore (with confirm) or Delete forever. Every item "purges in N days" (30-day window). Empty states per tab.</p></div>
+    <div style="break-inside:avoid;"><p style="margin:0 0 4px; font-size:15px; font-weight:800;">Error states <span style="font-weight:700; color:#F84F93;">(key feature)</span></p><p style="margin:0; font-size:13.5px; color:rgba(26,26,26,0.7);">One screen, four variants: unable to load photos, unable to access contacts, something went wrong, permission changed — each with an icon, title, message, and primary/secondary actions.</p></div>
+    <div style="break-inside:avoid;"><p style="margin:0 0 4px; font-size:15px; font-weight:800;">Streak &amp; settings</p><p style="margin:0; font-size:13.5px; color:rgba(26,26,26,0.7);">Streak screen with week strip + "Last 5 weeks" heatmap. Settings: Go Premium, Preferences (Appearance, Haptics, Notifications), Account (sign in, delete), Rate / Share.</p></div>
+  </div>
+
+  <!-- ============ STATE MODEL ============ -->
+  <h2 style="font-size:15px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:#F84F93; margin:0 0 12px;">6 · State model</h2>
+  <p style="margin:0 0 12px; font-size:14px; color:rgba(26,26,26,0.7);">The app is a single state machine keyed on <code style="background:#F0EADE; padding:1px 6px; border-radius:5px; font-size:12.5px;">screen</code>. Model these as repositories/providers backed by the platform Contacts/Photos APIs:</p>
+  <ul style="margin:0 0 30px; padding-left:20px; font-size:13.5px; line-height:1.7; color:rgba(26,26,26,0.75);">
+    <li><strong>Navigation:</strong> splash, welcome, walkthrough, permissions, batch pickers, swipe, duplicates, trash, streak, settings, sign-in, error.</li>
+    <li><strong>Permissions:</strong> contactsGranted, photosGranted (lazy).</li>
+    <li><strong>Swipe:</strong> deck, total, kept, deleted, drag offset, tutorialSeen, undo history.</li>
+    <li><strong>Batches:</strong> clearedPhotos / clearedContacts maps.</li>
+    <li><strong>Duplicates:</strong> index, merged, kept, deleted counters.</li>
+    <li><strong>Trash:</strong> items, counts, active tab, select mode, selection, restore confirm.</li>
+    <li><strong>Prefs:</strong> hapticOn, notifOn, signedIn · <strong>Activity:</strong> hasActivity drives first-time vs returning.</li>
+  </ul>
+
+  <!-- ============ METRICS + OPEN Qs ============ -->
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; break-inside:avoid;">
+    <div>
+      <h2 style="font-size:15px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:#F84F93; margin:0 0 12px;">7 · Success metrics</h2>
+      <ul style="margin:0; padding-left:18px; font-size:13.5px; line-height:1.65; color:rgba(26,26,26,0.75);">
+        <li><strong>Activation:</strong> % new users completing ≥1 session first sitting.</li>
+        <li><strong>Depth:</strong> items reviewed / session; batches cleared / week.</li>
+        <li><strong>Retention:</strong> streak length; D1/D7 return.</li>
+        <li><strong>Safety:</strong> restore rate from Trash.</li>
+      </ul>
+    </div>
+    <div>
+      <h2 style="font-size:15px; font-weight:800; letter-spacing:1.5px; text-transform:uppercase; color:#F84F93; margin:0 0 12px;">8 · Open questions</h2>
+      <ul style="margin:0; padding-left:18px; font-size:13.5px; line-height:1.65; color:rgba(26,26,26,0.75);">
+        <li>Real auth provider &amp; Premium billing model.</li>
+        <li>Exact contact-merge field-union &amp; write-back rules.</li>
+        <li>Real per-photo storage sizes (currently estimated).</li>
+        <li>Final production art for illustrations/confetti.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div style="margin-top:36px; padding-top:18px; border-top:1px solid rgba(26,26,26,0.12);">
+    <p style="margin:0; font-size:12px; color:rgba(26,26,26,0.5);">This document describes intended product behavior. See <strong>SCREENS.md</strong> for per-screen build specs, <strong>DESIGN_SYSTEM.md</strong> for the Flutter design system, and the interactive prototype for ground-truth look &amp; interaction.</p>
+  </div>
+
+</x-import>
+</x-dc>
+</body>
+</html>
