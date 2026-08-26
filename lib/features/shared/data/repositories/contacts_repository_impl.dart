@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/error/app_failure.dart';
 import '../../../../core/error/result.dart';
 import '../../domain/entities/batch_item.dart';
+import '../../domain/entities/contact_duplicate_logic.dart';
 import '../../domain/entities/contact_record.dart';
 import '../../domain/entities/duplicate_group.dart';
 import '../../domain/repositories/app_preferences_repository.dart';
@@ -91,7 +92,11 @@ class ContactsRepositoryImpl implements ContactsRepository {
   static const _contactProperties = {
     ContactProperty.phone,
     ContactProperty.email,
+    ContactProperty.name,
   };
+
+  /// Last fetched duplicate groups (for write-back by id).
+  List<DuplicateGroup> _cachedDuplicateGroups = const [];
 
   static const _sampleBatches = [
     BatchItem(
@@ -176,21 +181,66 @@ class ContactsRepositoryImpl implements ContactsRepository {
         properties: _contactProperties,
       );
       if (contacts.isEmpty) {
-        return const Success(_sampleBatches);
+        return const Success([]);
       }
-      return Success([
+
+      final records = contacts.map(_mapContact).toList();
+      final noPhone = records.where((c) => (c.phone ?? '').isEmpty).length;
+      final noEmail = records.where((c) => (c.email ?? '').isEmpty).length;
+      final dupGroups = ContactDuplicateLogic.detectGroups(records);
+      _cachedDuplicateGroups = dupGroups;
+
+      final batches = <BatchItem>[
         BatchItem(
           id: 'all',
           kind: BatchKind.contacts,
           title: 'All Contacts',
           subtitle: '${contacts.length} contacts',
           count: contacts.length,
+          gradientIndex: 0,
         ),
-        ..._sampleBatches.where((b) => b.id != 'all'),
-      ]);
+      ];
+      if (noPhone > 0) {
+        batches.add(
+          BatchItem(
+            id: 'no_phone',
+            kind: BatchKind.contacts,
+            title: 'No Phone Number',
+            subtitle: '$noPhone contacts',
+            count: noPhone,
+            gradientIndex: 1,
+          ),
+        );
+      }
+      if (noEmail > 0) {
+        batches.add(
+          BatchItem(
+            id: 'no_email',
+            kind: BatchKind.contacts,
+            title: 'No Email',
+            subtitle: '$noEmail contacts',
+            count: noEmail,
+            gradientIndex: 2,
+          ),
+        );
+      }
+      if (dupGroups.isNotEmpty) {
+        batches.add(
+          BatchItem(
+            id: 'duplicates',
+            kind: BatchKind.contacts,
+            title: 'Duplicates',
+            subtitle: '${dupGroups.length} groups',
+            count: dupGroups.length,
+            isDuplicates: true,
+            gradientIndex: 3,
+          ),
+        );
+      }
+      return Success(batches);
     } catch (e, st) {
       debugPrint('ContactsRepositoryImpl.fetchBatches: $e\n$st');
-      return const Success(_sampleBatches);
+      return FailureResult(ContactsLoadFailure(message: '$e'));
     }
   }
 
@@ -198,39 +248,135 @@ class ContactsRepositoryImpl implements ContactsRepository {
   Future<Result<List<ContactRecord>>> fetchContactsForBatch(
     String batchId,
   ) async {
+    final permission = await hasPermission();
+    if (permission.valueOrNull == false) {
+      return Success(_sampleContacts(batchId));
+    }
+
     try {
       final contacts = await FlutterContacts.getAll(
         properties: _contactProperties,
       );
       if (contacts.isEmpty) {
-        return Success(_sampleContacts(batchId));
+        return const Success([]);
       }
-      return Success(
-        contacts.take(20).map(_mapContact).toList(),
-      );
+      final records = contacts.map(_mapContact).toList();
+      return Success(_filterBatch(records, batchId));
     } catch (e) {
-      return Success(_sampleContacts(batchId));
+      return FailureResult(ContactsLoadFailure(message: '$e'));
+    }
+  }
+
+  List<ContactRecord> _filterBatch(List<ContactRecord> records, String batchId) {
+    switch (batchId) {
+      case 'no_phone':
+        return records.where((c) => (c.phone ?? '').isEmpty).toList();
+      case 'no_email':
+        return records.where((c) => (c.email ?? '').isEmpty).toList();
+      case 'all':
+      default:
+        return records;
     }
   }
 
   @override
   Future<Result<List<DuplicateGroup>>> fetchDuplicateGroups() async {
-    return Success(_sampleDuplicateGroups());
+    final permission = await hasPermission();
+    if (permission.valueOrNull == false) {
+      final samples = _sampleDuplicateGroups();
+      _cachedDuplicateGroups = samples;
+      return Success(samples);
+    }
+
+    try {
+      final contacts = await FlutterContacts.getAll(
+        properties: _contactProperties,
+      );
+      final records = contacts.map(_mapContact).toList();
+      final groups = ContactDuplicateLogic.detectGroups(records);
+      _cachedDuplicateGroups = groups;
+      return Success(groups);
+    } catch (e, st) {
+      debugPrint('ContactsRepositoryImpl.fetchDuplicateGroups: $e\n$st');
+      return FailureResult(ContactsLoadFailure(message: '$e'));
+    }
+  }
+
+  DuplicateGroup? _groupById(String groupId) {
+    for (final g in _cachedDuplicateGroups) {
+      if (g.id == groupId) return g;
+    }
+    return null;
   }
 
   @override
   Future<Result<void>> mergeDuplicateGroup(String groupId) async {
-    return const Success(null);
+    final group = _groupById(groupId);
+    if (group == null || group.contacts.length < 2) {
+      return const FailureResult(
+        ContactsLoadFailure(message: 'Duplicate group not found'),
+      );
+    }
+
+    final primaryId = group.contacts.first.id;
+    final secondaryId = group.contacts[1].id;
+
+    try {
+      final primary = await FlutterContacts.get(
+        primaryId,
+        properties: _contactProperties,
+      );
+      if (primary == null) {
+        return const FailureResult(
+          ContactsLoadFailure(message: 'Primary contact missing'),
+        );
+      }
+
+      final union = ContactDuplicateLogic.fieldUnion(group.contacts);
+      final updated = primary.copyWith(
+        name: Name(first: union.displayName),
+        phones: union.phones.map((n) => Phone(number: n)).toList(),
+        emails: union.emails.map((e) => Email(address: e)).toList(),
+      );
+
+      await FlutterContacts.update(updated);
+      await FlutterContacts.delete(secondaryId);
+      _cachedDuplicateGroups =
+          _cachedDuplicateGroups.where((g) => g.id != groupId).toList();
+      return const Success(null);
+    } catch (e, st) {
+      debugPrint('ContactsRepositoryImpl.mergeDuplicateGroup: $e\n$st');
+      return FailureResult(ContactsLoadFailure(message: '$e'));
+    }
   }
 
   @override
   Future<Result<void>> keepBothDuplicateGroup(String groupId) async {
+    // No device write — user keeps both records as-is.
+    _cachedDuplicateGroups =
+        _cachedDuplicateGroups.where((g) => g.id != groupId).toList();
     return const Success(null);
   }
 
   @override
   Future<Result<void>> deleteOneFromDuplicateGroup(String groupId) async {
-    return const Success(null);
+    final group = _groupById(groupId);
+    if (group == null || group.contacts.length < 2) {
+      return const FailureResult(
+        ContactsLoadFailure(message: 'Duplicate group not found'),
+      );
+    }
+
+    final toDelete = group.contacts[1].id;
+    try {
+      await FlutterContacts.delete(toDelete);
+      _cachedDuplicateGroups =
+          _cachedDuplicateGroups.where((g) => g.id != groupId).toList();
+      return const Success(null);
+    } catch (e, st) {
+      debugPrint('ContactsRepositoryImpl.deleteOneFromDuplicateGroup: $e\n$st');
+      return FailureResult(ContactsLoadFailure(message: '$e'));
+    }
   }
 
   @override
@@ -270,12 +416,12 @@ class ContactsRepositoryImpl implements ContactsRepository {
   }
 
   List<DuplicateGroup> _sampleDuplicateGroups() {
-    return const [
+    return [
       DuplicateGroup(
-        id: 'dup-1',
+        id: ContactDuplicateLogic.groupIdFor('e1', 'e2'),
         displayName: 'Emily Carter',
         reason: DuplicateReason.samePhone,
-        contacts: [
+        contacts: const [
           ContactRecord(
             id: 'e1',
             displayName: 'Emily Carter',
@@ -293,10 +439,10 @@ class ContactsRepositoryImpl implements ContactsRepository {
         ],
       ),
       DuplicateGroup(
-        id: 'dup-2',
+        id: ContactDuplicateLogic.groupIdFor('m1', 'm2'),
         displayName: 'Marcus Bell',
         reason: DuplicateReason.sameEmail,
-        contacts: [
+        contacts: const [
           ContactRecord(
             id: 'm1',
             displayName: 'Marcus Bell',

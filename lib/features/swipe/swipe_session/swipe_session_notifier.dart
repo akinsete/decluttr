@@ -206,33 +206,41 @@ class SwipeSessionNotifier extends Notifier<SwipeSessionState> {
     final item = state.currentItem;
     if (item == null) return;
 
+    var sizeBytes = item.sizeBytes;
+    if (state.isPhotos && sizeBytes <= 0) {
+      final sized = await ref.read(photosRepositoryProvider).resolvePhotoSizeBytes(item.id);
+      sizeBytes = sized.valueOrNull ?? 0;
+    }
+
+    final trashedItem = item.copyWith(sizeBytes: sizeBytes);
+
     await ref
         .read(trashRepositoryProvider)
         .add(
           TrashItem(
-            id: item.id,
+            id: trashedItem.id,
             type: state.isPhotos ? TrashItemType.photo : TrashItemType.contact,
-            title: item.title,
-            subtitle: item.subtitle,
+            title: trashedItem.title,
+            subtitle: trashedItem.subtitle,
             deletedAt: DateTime.now(),
             monthKey: state.isPhotos ? state.batchId : null,
-            initial: state.isPhotos ? null : _initials(item.title),
-            sizeBytes: state.isPhotos ? item.sizeBytes : 0,
-            gradientIndex: item.gradientIndex,
-            isVideo: state.isPhotos ? item.isVideo : false,
-            durationLabel: state.isPhotos ? item.durationLabel : null,
+            initial: state.isPhotos ? null : _initials(trashedItem.title),
+            sizeBytes: state.isPhotos ? sizeBytes : 0,
+            gradientIndex: trashedItem.gradientIndex,
+            isVideo: state.isPhotos ? trashedItem.isVideo : false,
+            durationLabel: state.isPhotos ? trashedItem.durationLabel : null,
           ),
         );
 
     bumpTrashDockBadge(ref);
 
-    _lastRemoved = item;
+    _lastRemoved = trashedItem;
     _lastDecision = SwipeDecision.delete;
 
     state = state.copyWith(
       currentIndex: state.currentIndex + 1,
       deleted: state.deleted + 1,
-      deletedBytes: state.deletedBytes + (state.isPhotos ? item.sizeBytes : 0),
+      deletedBytes: state.deletedBytes + (state.isPhotos ? sizeBytes : 0),
     );
     await ref.read(appStateProvider.notifier).recordActivity();
     await _prefetchIfNeeded();

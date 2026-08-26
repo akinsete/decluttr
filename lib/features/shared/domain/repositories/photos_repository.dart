@@ -17,4 +17,7 @@ abstract class PhotosRepository {
 
   /// Absolute path to a local file suitable for in-app video playback, or null.
   Future<Result<String?>> resolvePlayablePath(String assetId);
+
+  /// Lazily reads on-disk byte size for a single asset (may be slow).
+  Future<Result<int>> resolvePhotoSizeBytes(String assetId);
 }

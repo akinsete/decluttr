@@ -239,6 +239,12 @@ class _MemoryTrashRepository implements TrashRepository {
   Future<int> reclaimableBytes({TrashItemType? type}) async => 0;
 
   @override
+  Future<List<TrashItem>> fetchExpired({
+    Duration maxAge = const Duration(days: 30),
+  }) async =>
+      const [];
+
+  @override
   Future<void> remove(String id) async {
     items.removeWhere((item) => item.id == id);
   }
@@ -282,4 +288,8 @@ class _MemoryPhotosRepository implements PhotosRepository {
   @override
   Future<Result<String?>> resolvePlayablePath(String assetId) async =>
       const Success(null);
+
+  @override
+  Future<Result<int>> resolvePhotoSizeBytes(String assetId) async =>
+      const Success(0);
 }

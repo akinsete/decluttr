@@ -136,21 +136,19 @@ class PhotosRepositoryImpl implements PhotosRepository {
         hasAll: true,
       );
       if (paths.isEmpty) {
-        return Success(_sampleBatches);
+        return const Success([]);
       }
 
       final monthCounts = await _countAssetsByMonth(paths.first);
       if (monthCounts.isEmpty) {
-        return Success(_sampleBatches);
+        return const Success([]);
       }
 
-      return Success([
-        _duplicatesBatch,
-        ...batchItemsFromMonthCounts(monthCounts),
-      ]);
+      // Device photo-duplicate detection is out of v1 — no fake "dup" batch.
+      return Success(batchItemsFromMonthCounts(monthCounts));
     } catch (e, st) {
       debugPrint('PhotosRepositoryImpl.fetchBatches: $e\n$st');
-      return Success(_sampleBatches);
+      return FailureResult(PhotosLoadFailure(message: '$e'));
     }
   }
 
@@ -175,6 +173,13 @@ class PhotosRepositoryImpl implements PhotosRepository {
   }) async {
     final trace = PhotoLoadTrace('fetchPhotosForBatchPage($batchId off=$offset lim=$limit)');
     if (batchId == _duplicatesBatch.id) {
+      final permission = await hasPermission();
+      if (permission.valueOrNull == true) {
+        trace.finish('dup batch gated (no device photo-dup in v1)');
+        return const Success(
+          PhotoBatchPage(items: [], totalCount: 0, hasMore: false),
+        );
+      }
       final all = _samplePhotos(batchId);
       final slice = all.skip(offset).take(limit).toList();
       trace.finish('sample duplicates ${slice.length} items');
@@ -204,15 +209,9 @@ class PhotosRepositoryImpl implements PhotosRepository {
 
     final month = parseMonthKey(batchId);
     if (month == null) {
-      final all = _samplePhotos(batchId);
-      final slice = all.skip(offset).take(limit).toList();
-      trace.finish('sample (bad month key) ${slice.length} items');
-      return Success(
-        PhotoBatchPage(
-          items: slice,
-          totalCount: all.length,
-          hasMore: offset + slice.length < all.length,
-        ),
+      trace.finish('bad month key');
+      return const Success(
+        PhotoBatchPage(items: [], totalCount: 0, hasMore: false),
       );
     }
 
@@ -220,15 +219,9 @@ class PhotosRepositoryImpl implements PhotosRepository {
       final path = await _pathForMonth(batchId, month.$1, month.$2);
       trace.step('pathForMonth');
       if (path == null) {
-        final all = _samplePhotos(batchId);
-        final slice = all.skip(offset).take(limit).toList();
-        trace.finish('sample (no path) ${slice.length} items');
-        return Success(
-          PhotoBatchPage(
-            items: slice,
-            totalCount: all.length,
-            hasMore: offset + slice.length < all.length,
-          ),
+        trace.finish('no path for month');
+        return const Success(
+          PhotoBatchPage(items: [], totalCount: 0, hasMore: false),
         );
       }
 
@@ -265,15 +258,7 @@ class PhotosRepositoryImpl implements PhotosRepository {
     } catch (e, st) {
       trace.finish('error: $e');
       debugPrint('PhotosRepositoryImpl.fetchPhotosForBatchPage: $e\n$st');
-      final all = _samplePhotos(batchId);
-      final slice = all.skip(offset).take(limit).toList();
-      return Success(
-        PhotoBatchPage(
-          items: slice,
-          totalCount: all.length,
-          hasMore: offset + slice.length < all.length,
-        ),
-      );
+      return FailureResult(PhotosLoadFailure(message: '$e'));
     }
   }
 
@@ -481,6 +466,19 @@ class PhotosRepositoryImpl implements PhotosRepository {
       return Success(file?.path);
     } catch (e, st) {
       debugPrint('PhotosRepositoryImpl.resolvePlayablePath: $e\n$st');
+      return FailureResult(PhotosLoadFailure(message: '$e'));
+    }
+  }
+
+  @override
+  Future<Result<int>> resolvePhotoSizeBytes(String assetId) async {
+    try {
+      final entity = await AssetEntity.fromId(assetId);
+      if (entity == null) return const Success(0);
+      final size = await _readAssetSizeBytes(entity);
+      return Success(size);
+    } catch (e, st) {
+      debugPrint('PhotosRepositoryImpl.resolvePhotoSizeBytes: $e\n$st');
       return FailureResult(PhotosLoadFailure(message: '$e'));
     }
   }

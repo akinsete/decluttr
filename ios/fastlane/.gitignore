@@ -1,0 +1,5 @@
+metadata/*
+!metadata/.gitignore
+screenshots/*
+!screenshots/.gitignore
+vendor/

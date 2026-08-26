@@ -26,6 +26,8 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>NSContactsUsageDescription</key>
 	<string>Decluttr needs access to your contacts to help you merge duplicates and clean up your address book on device.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

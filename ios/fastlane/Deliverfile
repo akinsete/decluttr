@@ -1,0 +1,27 @@
+# deliver defaults — binary upload stays with Codemagic publishing.
+
+app_identifier "com.ffslabs.invoicefinito"
+platform "ios"
+
+skip_binary_upload true
+skip_app_version_update false
+
+# Metadata + screenshots from prepare-deliver.sh staging dirs.
+metadata_path "./fastlane/metadata"
+screenshots_path "./fastlane/screenshots"
+
+# CI: never wait for an HTML preview confirmation.
+force true
+
+# Replace existing screenshots when uploading.
+overwrite_screenshots true
+
+# Do not auto-submit for App Review (keep Codemagic submit_to_app_store: false).
+submit_for_review false
+automatic_release false
+
+run_precheck_before_submit false
+precheck_include_in_app_purchases false
+
+# Locales are created/updated from staged metadata folders.
+phased_release false

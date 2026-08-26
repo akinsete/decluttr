@@ -19,6 +19,10 @@ class SettingsUiNotifier extends Notifier<SettingsUiState> {
 
   Future<void> setNotif(bool value) =>
       ref.read(appStateProvider.notifier).setNotifOn(value);
+
+  /// Clears local signed-in flag and activity prefs (device media untouched).
+  Future<void> deleteLocalAccountData() =>
+      ref.read(appStateProvider.notifier).clearLocalAccountFlags();
 }
 
 final settingsUiProvider =

@@ -1,8 +1,41 @@
 # Codemagic — Decluttr
 #
-# Repository root is this Flutter app directory (`mobile/`).
+# Repository root is this Flutter app directory (`mobile/`). Workspace docs live
+# one level up (`../docs/store/`, `../docs/codemagic-setup.md`).
 #
-# Setup: see docs/codemagic-setup.md
+# Stores
+# - Google Play accepts the Android App Bundle (.aab). APK is built as an artifact;
+#   Play binary upload uses Codemagic `publishing.google_play`.
+# - Listing (title, descriptions, screenshots) uploads via Fastlane `supply` from
+#   `../docs/store/google-play/` after the AAB.
+# - App Store / TestFlight: IPA via Codemagic `publishing.app_store_connect`.
+# - Listing via Fastlane `deliver` from `../docs/store/app-store/` after the IPA.
+#   Optional App Privacy via `sync_store_extras`.
+#
+# One-time setup
+# - Create the app in Play Console and App Store Connect; first binary upload is often manual.
+# - Bump `pubspec.yaml` version (+ build number) for each store submission.
+# - See `docs/codemagic-setup.md` (this folder) and `../docs/android-signing-fingerprints.md`.
+#
+# Codemagic UI
+# - Code signing → Android: upload keystore; set `android_signing` reference below.
+# - Env group `google_credentials`: `GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS` (JSON).
+# - Env group `mobile_env_files`: `MOBILE_ENV_PRODUCTION` / `MOBILE_ENV_DEVELOPMENT`.
+# - Integrations → App Store Connect API key named `appstore-connect-key`.
+# - Env group `appstore_credentials` (if integration does not inject ASC vars):
+#   - `APP_STORE_CONNECT_KEY_IDENTIFIER`
+#   - `APP_STORE_CONNECT_ISSUER_ID`
+#   - `APP_STORE_CONNECT_API_KEY_BASE64` (base64 of .p8)
+# - Optional: `ASC_APPLE_ID` (numeric) for Fastlane Appfile.
+#
+# Escape hatches (workflow env / start-build form):
+#   - SKIP_LISTING_UPLOAD=true
+#   - SKIP_SCREENSHOT_UPLOAD=true
+#   - SKIP_STORE_EXTRAS=true
+#   - SKIP_PLAY_LISTING_UPLOAD=true
+#   - SKIP_PLAY_SCREENSHOT_UPLOAD=true
+#
+# Firebase: `android/app/google-services.json`, `ios/Runner/GoogleService-Info.plist`.
 
 workflows:
   release:
@@ -19,11 +52,18 @@ workflows:
       groups:
         - google_credentials
         - mobile_env_files
+        - appstore_credentials
       android_signing:
         - YOUR_DECLUTTR_android_keystore
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.ffslabs.decluttr
+      vars:
+        SKIP_LISTING_UPLOAD: "false"
+        SKIP_SCREENSHOT_UPLOAD: "false"
+        SKIP_STORE_EXTRAS: "false"
+        SKIP_PLAY_LISTING_UPLOAD: "false"
+        SKIP_PLAY_SCREENSHOT_UPLOAD: "false"
     scripts:
       - name: Recreate env files from secrets
         script: |
@@ -51,8 +91,94 @@ workflows:
         script: |
           flutter build apk --release
           flutter build appbundle --release
+      - name: Stage Google Play listing for Fastlane supply
+        script: |
+          set -euo pipefail
+          if [ "${SKIP_PLAY_LISTING_UPLOAD:-false}" = "true" ]; then
+            echo "SKIP_PLAY_LISTING_UPLOAD=true — skipping prepare-supply"
+            exit 0
+          fi
+          bash ../docs/store/google-play/prepare-supply.sh
+      - name: Upload Google Play metadata and screenshots (Fastlane supply)
+        script: |
+          set -euo pipefail
+          if [ "${SKIP_PLAY_LISTING_UPLOAD:-false}" = "true" ]; then
+            echo "SKIP_PLAY_LISTING_UPLOAD=true — skipping supply"
+            exit 0
+          fi
+          : "${GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS:?Play service account JSON missing}"
+          cd android
+          gem install bundler --no-document
+          bundle config set --local path 'vendor/bundle'
+          bundle install
+          set +e
+          if [ "${SKIP_PLAY_SCREENSHOT_UPLOAD:-false}" = "true" ]; then
+            bundle exec fastlane supply_metadata_only
+          else
+            bundle exec fastlane supply_listing
+          fi
+          supply_status=$?
+          set -e
+          if [ "$supply_status" -ne 0 ]; then
+            echo "WARNING: Play supply_listing exited $supply_status — AAB publish may still proceed"
+          fi
       - name: Build iOS IPA
         script: flutter build ipa --release --export-options-plist=/Users/builder/export_options.plist
+      - name: Stage App Store listing for Fastlane deliver
+        script: |
+          set -euo pipefail
+          if [ "${SKIP_LISTING_UPLOAD:-false}" = "true" ]; then
+            echo "SKIP_LISTING_UPLOAD=true — skipping prepare-deliver"
+            exit 0
+          fi
+          bash ../docs/store/app-store/prepare-deliver.sh
+      - name: Upload App Store metadata and screenshots (Fastlane deliver)
+        script: |
+          set -euo pipefail
+          if [ "${SKIP_LISTING_UPLOAD:-false}" = "true" ]; then
+            echo "SKIP_LISTING_UPLOAD=true — skipping deliver"
+            exit 0
+          fi
+          : "${APP_STORE_CONNECT_KEY_IDENTIFIER:?ASC key id missing — check Codemagic App Store Connect integration}"
+          : "${APP_STORE_CONNECT_ISSUER_ID:?ASC issuer id missing}"
+          : "${APP_STORE_CONNECT_API_KEY_BASE64:?ASC API key base64 missing}"
+          cd ios
+          gem install bundler --no-document
+          bundle config set --local path 'vendor/bundle'
+          bundle install
+          if [ "${SKIP_SCREENSHOT_UPLOAD:-false}" = "true" ]; then
+            bundle exec fastlane deliver_metadata_only
+          else
+            set +e
+            bundle exec fastlane deliver_listing
+            status=$?
+            set -e
+            if [ "$status" -ne 0 ]; then
+              echo "WARNING: deliver_listing exited $status — retry metadata only"
+              bundle exec fastlane deliver_metadata_only
+            fi
+          fi
+      - name: Sync App Privacy extras
+        script: |
+          set -euo pipefail
+          if [ "${SKIP_LISTING_UPLOAD:-false}" = "true" ] || [ "${SKIP_STORE_EXTRAS:-false}" = "true" ]; then
+            echo "Skipping store extras"
+            exit 0
+          fi
+          : "${APP_STORE_CONNECT_KEY_IDENTIFIER:?ASC key id missing}"
+          : "${APP_STORE_CONNECT_ISSUER_ID:?ASC issuer id missing}"
+          : "${APP_STORE_CONNECT_API_KEY_BASE64:?ASC API key base64 missing}"
+          cd ios
+          gem install bundler --no-document
+          bundle config set --local path 'vendor/bundle'
+          bundle install
+          set +e
+          bundle exec fastlane sync_store_extras
+          extras_status=$?
+          set -e
+          if [ "$extras_status" -ne 0 ]; then
+            echo "WARNING: sync_store_extras exited $extras_status"
+          fi
     artifacts:
       - build/app/outputs/flutter-apk/*.apk
       - build/app/outputs/bundle/release/*.aab

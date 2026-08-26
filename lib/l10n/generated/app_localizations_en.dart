@@ -625,6 +625,29 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsShare => 'Share Decluttr';
 
   @override
+  String get settingsShareMessage =>
+      'I\'m decluttering with Decluttr — swipe to clean contacts and photos.';
+
+  @override
+  String get settingsDeleteAccount => 'Delete account data';
+
+  @override
+  String get settingsDeleteAccountConfirmTitle => 'Delete local account data?';
+
+  @override
+  String get settingsDeleteAccountConfirmBody =>
+      'This signs you out and clears Decluttr data on this device. Photos and contacts on your phone are not changed.';
+
+  @override
+  String get settingsDeleteAccountConfirmAction => 'Delete';
+
+  @override
+  String get settingsCancel => 'Cancel';
+
+  @override
+  String get settingsPremiumComingSoon => 'Premium is coming soon.';
+
+  @override
   String get signInTitle => 'Sign in';
 
   @override

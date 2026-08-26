@@ -103,4 +103,12 @@ class TrashRepositoryImpl implements TrashRepository {
         : _items.where((item) => item.type == type).toList();
     return filtered.fold<int>(0, (sum, item) => sum + item.sizeBytes);
   }
+
+  @override
+  Future<List<TrashItem>> fetchExpired({
+    Duration maxAge = const Duration(days: 30),
+  }) async {
+    final cutoff = DateTime.now().subtract(maxAge);
+    return _items.where((item) => item.deletedAt.isBefore(cutoff)).toList();
+  }
 }

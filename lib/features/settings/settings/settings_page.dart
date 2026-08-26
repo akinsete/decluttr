@@ -1,9 +1,11 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../../../../core/di/providers.dart';
+import '../../../../core/platform/app_share.dart';
 import '../../../../core/testing/widget_keys.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
@@ -38,7 +40,13 @@ class SettingsPage extends ConsumerWidget {
             style: context.decluttrTypography.walkthroughTitle,
           ),
           SizedBox(height: context.decluttrTheme.x5 + context.decluttrTheme.x1),
-          _PremiumCard(onTap: () {}),
+          _PremiumCard(
+            onTap: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.settingsPremiumComingSoon)),
+              );
+            },
+          ),
           SizedBox(height: context.decluttrTheme.x5 + context.decluttrTheme.x1),
           _SignInCard(
             signedIn: ui.signedIn,
@@ -49,14 +57,7 @@ class SettingsPage extends ConsumerWidget {
             title: l10n.settingsPreferences,
             child: _SettingsCard(
               children: [
-                _SettingsNavRow(
-                  icon: PhosphorIconsRegular.sun,
-                  iconColor: context.decluttrTheme.textSecondary,
-                  label: l10n.settingsAppearance,
-                  value: l10n.settingsAppearanceValue,
-                  onTap: () {},
-                ),
-                _SettingsDivider(),
+                // Appearance hidden until dark theme ships.
                 _SettingsToggleRow(
                   icon: PhosphorIconsRegular.deviceMobile,
                   iconColor: context.decluttrTheme.success,
@@ -87,7 +88,7 @@ class SettingsPage extends ConsumerWidget {
                   value: appState.photosGranted
                       ? l10n.settingsAccessFull
                       : l10n.settingsAccessDenied,
-                  onTap: () {},
+                  onTap: openAppSettings,
                 ),
                 _SettingsDivider(),
                 _SettingsNavRow(
@@ -97,7 +98,7 @@ class SettingsPage extends ConsumerWidget {
                   value: appState.contactsGranted
                       ? l10n.settingsAccessFull
                       : l10n.settingsAccessDenied,
-                  onTap: () {},
+                  onTap: openAppSettings,
                 ),
               ],
             ),
@@ -111,14 +112,21 @@ class SettingsPage extends ConsumerWidget {
                   icon: PhosphorIconsRegular.star,
                   iconColor: context.decluttrTheme.settingsRateStar,
                   label: l10n.settingsRate,
-                  onTap: () {},
+                  onTap: () => AppShare.openStoreListing(),
                 ),
                 _SettingsDivider(),
                 _SettingsNavRow(
                   icon: PhosphorIconsRegular.shareFat,
                   iconColor: context.decluttrTheme.blue,
                   label: l10n.settingsShare,
-                  onTap: () {},
+                  onTap: () => AppShare.shareText(l10n.settingsShareMessage),
+                ),
+                _SettingsDivider(),
+                _SettingsNavRow(
+                  icon: PhosphorIconsRegular.trash,
+                  iconColor: context.decluttrTheme.destructiveStrong,
+                  label: l10n.settingsDeleteAccount,
+                  onTap: () => _confirmDeleteAccount(context, notifier),
                 ),
               ],
             ),
@@ -126,6 +134,33 @@ class SettingsPage extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _confirmDeleteAccount(
+    BuildContext context,
+    SettingsUiNotifier notifier,
+  ) async {
+    final l10n = context.l10n;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.settingsDeleteAccountConfirmTitle),
+        content: Text(l10n.settingsDeleteAccountConfirmBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.settingsCancel),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.settingsDeleteAccountConfirmAction),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true) {
+      await notifier.deleteLocalAccountData();
+    }
   }
 }
 

@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 import '../../../../core/formatting/display_number_formatter.dart';
+import '../../../../core/platform/app_share.dart';
 import '../../../../core/testing/widget_keys.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
@@ -68,7 +69,7 @@ class _StreakBody extends StatelessWidget {
                     AppIconButton(
                       keyId: WidgetKeys.streakShareButton,
                       icon: PhosphorIconsRegular.shareFat,
-                      onPressed: () {},
+                      onPressed: () => AppShare.shareText(l10n.settingsShareMessage),
                     ),
                   ],
                 ),

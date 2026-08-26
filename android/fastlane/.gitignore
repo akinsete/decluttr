@@ -1,0 +1,4 @@
+metadata/android/*
+!metadata/android/.gitignore
+play-service-account.json
+vendor/

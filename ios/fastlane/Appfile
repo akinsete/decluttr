@@ -1,0 +1,11 @@
+# App Store Connect identifiers for Fastlane deliver.
+# Auth comes from Codemagic ASC API key env vars (see Fastfile).
+# Replace apple_id when the Decluttr app exists in App Store Connect.
+
+app_identifier("com.ffslabs.decluttr")
+
+# Numeric Apple ID from App Store Connect → App Information (placeholder).
+apple_id(ENV.fetch("ASC_APPLE_ID", "0000000000"))
+
+itc_team_id(ENV["ITC_TEAM_ID"]) if ENV["ITC_TEAM_ID"].to_s.strip != ""
+team_id(ENV["APPLE_TEAM_ID"]) if ENV["APPLE_TEAM_ID"].to_s.strip != ""

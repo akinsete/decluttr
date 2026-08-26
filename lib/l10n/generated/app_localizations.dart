@@ -1006,6 +1006,48 @@ abstract class AppLocalizations {
   /// **'Share Decluttr'**
   String get settingsShare;
 
+  /// No description provided for @settingsShareMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'m decluttering with Decluttr — swipe to clean contacts and photos.'**
+  String get settingsShareMessage;
+
+  /// No description provided for @settingsDeleteAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete account data'**
+  String get settingsDeleteAccount;
+
+  /// No description provided for @settingsDeleteAccountConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete local account data?'**
+  String get settingsDeleteAccountConfirmTitle;
+
+  /// No description provided for @settingsDeleteAccountConfirmBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This signs you out and clears Decluttr data on this device. Photos and contacts on your phone are not changed.'**
+  String get settingsDeleteAccountConfirmBody;
+
+  /// No description provided for @settingsDeleteAccountConfirmAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get settingsDeleteAccountConfirmAction;
+
+  /// No description provided for @settingsCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get settingsCancel;
+
+  /// No description provided for @settingsPremiumComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium is coming soon.'**
+  String get settingsPremiumComingSoon;
+
   /// No description provided for @signInTitle.
   ///
   /// In en, this message translates to:

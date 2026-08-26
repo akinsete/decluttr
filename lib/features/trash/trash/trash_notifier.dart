@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/di/trash_dock_badge_providers.dart';
 import '../../../../core/di/providers.dart';
 import '../../shared/data/photos/photo_load_log.dart';
-import '../../../../core/di/trash_dock_badge_providers.dart';
 import '../../../../core/error/result.dart';
 import '../../shared/domain/entities/photo_size_formatter.dart';
 import '../../shared/domain/entities/trash_item.dart';
@@ -24,6 +23,7 @@ class TrashUiNotifier extends Notifier<TrashUiState> {
 
   Future<void> refresh() async {
     photoLoadLog('TrashUi.refresh start count=${state.items.length}');
+    await purgeExpired();
     final repo = ref.read(trashRepositoryProvider);
     final items = await repo.fetchAll();
     state = state.copyWith(
@@ -33,6 +33,13 @@ class TrashUiNotifier extends Notifier<TrashUiState> {
     photoLoadLog(
       'TrashUi.refresh done photos=$photoCount contacts=$contactCount',
     );
+  }
+
+  /// Permanently removes trash older than 30 days (device + prefs).
+  Future<void> purgeExpired() async {
+    final expired = await ref.read(trashRepositoryProvider).fetchExpired();
+    if (expired.isEmpty) return;
+    await _deleteItemsForever(expired);
   }
 
   void setTab(TrashTab tab) {
@@ -89,6 +96,16 @@ class TrashUiNotifier extends Notifier<TrashUiState> {
     if (ids.isEmpty) return true;
 
     final items = state.items.where((item) => ids.contains(item.id)).toList();
+    final ok = await _deleteItemsForever(items);
+    if (!ok) return false;
+    await refresh();
+    state = state.copyWith(selectMode: false, selectedIds: {});
+    return true;
+  }
+
+  Future<bool> _deleteItemsForever(List<TrashItem> items) async {
+    if (items.isEmpty) return true;
+
     final photoItems = items.where((item) => item.type == TrashItemType.photo).toList();
     final photoIds = photoItems.map((item) => item.id).toList();
     if (photoIds.isNotEmpty) {
@@ -103,10 +120,8 @@ class TrashUiNotifier extends Notifier<TrashUiState> {
       if (result is FailureResult<void>) return false;
     }
 
-    await ref.read(trashRepositoryProvider).deleteForever(ids);
+    await ref.read(trashRepositoryProvider).deleteForever(items.map((i) => i.id).toList());
     bumpTrashDockBadge(ref);
-    await refresh();
-    state = state.copyWith(selectMode: false, selectedIds: {});
     return true;
   }
 

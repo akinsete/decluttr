@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,6 +12,7 @@ import '../../features/shared/data/repositories/photos_repository_impl.dart';
 import '../../features/shared/data/repositories/streak_repository_impl.dart';
 import '../../features/shared/data/repositories/swipe_stats_repository_impl.dart';
 import '../../features/shared/data/repositories/trash_repository_impl.dart';
+import '../../features/shared/domain/entities/trash_item.dart';
 import '../../features/shared/domain/repositories/app_preferences_repository.dart';
 import '../../features/shared/domain/repositories/auth_repository.dart';
 import '../../features/shared/domain/repositories/contacts_repository.dart';
@@ -77,6 +79,7 @@ class AppStateNotifier extends Notifier<AppState> {
   Future<void> _load() async {
     await ref.read(authRepositoryProvider).ensureAnonymousUser();
     unawaited(ref.read(swipeStatsRepositoryProvider).syncPendingSessions());
+    unawaited(_purgeExpiredTrash());
 
     state = state.copyWith(
       onboardingComplete: await _prefs.onboardingComplete(),
@@ -89,6 +92,32 @@ class AppStateNotifier extends Notifier<AppState> {
       signedIn: await _prefs.signedIn(),
       isLoading: false,
     );
+  }
+
+  Future<void> _purgeExpiredTrash() async {
+    try {
+      final trash = ref.read(trashRepositoryProvider);
+      final expired = await trash.fetchExpired();
+      if (expired.isEmpty) return;
+
+      final photoIds = expired
+          .where((i) => i.type == TrashItemType.photo)
+          .map((i) => i.id)
+          .toList();
+      if (photoIds.isNotEmpty) {
+        await ref.read(photosRepositoryProvider).deletePhotos(photoIds);
+        final bytes = expired
+            .where((i) => i.type == TrashItemType.photo)
+            .fold<int>(0, (sum, i) => sum + i.sizeBytes);
+        await ref.read(swipeStatsRepositoryProvider).recordCommittedDeletedBytes(bytes);
+      }
+      for (final contact in expired.where((i) => i.type == TrashItemType.contact)) {
+        await ref.read(contactsRepositoryProvider).deleteContact(contact.id);
+      }
+      await trash.deleteForever(expired.map((i) => i.id).toList());
+    } catch (e, st) {
+      debugPrint('AppStateNotifier._purgeExpiredTrash: $e\n$st');
+    }
   }
 
   Future<void> completeOnboarding() async {
@@ -130,6 +159,17 @@ class AppStateNotifier extends Notifier<AppState> {
     await _prefs.setHasActivity(true);
     await ref.read(streakRepositoryProvider).recordActivity();
     state = state.copyWith(hasActivity: true);
+  }
+
+  Future<void> clearLocalAccountFlags() async {
+    await _prefs.setSignedIn(false);
+    await _prefs.setHasActivity(false);
+    await _prefs.setTutorialSeen(false);
+    state = state.copyWith(
+      signedIn: false,
+      hasActivity: false,
+      tutorialSeen: false,
+    );
   }
 }
 

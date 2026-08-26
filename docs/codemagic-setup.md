@@ -1,45 +1,33 @@
-# Codemagic — Decluttr
+# Codemagic setup (Decluttr)
 
-Git repository root is this Flutter app directory. `codemagic.yaml` lives here alongside `pubspec.yaml`.
+Git / Flutter root: **`mobile/`** (this folder’s parent workspace holds `docs/store/`).
 
-## One-time Codemagic UI setup
+Workflow file: [`codemagic.yaml`](../codemagic.yaml) — **Release — Decluttr**.
 
-### Android code signing
-1. Team settings → Code signing identities → Android
-2. Upload keystore; note the reference name (default placeholder: `YOUR_DECLUTTR_android_keystore`)
+## One-time Codemagic UI
 
-### Environment variable groups
+1. **Android keystore** — Team → Code signing → Android. Replace `YOUR_DECLUTTR_android_keystore` in `codemagic.yaml` with the reference name.
+2. **Env group `google_credentials`** — `GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS` = Play service account JSON.
+3. **Env group `mobile_env_files`** — `MOBILE_ENV_PRODUCTION` / `MOBILE_ENV_DEVELOPMENT` (full `.env` file bodies).
+4. **Env group `appstore_credentials`** (if needed for Fastlane deliver):
+   - `APP_STORE_CONNECT_KEY_IDENTIFIER`
+   - `APP_STORE_CONNECT_ISSUER_ID`
+   - `APP_STORE_CONNECT_API_KEY_BASE64`
+5. **Integration** — App Store Connect API key named `appstore-connect-key`.
+6. Optional vars: `ASC_APPLE_ID`, skip flags (`SKIP_*_LISTING_UPLOAD`, etc.).
 
-**Group: `google_credentials`**
-- `GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS` — full JSON body of Play Console service account key
+## Listing automation
 
-**Group: `mobile_env_files`**
-- `MOBILE_ENV_PRODUCTION` — full contents of `env/.env.production`
-- `MOBILE_ENV_DEVELOPMENT` — full contents of `env/.env.development`
+See [`../../docs/store/README.md`](../../docs/store/README.md). Screenshots: `bash docs/store/generate-mobile-screenshots.sh` from the workspace root.
 
-### App Store Connect
-1. Team integrations → Developer Portal → add App Store Connect API key
-2. Use the same integration name as `integrations.app_store_connect` in `codemagic.yaml` (default: `appstore-connect-key`)
+## Fingerprints
 
-### Firebase native configs (before first release build)
-- `android/app/google-services.json`
-- `ios/Runner/GoogleService-Info.plist`
-- Register bundle ID `com.ffslabs.decluttr` in Firebase Console (dev + prod projects)
+[`../../docs/android-signing-fingerprints.md`](../../docs/android-signing-fingerprints.md)
 
-### iOS bundle identifier
-- `com.ffslabs.decluttr` — must match Xcode, Firebase, and `codemagic.yaml` → `ios_signing.bundle_identifier`
-
-## Local verification before CI
+## Local verify
 
 ```bash
-make setup-env   # create .env files from examples
-fvm flutter pub get
-fvm dart run build_runner build --delete-conflicting-outputs
-fvm flutter gen-l10n
-fvm dart analyze lib test
+cd mobile
+fvm flutter analyze
 fvm flutter test
 ```
-
-## Workflow
-
-The `release` workflow builds Android APK/AAB + iOS IPA, runs analyze + test, and publishes to Google Play (internal/draft) and TestFlight.

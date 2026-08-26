@@ -27,7 +27,7 @@ void main() {
           type: TrashItemType.photo,
           title: 'One',
           subtitle: '1 MB',
-          deletedAt: DateTime(2024, 5, 1),
+          deletedAt: DateTime.now(),
         ),
       );
       container.read(trashRevisionProvider.notifier).bump();
@@ -92,6 +92,12 @@ class _MutableTrashRepository implements TrashRepository {
 
   @override
   Future<int> reclaimableBytes({TrashItemType? type}) async => 0;
+
+  @override
+  Future<List<TrashItem>> fetchExpired({
+    Duration maxAge = const Duration(days: 30),
+  }) async =>
+      items.where((item) => item.deletedAt.isBefore(DateTime.now().subtract(maxAge))).toList();
 
   @override
   Future<void> remove(String id) async {
