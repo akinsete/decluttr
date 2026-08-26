@@ -47,6 +47,7 @@ app.*.map.json
 # Android signing keys
 *.jks
 *.keystore
+android/keystore/*.credentials
 
 # FVM local SDK symlink (keep .fvm/fvm_config.json)
 .fvm/flutter_sdk
