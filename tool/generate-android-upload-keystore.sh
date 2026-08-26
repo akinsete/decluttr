@@ -7,7 +7,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 OUT_DIR="${ROOT}/android/keystore"
 KEYSTORE="${OUT_DIR}/decluttr-upload.keystore"
 CREDS="${OUT_DIR}/decluttr-upload.credentials"
-REFERENCE_NAME="decluttr_android_keystore"
+REFERENCE_NAME="decluttr-keystore"
 ALIAS="decluttr-upload"
 VALIDITY_DAYS=10000
 

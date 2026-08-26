@@ -54,7 +54,7 @@ workflows:
         - mobile_env_files
         - appstore_credentials
       android_signing:
-        - decluttr_android_keystore
+        - decluttr-keystore
       ios_signing:
         distribution_type: app_store
         bundle_identifier: com.ffslabs.decluttr
