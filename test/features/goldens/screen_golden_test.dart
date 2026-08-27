@@ -38,7 +38,6 @@ import 'package:decluttr/features/swipe/swipe_session/swipe_session_page.dart';
 import 'package:decluttr/features/trash/trash/trash_notifier.dart';
 import 'package:decluttr/features/trash/trash/trash_page.dart';
 import 'package:decluttr/features/trash/trash/trash_state.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../helpers/test_app.dart';

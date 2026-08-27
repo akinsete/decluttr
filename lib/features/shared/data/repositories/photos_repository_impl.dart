@@ -406,7 +406,7 @@ class PhotosRepositoryImpl implements PhotosRepository {
     try {
       final file = await asset.originFile;
       if (file == null) return 0;
-      return file.length();
+      return await file.length();
     } catch (_) {
       return 0;
     }

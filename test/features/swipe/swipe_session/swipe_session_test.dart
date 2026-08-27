@@ -3,7 +3,6 @@ import 'package:decluttr/features/shared/domain/entities/swipe_item.dart';
 import 'package:decluttr/features/swipe/swipe_session/swipe_session_notifier.dart';
 import 'package:decluttr/features/swipe/swipe_session/swipe_session_page.dart';
 import 'package:decluttr/features/swipe/swipe_session/swipe_session_state.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../../helpers/test_app.dart';

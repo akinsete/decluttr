@@ -2,8 +2,6 @@ import 'package:decluttr/core/di/providers.dart';
 import 'package:decluttr/core/di/trash_dock_badge_providers.dart';
 import 'package:decluttr/core/testing/widget_keys.dart';
 import 'package:decluttr/core/widgets/dock_count_badge.dart';
-import 'package:decluttr/core/theme/theme.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
