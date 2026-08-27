@@ -2,7 +2,7 @@ name: decluttr
 description: Decluttr — swipe to clean up contacts and photos.
 publish_to: "none"
 
-version: 1.0.2+2
+version: 1.0.3+3
 
 environment:
   sdk: ^3.12.0

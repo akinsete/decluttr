@@ -7,11 +7,11 @@ Decluttr listing copy, screenshot pipeline, and Fastlane upload notes (mirrors I
 | Google Play | [`google-play/README.md`](google-play/README.md) |
 | App Store | [`app-store/README.md`](app-store/README.md) |
 
-**CI:** Codemagic **Release — Decluttr** stages listing via `prepare-supply.sh` / `prepare-deliver.sh`, then Fastlane `supply` / `deliver` (see [`mobile/codemagic.yaml`](../mobile/codemagic.yaml)). Git root is `mobile/`; from CI cwd run `bash ../docs/store/...`.
+**CI:** Codemagic **Release — Decluttr** stages listing via `prepare-supply.sh` / `prepare-deliver.sh`, then Fastlane `supply` / `deliver` (see [`codemagic.yaml`](../codemagic.yaml)). Git root is this Flutter repo; run `bash docs/store/...` from repo root.
 
 ## Generate screenshots
 
-From the **workspace root** (`decluttr/`):
+From the **Flutter repo root** (`mobile/`):
 
 ```bash
 bash docs/store/generate-mobile-screenshots.sh
@@ -24,7 +24,7 @@ Requires FVM + (for export) ImageMagick 7 (`magick`).
 - Listing text: `google-play/*.txt`, `app-store/*.txt` (+ `locales/es|fr`)
 - Sources: `*/screenshots/source/`
 - Exported upload sizes: `google-play/screenshots/phone|tablet-*`, `app-store/screenshots/iphone-*|ipad-*`
-- Fastlane stage targets: `mobile/android/fastlane/metadata`, `mobile/ios/fastlane/metadata|screenshots` (gitignored)
+- Fastlane stage targets: `android/fastlane/metadata`, `ios/fastlane/metadata|screenshots` (gitignored)
 
 ## Skip flags (Codemagic env)
 
