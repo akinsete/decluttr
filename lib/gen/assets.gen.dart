@@ -333,7 +333,6 @@ class SvgGenImage {
         colorMapper: colorMapper,
       );
     }
-
     return _svg.SvgPicture(
       loader,
       key: key,
