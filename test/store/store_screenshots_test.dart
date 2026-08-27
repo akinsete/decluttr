@@ -16,7 +16,11 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../helpers/test_app.dart';
 
-/// Decluttr store listing captures (light theme for brand consistency).
+bool get _skipPixelTestsInCi =>
+    Platform.environment['CI'] == 'true' ||
+    (Platform.environment['CM_BUILD_ID']?.isNotEmpty ?? false);
+
+/// Store listing captures — run locally only (`flutter test --tags store-screenshot`).
 const Size _storePhoneSize = Size(390, 844);
 
 Future<void> _capture(
@@ -56,7 +60,17 @@ Future<void> _capture(
   );
 }
 
+@Tags(['store-screenshot'])
 void main() {
+  if (_skipPixelTestsInCi) {
+    test(
+      'store screenshots skipped in CI',
+      () {},
+      skip: 'Run locally: flutter test --tags store-screenshot',
+    );
+    return;
+  }
+
   for (final store in ['google-play', 'app-store']) {
     group('$store screenshots', () {
       testWidgets('01-home_light.png', (tester) async {

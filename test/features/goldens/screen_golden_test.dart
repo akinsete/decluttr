@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:decluttr/app/router/app_router.dart';
 import 'package:decluttr/core/di/app_state.dart';
 import 'package:decluttr/core/di/providers.dart';
@@ -44,6 +46,10 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../helpers/test_app.dart';
 
+bool get _skipPixelTestsInCi =>
+    Platform.environment['CI'] == 'true' ||
+    (Platform.environment['CM_BUILD_ID']?.isNotEmpty ?? false);
+
 const _swipeArgs = SwipeSessionArgs(
   batchId: '2025-06',
   batchTitle: 'June 2025',
@@ -56,7 +62,14 @@ List<Override> _shellHomeOverrides() => [
       trashUiProvider.overrideWith(_EmptyTrashUi.new),
     ];
 
+/// Golden pixel tests — run locally only (`flutter test --tags golden`).
+@Tags(['golden'])
 void main() {
+  if (_skipPixelTestsInCi) {
+    test('goldens skipped in CI', () {}, skip: 'Run locally: flutter test --tags golden');
+    return;
+  }
+
   group('onboarding goldens', () {
     testWidgets('splash', (tester) async {
       final prefs = await initTestPrefs();
