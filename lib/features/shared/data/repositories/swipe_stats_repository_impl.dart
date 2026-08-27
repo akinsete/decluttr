@@ -14,9 +14,11 @@ class SwipeStatsRepositoryImpl implements SwipeStatsRepository {
     required SharedPreferences prefs,
     required AuthRepository authRepository,
     SwipeStatsSync? firestoreSync,
+    DateTime Function()? clock,
   })  : _prefs = prefs,
         _authRepository = authRepository,
-        _firestoreSync = firestoreSync ?? SwipeStatsFirestoreSync();
+        _firestoreSync = firestoreSync ?? SwipeStatsFirestoreSync(),
+        _clock = clock ?? DateTime.now;
 
   static const _lifetimeKey = 'swipe_stats_lifetime';
   static const _pendingKey = 'swipe_stats_pending_sync';
@@ -27,6 +29,7 @@ class SwipeStatsRepositoryImpl implements SwipeStatsRepository {
   final SharedPreferences _prefs;
   final AuthRepository _authRepository;
   final SwipeStatsSync _firestoreSync;
+  final DateTime Function() _clock;
 
   @override
   Future<LifetimeSwipeStats> getLifetimeStats() async {
@@ -47,7 +50,7 @@ class SwipeStatsRepositoryImpl implements SwipeStatsRepository {
       committedDeletedBytes: lifetime.committedDeletedBytes,
       photosDeleted: lifetime.photosDeleted,
       contactsDeleted: lifetime.contactsDeleted,
-      weekCleanedCounts: _weekCleanedCounts(sessions, DateTime.now()),
+      weekCleanedCounts: _weekCleanedCounts(sessions, _clock()),
     );
   }
 
@@ -88,7 +91,7 @@ class SwipeStatsRepositoryImpl implements SwipeStatsRepository {
   Future<void> _appendSession(SwipeSessionRecord session) async {
     final sessions = await _readSessions();
     sessions.add(session);
-    final cutoff = DateTime.now().subtract(const Duration(days: _sessionRetentionDays));
+    final cutoff = _clock().subtract(const Duration(days: _sessionRetentionDays));
     final trimmed = sessions
         .where((s) => !s.endedAt.isBefore(cutoff))
         .toList();

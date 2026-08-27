@@ -1,3 +1,5 @@
 tags:
   golden:
     description: "Pixel-snapshot tests. Run with --tags golden --update-goldens to regenerate baselines."
+  store-screenshot:
+    description: "Store listing captures. Run locally with --tags store-screenshot --update-goldens."

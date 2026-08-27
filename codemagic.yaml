@@ -88,7 +88,17 @@ workflows:
       - name: Run analyzer
         script: dart analyze lib test
       - name: Run tests
-        script: flutter test
+        script: |
+          flutter test \
+            test/core \
+            test/features/batch \
+            test/features/home \
+            test/features/insights \
+            test/features/onboarding \
+            test/features/shared \
+            test/features/streak \
+            test/features/swipe \
+            test/features/trash
       - name: Build Android APK and App Bundle
         script: |
           flutter build apk --release

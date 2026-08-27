@@ -1,5 +1,7 @@
 import 'package:decluttr/app/router/app_router.dart';
+import 'package:decluttr/core/di/app_state.dart';
 import 'package:decluttr/core/di/providers.dart';
+import 'package:decluttr/core/di/trash_dock_badge_providers.dart';
 import 'package:decluttr/features/batch/batch_contacts/batch_contacts_notifier.dart';
 import 'package:decluttr/features/batch/batch_contacts/batch_contacts_page.dart';
 import 'package:decluttr/features/batch/batch_photos/batch_photos_notifier.dart';
@@ -63,6 +65,9 @@ void main() {
         baseName: 'splash_page',
         prefs: prefs,
         settle: false,
+        overrides: [
+          appStateProvider.overrideWith(_PendingSplashAppState.new),
+        ],
         builder: (_) => const SplashPage(),
       );
     }, tags: ['golden']);
@@ -202,7 +207,11 @@ void main() {
         tester,
         baseName: 'batch_photos_empty',
         prefs: prefs,
-        overrides: [batchPhotosProvider.overrideWith(_EmptyBatchPhotos.new)],
+        settle: false,
+        overrides: [
+          batchPhotosProvider.overrideWith(_EmptyBatchPhotos.new),
+          trashItemCountProvider.overrideWith((ref) async => 0),
+        ],
         builder: (_) => const BatchPhotosPage(),
       );
     }, tags: ['golden']);
@@ -213,7 +222,11 @@ void main() {
         tester,
         baseName: 'batch_photos_populated',
         prefs: prefs,
-        overrides: [batchPhotosProvider.overrideWith(_SampleBatchPhotos.new)],
+        settle: false,
+        overrides: [
+          batchPhotosProvider.overrideWith(_SampleBatchPhotos.new),
+          trashItemCountProvider.overrideWith((ref) async => 3),
+        ],
         builder: (_) => const BatchPhotosPage(),
       );
     }, tags: ['golden']);
@@ -293,6 +306,7 @@ void main() {
         tester,
         baseName: 'main_shell_home',
         prefs: prefs,
+        settle: false,
         route: const MainShellRoute(children: [HomeRoute()]),
         overrides: _shellHomeOverrides(),
       );
@@ -304,11 +318,12 @@ void main() {
         tester,
         baseName: 'main_shell_settings',
         prefs: prefs,
-        route: const MainShellRoute(children: [SettingsRoute()]),
+        settle: false,
         overrides: [
           ..._shellHomeOverrides(),
           settingsUiProvider.overrideWith(_DefaultSettingsUi.new),
         ],
+        route: const MainShellRoute(children: [SettingsRoute()]),
       );
     }, tags: ['golden']);
   });
@@ -366,6 +381,11 @@ void main() {
       );
     }, tags: ['golden']);
   });
+}
+
+class _PendingSplashAppState extends AppStateNotifier {
+  @override
+  AppState build() => const AppState(isLoading: false);
 }
 
 class _FirstVisitAppState extends AppStateNotifier {

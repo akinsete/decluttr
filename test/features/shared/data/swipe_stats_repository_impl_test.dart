@@ -62,17 +62,20 @@ void main() {
   test('recordSession persists history for weekly insights', () async {
     SharedPreferences.setMockInitialValues({});
     final prefs = await SharedPreferences.getInstance();
+    // Pin "today" so week buckets are stable across time zones and CI dates.
+    final anchor = DateTime(2026, 8, 26, 12);
+    final monday = DateTime(2026, 8, 24);
     final repo = SwipeStatsRepositoryImpl(
       prefs: prefs,
       authRepository: _FakeAuthRepository(),
       firestoreSync: _FakeFirestoreSync(),
+      clock: () => anchor,
     );
 
-    final monday = DateTime(2026, 7, 6);
     await repo.recordSession(
       SwipeSessionRecord(
         sessionId: 's-week',
-        batchId: '2026-07',
+        batchId: '2026-08',
         isPhotos: true,
         keptCount: 10,
         deletedCount: 5,

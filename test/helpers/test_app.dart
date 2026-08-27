@@ -11,9 +11,34 @@ import 'package:decluttr/app/router/app_router.dart';
 import 'package:decluttr/app/router/app_router_provider.dart';
 import 'package:decluttr/core/di/providers.dart';
 import 'package:decluttr/core/theme/app_theme.dart';
+import 'package:decluttr/features/shared/domain/repositories/auth_repository.dart';
 import 'package:decluttr/l10n/generated/app_localizations.dart';
+import 'package:mockito/mockito.dart';
+
+import 'mock_providers.mocks.dart';
 
 export 'package:riverpod/src/framework.dart' show Override;
+
+/// Auth stub so widget tests never touch [FirebaseAuth.instance].
+MockAuthRepository createTestAuthRepository() {
+  final mock = MockAuthRepository();
+  when(mock.currentUserId).thenReturn(null);
+  when(mock.isAnonymous).thenReturn(true);
+  when(mock.ensureAnonymousUser()).thenAnswer((_) async => null);
+  when(
+    mock.linkWithEmail(
+      email: anyNamed('email'),
+      password: anyNamed('password'),
+    ),
+  ).thenAnswer((_) async {});
+  return mock;
+}
+
+List<Override> coreTestOverrides({AuthRepository? authRepository}) => [
+      authRepositoryProvider.overrideWithValue(
+        authRepository ?? createTestAuthRepository(),
+      ),
+    ];
 
 enum GoldenThemeVariant { lightOnly, darkOnly, both }
 
@@ -35,6 +60,7 @@ Widget buildTestApp({
   return ProviderScope(
     overrides: [
       sharedPreferencesProvider.overrideWithValue(prefs),
+      ...coreTestOverrides(),
       ...overrides,
     ],
     child: MaterialApp(
@@ -67,6 +93,7 @@ Widget buildTestRouterApp({
     overrides: [
       sharedPreferencesProvider.overrideWithValue(prefs),
       appRouterProvider.overrideWithValue(router),
+      ...coreTestOverrides(),
       ...overrides,
     ],
     child: MaterialApp.router(
