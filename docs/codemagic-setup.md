@@ -14,7 +14,10 @@ Workflow file: [`codemagic.yaml`](../codemagic.yaml) — **Release — Decluttr*
 2. **iOS App Store signing** — one-time:
    - **Option A (automated):** Copy Codemagic `appstore_credentials` into `ios/fastlane/.env.asc` (see `.env.asc.example`), then run `bash tool/setup-ios-app-store.sh` from `mobile/`. This registers `com.ffslabs.decluttr` in Developer Portal + App Store Connect.
    - **Option B (manual):** [Apple Developer Identifiers](https://developer.apple.com/account/resources/identifiers/list) → create App ID `com.ffslabs.decluttr`; [App Store Connect](https://appstoreconnect.apple.com/apps) → New App.
-   - **Codemagic:** Team integrations → **Developer Portal** → add the same App Store Connect API key (`appstore-connect-key`). Team settings → Code signing identities → **iOS** → ensure an **Apple Distribution** certificate exists (generate or fetch). The release workflow runs `app-store-connect fetch-signing-files … --create` before `xcode-project use-profiles`; you can also fetch an App Store profile manually under **iOS provisioning profiles**.
+   - **Codemagic iOS signing (required reference names — must match `codemagic.yaml`):**
+     1. **Certificates** → upload the downloaded `.p12` as reference **`decluttr-distribution`** (password in `ios/keystore/decluttr-distribution.credentials`)
+     2. **Provisioning profiles** → **Fetch profiles** → select **App Store** profile for `com.ffslabs.decluttr` → reference **`decluttr-appstore`** → **Download selected**
+     3. Confirm the profile row shows a green checkmark on the certificate column
    - `codemagic.yaml` already sets `ios_signing.distribution_type: app_store` and `bundle_identifier: com.ffslabs.decluttr`.
 3. **Env group `google_credentials`** — `GOOGLE_PLAY_SERVICE_ACCOUNT_CREDENTIALS` = Play service account JSON.
 4. **Env group `mobile_env_files`** — `MOBILE_ENV_PRODUCTION` / `MOBILE_ENV_DEVELOPMENT` (full `.env` file bodies).

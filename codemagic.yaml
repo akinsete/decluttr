@@ -56,8 +56,10 @@ workflows:
       android_signing:
         - decluttr-keystore
       ios_signing:
-        distribution_type: app_store
-        bundle_identifier: com.ffslabs.decluttr
+        provisioning_profiles:
+          - decluttr-appstore
+        certificates:
+          - decluttr-distribution
       vars:
         SKIP_LISTING_UPLOAD: "false"
         SKIP_SCREENSHOT_UPLOAD: "false"
@@ -73,13 +75,6 @@ workflows:
           : "${MOBILE_ENV_DEVELOPMENT:?MOBILE_ENV_DEVELOPMENT is not set}"
           printf "%s" "$MOBILE_ENV_PRODUCTION" > env/.env.production
           printf "%s" "$MOBILE_ENV_DEVELOPMENT" > env/.env.development
-      - name: Fetch iOS code signing files from Apple
-        script: |
-          set -euo pipefail
-          app-store-connect fetch-signing-files "com.ffslabs.decluttr" \
-            --type IOS_APP_STORE \
-            --create
-          keychain add-certificates
       - name: Set up iOS code signing settings on Xcode project
         script: xcode-project use-profiles
       - name: Get Flutter packages
