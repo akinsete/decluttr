@@ -1,6 +1,6 @@
 # deliver defaults — binary upload stays with Codemagic publishing.
 
-app_identifier "com.ffslabs.invoicefinito"
+app_identifier "com.ffslabs.decluttr"
 platform "ios"
 
 skip_binary_upload true

@@ -148,17 +148,18 @@ workflows:
           gem install bundler --no-document
           bundle config set --local path 'vendor/bundle'
           bundle install
+          set +e
           if [ "${SKIP_SCREENSHOT_UPLOAD:-false}" = "true" ]; then
             bundle exec fastlane deliver_metadata_only
           else
-            set +e
             bundle exec fastlane deliver_listing
-            status=$?
-            set -e
-            if [ "$status" -ne 0 ]; then
-              echo "WARNING: deliver_listing exited $status — retry metadata only"
-              bundle exec fastlane deliver_metadata_only
-            fi
+          fi
+          deliver_status=$?
+          set -e
+          if [ "$deliver_status" -ne 0 ]; then
+            echo "WARNING: deliver exited $deliver_status — metadata upload skipped."
+            echo "Common on first release: no editable App Store version until TestFlight processes the IPA."
+            echo "Re-run after publishing completes, or set SKIP_LISTING_UPLOAD=true for the first build."
           fi
       - name: Sync App Privacy extras
         script: |
