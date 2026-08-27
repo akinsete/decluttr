@@ -1,3 +1,6 @@
+@Tags(['golden'])
+library;
+
 import 'dart:io';
 
 import 'package:decluttr/app/router/app_router.dart';
@@ -63,7 +66,6 @@ List<Override> _shellHomeOverrides() => [
     ];
 
 /// Golden pixel tests — run locally only (`flutter test --tags golden`).
-@Tags(['golden'])
 void main() {
   if (_skipPixelTestsInCi) {
     test('goldens skipped in CI', () {}, skip: 'Run locally: flutter test --tags golden');

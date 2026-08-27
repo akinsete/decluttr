@@ -1,3 +1,6 @@
+@Tags(['store-screenshot'])
+library;
+
 import 'dart:io';
 
 import 'package:decluttr/core/di/app_state.dart';
@@ -60,7 +63,6 @@ Future<void> _capture(
   );
 }
 
-@Tags(['store-screenshot'])
 void main() {
   if (_skipPixelTestsInCi) {
     test(
