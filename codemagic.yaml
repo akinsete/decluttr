@@ -1,15 +1,15 @@
 # Codemagic — Decluttr
 #
-# Repository root is this Flutter app directory (`mobile/`). Workspace docs live
-# one level up (`../docs/store/`, `../docs/codemagic-setup.md`).
+# Repository root is this Flutter app directory (`mobile/` on GitHub).
+# Store listing assets live in `docs/store/` (same repo).
 #
 # Stores
 # - Google Play accepts the Android App Bundle (.aab). APK is built as an artifact;
 #   Play binary upload uses Codemagic `publishing.google_play`.
 # - Listing (title, descriptions, screenshots) uploads via Fastlane `supply` from
-#   `../docs/store/google-play/` after the AAB.
+#   `docs/store/google-play/` after the AAB.
 # - App Store / TestFlight: IPA via Codemagic `publishing.app_store_connect`.
-# - Listing via Fastlane `deliver` from `../docs/store/app-store/` after the IPA.
+# - Listing via Fastlane `deliver` from `docs/store/app-store/` after the IPA.
 #   Optional App Privacy via `sync_store_extras`.
 #
 # One-time setup
@@ -62,10 +62,10 @@ workflows:
           - decluttr-distribution
       vars:
         SKIP_LISTING_UPLOAD: "false"
-        SKIP_SCREENSHOT_UPLOAD: "false"
+        SKIP_SCREENSHOT_UPLOAD: "true"
         SKIP_STORE_EXTRAS: "false"
         SKIP_PLAY_LISTING_UPLOAD: "false"
-        SKIP_PLAY_SCREENSHOT_UPLOAD: "false"
+        SKIP_PLAY_SCREENSHOT_UPLOAD: "true"
     scripts:
       - name: Recreate env files from secrets
         script: |
@@ -100,7 +100,7 @@ workflows:
             echo "SKIP_PLAY_LISTING_UPLOAD=true — skipping prepare-supply"
             exit 0
           fi
-          bash ../docs/store/google-play/prepare-supply.sh
+          bash docs/store/google-play/prepare-supply.sh
       - name: Upload Google Play metadata and screenshots (Fastlane supply)
         script: |
           set -euo pipefail
@@ -133,7 +133,7 @@ workflows:
             echo "SKIP_LISTING_UPLOAD=true — skipping prepare-deliver"
             exit 0
           fi
-          bash ../docs/store/app-store/prepare-deliver.sh
+          bash docs/store/app-store/prepare-deliver.sh
       - name: Upload App Store metadata and screenshots (Fastlane deliver)
         script: |
           set -euo pipefail

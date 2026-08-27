@@ -1,0 +1,5 @@
+Decluttr helps you clean up contacts and photos with a simple swipe.
+
+Swipe right to keep, left to delete. Mistakes go to a 30-day Trash. Merge duplicate contacts and track your streak.
+
+Processing stays on your device — privacy first.

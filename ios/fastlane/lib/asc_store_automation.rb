@@ -27,7 +27,7 @@ module AscStoreAutomation
   module_function
 
   def repo_store_root
-    File.expand_path("../../../../docs/store/app-store", __dir__)
+    File.expand_path("../../../docs/store/app-store", __dir__)
   end
 
   def private_key_b64
