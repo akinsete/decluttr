@@ -48,6 +48,9 @@ app.*.map.json
 *.jks
 *.keystore
 android/keystore/*.credentials
+ios/keystore/*.credentials
+ios/keystore/*.p12
+ios/fastlane/.env.asc
 
 # FVM local SDK symlink (keep .fvm/fvm_config.json)
 .fvm/flutter_sdk

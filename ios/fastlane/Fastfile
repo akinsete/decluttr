@@ -19,6 +19,22 @@ platform :ios do
     )
   end
 
+  desc "One-time: register bundle ID + create App Store Connect app"
+  lane :setup_app_store do
+    produce(
+      api_key: asc_api_key,
+      app_identifier: "com.ffslabs.decluttr",
+      app_name: "Decluttr",
+      sku: "decluttr-ios",
+      language: "en-US",
+      skip_itc: false,
+      skip_devcenter: false
+    )
+
+    UI.success("Registered com.ffslabs.decluttr in Developer Portal and App Store Connect.")
+    UI.important("Next: Codemagic → Team settings → Code signing → iOS → fetch App Store profile, then re-run CI.")
+  end
+
   desc "Upload App Store listing metadata (+ screenshots) via deliver"
   lane :deliver_listing do |options|
     skip_screenshots = options.fetch(:skip_screenshots, ENV["SKIP_SCREENSHOT_UPLOAD"] == "true")
