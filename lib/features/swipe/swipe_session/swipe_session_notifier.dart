@@ -270,24 +270,32 @@ class SwipeSessionNotifier extends Notifier<SwipeSessionState> {
   }
 
   /// Persists one combined session record locally (+ remote when available).
+  /// Marks [flushed] up front so navigation can leave immediately without
+  /// waiting on prefs/Firestore.
   Future<void> flushSession({required bool completed}) async {
     if (state.flushed || !state.hasActivity) return;
 
+    final snapshot = state;
+    state = state.copyWith(flushed: true);
+
     final record = SwipeSessionRecord(
       sessionId: _uuid.v4(),
-      batchId: state.batchId,
-      isPhotos: state.isPhotos,
-      keptCount: state.kept,
-      deletedCount: state.deleted,
-      deletedBytes: state.deletedBytes,
+      batchId: snapshot.batchId,
+      isPhotos: snapshot.isPhotos,
+      keptCount: snapshot.kept,
+      deletedCount: snapshot.deleted,
+      deletedBytes: snapshot.deletedBytes,
       completed: completed,
-      startedAt: state.startedAt ?? DateTime.now(),
+      startedAt: snapshot.startedAt ?? DateTime.now(),
       endedAt: DateTime.now(),
     );
 
-    await ref.read(swipeStatsRepositoryProvider).recordSession(record);
-    bumpSwipeStatsRevision(ref);
-    state = state.copyWith(flushed: true);
+    try {
+      await ref.read(swipeStatsRepositoryProvider).recordSession(record);
+      bumpSwipeStatsRevision(ref);
+    } catch (_) {
+      // Best-effort; UI already left the session.
+    }
   }
 
   static String _initials(String name) {

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart' hide Banner;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -184,12 +186,16 @@ class _SwipeSessionPageState extends ConsumerState<SwipeSessionPage> {
                         ],
                       ),
               ),
-              SwipeActionBar(
-                onUndo: state.isLoading
-                    ? () {}
-                    : () => ref.read(swipeSessionProvider(_args).notifier).undoLast(),
-                onDelete: state.isLoading ? () {} : () => _triggerSwipe(delete: true),
-                onKeep: state.isLoading ? () {} : () => _triggerSwipe(delete: false),
+              SizedBox(height: dt.x8),
+              Padding(
+                padding: EdgeInsets.only(bottom: dt.x5),
+                child: SwipeActionBar(
+                  onUndo: state.isLoading
+                      ? () {}
+                      : () => ref.read(swipeSessionProvider(_args).notifier).undoLast(),
+                  onDelete: state.isLoading ? () {} : () => _triggerSwipe(delete: true),
+                  onKeep: state.isLoading ? () {} : () => _triggerSwipe(delete: false),
+                ),
               ),
             ],
           ),
@@ -199,12 +205,10 @@ class _SwipeSessionPageState extends ConsumerState<SwipeSessionPage> {
   }
 
   Future<void> _onSessionComplete(SwipeSessionState next) async {
-    try {
-      await ref
-          .read(swipeSessionProvider(_args).notifier)
-          .flushSession(completed: true)
-          .timeout(const Duration(seconds: 2));
-    } catch (_) {}
+    // Navigate immediately; persist stats in the background.
+    unawaited(
+      ref.read(swipeSessionProvider(_args).notifier).flushSession(completed: true),
+    );
     if (!mounted) return;
     context.router.replace(
       SessionSummaryRoute(
@@ -217,16 +221,11 @@ class _SwipeSessionPageState extends ConsumerState<SwipeSessionPage> {
     );
   }
 
-  Future<void> _exitSession({required bool completed}) async {
-    // Never block leaving the screen on stats/Firestore flush — that felt like a
-    // dead close (X) button when the network hung.
-    try {
-      await ref
-          .read(swipeSessionProvider(_args).notifier)
-          .flushSession(completed: completed)
-          .timeout(const Duration(seconds: 2));
-    } catch (_) {}
-    if (!mounted) return;
+  void _exitSession({required bool completed}) {
+    // Never await flush — back must feel instant even if Firestore is slow.
+    unawaited(
+      ref.read(swipeSessionProvider(_args).notifier).flushSession(completed: completed),
+    );
     if (context.router.canPop()) {
       context.router.pop();
       return;
