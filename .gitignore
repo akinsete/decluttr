@@ -52,6 +52,10 @@ ios/keystore/*.credentials
 ios/keystore/*.p12
 ios/fastlane/.env.asc
 
+# Fastlane Bundler (local gem install; reinstall with bundle install in ios/)
+ios/vendor/
+ios/.bundle/
+
 # FVM local SDK symlink (keep .fvm/fvm_config.json)
 .fvm/flutter_sdk
 .aider*

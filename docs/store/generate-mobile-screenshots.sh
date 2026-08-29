@@ -18,8 +18,9 @@ cd "$REPO_ROOT"
 fvm flutter test test/store/store_screenshots_test.dart --tags store-screenshot --update-goldens
 
 echo "Copying goldens to docs/store sources ..."
-cp -f "$PLAY_GOLDENS"/*.png "$PLAY_SRC"/ 2>/dev/null || true
-cp -f "$APP_GOLDENS"/*.png "$APP_SRC"/ 2>/dev/null || true
+rm -f "$PLAY_SRC"/*.png "$APP_SRC"/*.png
+cp -f "$PLAY_GOLDENS"/*.png "$PLAY_SRC"/
+cp -f "$APP_GOLDENS"/*.png "$APP_SRC"/
 
 if command -v magick >/dev/null 2>&1; then
   echo "Exporting Google Play sizes ..."

@@ -57,6 +57,13 @@ Widget buildTestApp({
   final theme = buildLightTheme();
   final darkTheme = buildDarkTheme();
 
+  // MaterialApp's default DefaultTextStyle is the yellow-underline "error"
+  // style. Pages used as `home` without their own Scaffold/Material (e.g.
+  // HomePage inside a shell) inherit that — goldens/store shots get yellow bars.
+  final scaffoldBg = brightness == Brightness.dark
+      ? darkTheme.scaffoldBackgroundColor
+      : theme.scaffoldBackgroundColor;
+
   return ProviderScope(
     overrides: [
       sharedPreferencesProvider.overrideWithValue(prefs),
@@ -64,6 +71,7 @@ Widget buildTestApp({
       ...overrides,
     ],
     child: MaterialApp(
+      debugShowCheckedModeBanner: false,
       theme: theme,
       darkTheme: darkTheme,
       themeMode: brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light,
@@ -75,7 +83,10 @@ Widget buildTestApp({
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: AppLocalizations.supportedLocales,
-      home: child,
+      home: Material(
+        color: scaffoldBg,
+        child: child,
+      ),
     ),
   );
 }
@@ -159,9 +170,13 @@ Future<void> runThemedGolden(
 
 /// Pumps a bounded number of frames — avoids [pumpAndSettle] timeouts from
 /// infinite animations (confetti, float, progress loops).
+///
+/// Also advances enough for [AsyncNotifier] / [FutureProvider] to emit data
+/// before a golden capture (which can hang while tickers keep scheduling).
 Future<void> pumpCaptureFrames(WidgetTester tester) async {
   await tester.pump();
-  await tester.pump(const Duration(milliseconds: 500));
+  await tester.pump(const Duration(milliseconds: 16));
+  await tester.pump(const Duration(milliseconds: 100));
   await tester.pump(const Duration(milliseconds: 500));
 }
 

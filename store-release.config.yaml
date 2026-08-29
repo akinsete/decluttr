@@ -1,0 +1,39 @@
+# Decluttr store release configuration — reference instance for ffslabs-flutter-store-release skill
+
+app:
+  display_name: Decluttr
+  bundle_id: com.ffslabs.decluttr
+  package_name: com.ffslabs.decluttr
+  github_repo: akinsete/decluttr
+
+google_cloud:
+  project_id: decluttr-becd5
+  play_service_account_email: firebase-adminsdk-fbsvc@decluttr-becd5.iam.gserviceaccount.com
+  play_service_account_json: android/fastlane/play-service-account.json
+
+codemagic:
+  workflow_name: "Release — Decluttr"
+  android_keystore_ref: decluttr-keystore
+  android_keystore_alias: decluttr-upload
+  ios_distribution_cert_ref: decluttr-distribution
+  ios_appstore_profile_ref: decluttr-appstore
+  asc_integration_name: appstore-connect-key
+  env_groups:
+    - google_credentials
+    - mobile_env_files
+    - appstore_credentials
+
+ios:
+  sku: decluttr-ios
+  asc_apple_id: ""
+
+android:
+  play_track: internal
+  submit_as_draft: true
+
+ci:
+  skip_screenshot_upload_default: true
+  skip_listing_first_build: true
+  deliver_warn_only: true
+  supply_warn_only: true
+  test_dirs: "test/core test/features/batch test/features/home test/features/insights test/features/onboarding test/features/shared test/features/streak test/features/swipe test/features/trash"
