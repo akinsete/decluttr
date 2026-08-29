@@ -111,7 +111,7 @@ class TrashUiNotifier extends Notifier<TrashUiState> {
     if (photoIds.isNotEmpty) {
       final result = await ref.read(photosRepositoryProvider).deletePhotos(photoIds);
       if (result is FailureResult<void>) return false;
-      final committedBytes = photoItems.fold<int>(0, (sum, item) => sum + item.sizeBytes);
+      final committedBytes = await _committedPhotoBytes(photoItems);
       await ref.read(swipeStatsRepositoryProvider).recordCommittedDeletedBytes(committedBytes);
     }
 
@@ -123,6 +123,21 @@ class TrashUiNotifier extends Notifier<TrashUiState> {
     await ref.read(trashRepositoryProvider).deleteForever(items.map((i) => i.id).toList());
     bumpTrashDockBadge(ref);
     return true;
+  }
+
+  /// Prefer stored sizes; re-resolve when swipe stored 0 so Insights isn't undercounted.
+  Future<int> _committedPhotoBytes(List<TrashItem> photoItems) async {
+    var total = 0;
+    final photos = ref.read(photosRepositoryProvider);
+    for (final item in photoItems) {
+      var bytes = item.sizeBytes;
+      if (bytes <= 0) {
+        final sized = await photos.resolvePhotoSizeBytes(item.id);
+        bytes = sized.valueOrNull ?? 0;
+      }
+      total += bytes;
+    }
+    return total;
   }
 
   List<TrashItem> get filteredItems {

@@ -39,16 +39,10 @@ class ProgressCard extends StatelessWidget {
     final dt = context.decluttrTheme;
     final typography = context.decluttrTypography;
 
-    return Container(
-      key: WidgetKeys.homeProgressCard,
+    final card = Padding(
       padding: EdgeInsets.symmetric(
         horizontal: dt.x4 + dt.x1,
         vertical: dt.x4,
-      ),
-      decoration: BoxDecoration(
-        color: dt.white,
-        borderRadius: BorderRadius.circular(dt.radiusXxl),
-        boxShadow: dt.shadowSm,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -61,19 +55,10 @@ class ProgressCard extends StatelessWidget {
                   style: typography.walkthroughDemoLabel,
                 ),
               ),
-              TextButton(
+              Text(
                 key: WidgetKeys.homeProgressViewAll,
-                onPressed: onViewAll,
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  foregroundColor: dt.pinkHot,
-                ),
-                child: Text(
-                  viewAllLabel,
-                  style: typography.walkthroughDemoLabel.copyWith(color: dt.pinkHot),
-                ),
+                viewAllLabel,
+                style: typography.walkthroughDemoLabel.copyWith(color: dt.pinkHot),
               ),
             ],
           ),
@@ -107,6 +92,26 @@ class ProgressCard extends StatelessWidget {
             ],
           ),
         ],
+      ),
+    );
+
+    return Material(
+      key: WidgetKeys.homeProgressCard,
+      color: dt.white,
+      elevation: 0,
+      shadowColor: Colors.transparent,
+      borderRadius: BorderRadius.circular(dt.radiusXxl),
+      child: InkWell(
+        onTap: onViewAll,
+        borderRadius: BorderRadius.circular(dt.radiusXxl),
+        child: Ink(
+          decoration: BoxDecoration(
+            color: dt.white,
+            borderRadius: BorderRadius.circular(dt.radiusXxl),
+            boxShadow: dt.shadowSm,
+          ),
+          child: card,
+        ),
       ),
     );
   }

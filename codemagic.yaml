@@ -62,10 +62,10 @@ workflows:
           - decluttr-distribution
       vars:
         SKIP_LISTING_UPLOAD: "false"
-        SKIP_SCREENSHOT_UPLOAD: "true"
+        SKIP_SCREENSHOT_UPLOAD: "false"
         SKIP_STORE_EXTRAS: "false"
         SKIP_PLAY_LISTING_UPLOAD: "false"
-        SKIP_PLAY_SCREENSHOT_UPLOAD: "true"
+        SKIP_PLAY_SCREENSHOT_UPLOAD: "false"
     scripts:
       - name: Recreate env files from secrets
         script: |

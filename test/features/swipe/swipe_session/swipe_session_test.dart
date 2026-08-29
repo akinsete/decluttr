@@ -8,9 +8,9 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../../helpers/test_app.dart';
 
 const _swipeArgs = SwipeSessionArgs(
-  batchId: '2026-05',
-  batchTitle: 'May 2026',
-  isPhotos: true,
+  batchId: 'a-m',
+  batchTitle: 'A–M',
+  isPhotos: false,
 );
 
 void main() {
@@ -23,16 +23,38 @@ void main() {
           swipeSessionProvider(_swipeArgs).overrideWith(_TutorialSwipeSession.new),
         ],
         child: const SwipeSessionPage(
-          batchId: '2026-05',
-          batchTitle: 'May 2026',
+          batchId: 'a-m',
+          batchTitle: 'A–M',
+          isPhotos: false,
         ),
       ),
     );
-    await tester.pumpAndSettle();
+    await pumpCaptureFrames(tester);
 
     expect(find.byKey(WidgetKeys.swipeTutorialOverlay), findsOneWidget);
     expect(find.text("Here's how it works"), findsOneWidget);
     expect(find.text('Got it'), findsOneWidget);
+  });
+
+  testWidgets('swipe session exposes close button', (tester) async {
+    final prefs = await initTestPrefs({'tutorial_seen': true});
+    await tester.pumpWidget(
+      buildTestApp(
+        prefs: prefs,
+        overrides: [
+          swipeSessionProvider(_swipeArgs).overrideWith(_LoadedSwipeSession.new),
+        ],
+        child: const SwipeSessionPage(
+          batchId: 'a-m',
+          batchTitle: 'A–M',
+          isPhotos: false,
+        ),
+      ),
+    );
+    await pumpCaptureFrames(tester);
+
+    expect(find.byKey(WidgetKeys.swipeSessionPage), findsOneWidget);
+    expect(find.byKey(WidgetKeys.swipeCloseButton), findsOneWidget);
   });
 }
 
@@ -42,16 +64,39 @@ class _TutorialSwipeSession extends SwipeSessionNotifier {
   @override
   SwipeSessionState build() {
     return const SwipeSessionState(
-      batchId: '2026-05',
-      batchTitle: 'May 2026',
-      isPhotos: true,
+      batchId: 'a-m',
+      batchTitle: 'A–M',
+      isPhotos: false,
       isLoading: false,
       showTutorial: true,
       items: [
         SwipeItem(
           id: '1',
-          title: 'Beach trip',
-          subtitle: 'June 2026 · 2.4 MB',
+          title: 'Alex Morgan',
+          subtitle: '555-0100',
+          gradientIndex: 0,
+        ),
+      ],
+    );
+  }
+}
+
+class _LoadedSwipeSession extends SwipeSessionNotifier {
+  _LoadedSwipeSession() : super(_swipeArgs);
+
+  @override
+  SwipeSessionState build() {
+    return const SwipeSessionState(
+      batchId: 'a-m',
+      batchTitle: 'A–M',
+      isPhotos: false,
+      isLoading: false,
+      showTutorial: false,
+      items: [
+        SwipeItem(
+          id: '1',
+          title: 'Alex Morgan',
+          subtitle: '555-0100',
           gradientIndex: 0,
         ),
       ],

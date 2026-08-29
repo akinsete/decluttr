@@ -1,13 +1,20 @@
 import 'package:decluttr/core/di/providers.dart';
 import 'package:decluttr/core/di/trash_dock_badge_providers.dart';
+import 'package:decluttr/core/error/result.dart';
 import 'package:decluttr/features/shared/domain/entities/trash_item.dart';
 import 'package:decluttr/features/shared/domain/repositories/trash_repository.dart';
 import 'package:decluttr/features/trash/trash/trash_notifier.dart';
 import 'package:decluttr/features/trash/trash/trash_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+
+import '../../helpers/mock_providers.dart';
 
 void main() {
+  provideDummy<Result<void>>(const Success(null));
+  provideDummy<Result<int>>(const Success(0));
+
   group('TrashUiNotifier', () {
     test('refresh reloads items when trash revision bumps', () async {
       final repo = _MutableTrashRepository();
@@ -65,6 +72,32 @@ void main() {
       expect(state.selectMode, isTrue);
       expect(state.selectedIds, isEmpty);
       expect(notifier.allFilteredSelected, isFalse);
+    });
+
+    test('deleteForever resolves zero sizeBytes before committing', () async {
+      final photos = MockPhotosRepository();
+      final stats = MockSwipeStatsRepository();
+      when(photos.deletePhotos(any)).thenAnswer((_) async => const Success(null));
+      when(photos.resolvePhotoSizeBytes('zero')).thenAnswer((_) async => const Success(4_200_000));
+      when(stats.recordCommittedDeletedBytes(any)).thenAnswer((_) async {});
+
+      final container = ProviderContainer(
+        overrides: [
+          photosRepositoryProvider.overrideWithValue(photos),
+          swipeStatsRepositoryProvider.overrideWithValue(stats),
+          trashRepositoryProvider.overrideWithValue(_MutableTrashRepository()),
+          trashUiProvider.overrideWith(_ZeroSizePhotoTrashUi.new),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      final notifier = container.read(trashUiProvider.notifier);
+      notifier.selectAllFiltered();
+      final ok = await notifier.deleteForeverSelected();
+
+      expect(ok, isTrue);
+      verify(photos.resolvePhotoSizeBytes('zero')).called(1);
+      verify(stats.recordCommittedDeletedBytes(4_200_000)).called(1);
     });
   });
 }
@@ -147,4 +180,26 @@ class _PopulatedTrashUi extends TrashUiNotifier {
       ],
     );
   }
+}
+
+class _ZeroSizePhotoTrashUi extends TrashUiNotifier {
+  @override
+  TrashUiState build() {
+    return TrashUiState(
+      isLoading: false,
+      items: [
+        TrashItem(
+          id: 'zero',
+          type: TrashItemType.photo,
+          title: 'Unknown size',
+          subtitle: 'May 2024',
+          deletedAt: DateTime(2024, 5, 1),
+          sizeBytes: 0,
+        ),
+      ],
+    );
+  }
+
+  @override
+  Future<void> refresh() async {}
 }

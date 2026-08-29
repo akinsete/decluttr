@@ -4,6 +4,7 @@ import 'package:uuid/uuid.dart';
 import '../../../../core/di/providers.dart';
 import '../../../../core/di/trash_dock_badge_providers.dart';
 import '../../../../core/error/result.dart';
+import '../../../../core/haptics/app_haptics.dart';
 import '../../shared/data/photos/photo_load_log.dart';
 import '../../shared/domain/entities/photo_asset.dart';
 import '../../shared/domain/entities/photo_batch_page.dart';
@@ -198,6 +199,7 @@ class SwipeSessionNotifier extends Notifier<SwipeSessionState> {
     _lastRemoved = item;
     _lastDecision = SwipeDecision.keep;
     state = state.copyWith(currentIndex: state.currentIndex + 1, kept: state.kept + 1);
+    await ref.read(appHapticsProvider).decision();
     await ref.read(appStateProvider.notifier).recordActivity();
     await _prefetchIfNeeded();
   }
@@ -242,6 +244,7 @@ class SwipeSessionNotifier extends Notifier<SwipeSessionState> {
       deleted: state.deleted + 1,
       deletedBytes: state.deletedBytes + (state.isPhotos ? sizeBytes : 0),
     );
+    await ref.read(appHapticsProvider).decision();
     await ref.read(appStateProvider.notifier).recordActivity();
     await _prefetchIfNeeded();
   }
@@ -263,6 +266,7 @@ class SwipeSessionNotifier extends Notifier<SwipeSessionState> {
 
     _lastRemoved = null;
     _lastDecision = SwipeDecision.undo;
+    await ref.read(appHapticsProvider).undo();
   }
 
   /// Persists one combined session record locally (+ remote when available).

@@ -63,13 +63,22 @@ class _SwipeSessionPageState extends ConsumerState<SwipeSessionPage> {
   }
 
   Future<void> _triggerSwipe({required bool delete}) async {
-    if (delete) {
-      await _topCardController.swipeDelete();
+    final notifier = ref.read(swipeSessionProvider(_args).notifier);
+    // Prefer the card fly-away animation; fall back if the controller is unbound
+    // (e.g. mid rebuild) so keep/delete never become silent no-ops.
+    if (_topCardController.isBound) {
+      if (delete) {
+        await _topCardController.swipeDelete();
+      } else {
+        await _topCardController.swipeKeep();
+      }
+    } else if (delete) {
+      await notifier.deleteCurrent();
     } else {
-      await _topCardController.swipeKeep();
+      await notifier.keepCurrent();
     }
     if (!mounted) return;
-    await ref.read(swipeSessionProvider(_args).notifier).loadMoreIfNeeded();
+    await notifier.loadMoreIfNeeded();
     if (!mounted) return;
     _handleSessionComplete(ref.read(swipeSessionProvider(_args)));
   }
@@ -109,6 +118,7 @@ class _SwipeSessionPageState extends ConsumerState<SwipeSessionPage> {
               Row(
                 children: [
                   AppIconButton(
+                    keyId: WidgetKeys.swipeCloseButton,
                     icon: PhosphorIconsRegular.x,
                     size: dt.x9,
                     onPressed: () => _exitSession(completed: false),
@@ -189,7 +199,12 @@ class _SwipeSessionPageState extends ConsumerState<SwipeSessionPage> {
   }
 
   Future<void> _onSessionComplete(SwipeSessionState next) async {
-    await ref.read(swipeSessionProvider(_args).notifier).flushSession(completed: true);
+    try {
+      await ref
+          .read(swipeSessionProvider(_args).notifier)
+          .flushSession(completed: true)
+          .timeout(const Duration(seconds: 2));
+    } catch (_) {}
     if (!mounted) return;
     context.router.replace(
       SessionSummaryRoute(
@@ -203,7 +218,14 @@ class _SwipeSessionPageState extends ConsumerState<SwipeSessionPage> {
   }
 
   Future<void> _exitSession({required bool completed}) async {
-    await ref.read(swipeSessionProvider(_args).notifier).flushSession(completed: completed);
+    // Never block leaving the screen on stats/Firestore flush — that felt like a
+    // dead close (X) button when the network hung.
+    try {
+      await ref
+          .read(swipeSessionProvider(_args).notifier)
+          .flushSession(completed: completed)
+          .timeout(const Duration(seconds: 2));
+    } catch (_) {}
     if (!mounted) return;
     if (context.router.canPop()) {
       context.router.pop();

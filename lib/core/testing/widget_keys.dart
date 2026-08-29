@@ -31,6 +31,7 @@ abstract final class WidgetKeys {
   static const swipeSessionPage = Key('swipe_session_page');
   static const swipeSessionLoadingShimmer = Key('swipe_session_loading_shimmer');
   static const swipeTutorialOverlay = Key('swipe_tutorial_overlay');
+  static const swipeCloseButton = Key('swipe_close_button');
   static const swipeKeepButton = Key('swipe_keep_button');
   static const swipeDeleteButton = Key('swipe_delete_button');
   static const swipeUndoButton = Key('swipe_undo_button');

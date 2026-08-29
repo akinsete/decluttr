@@ -19,24 +19,27 @@ class AppIconButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      key: keyId,
-      color: context.decluttrTheme.white,
-      elevation: 0,
-      shadowColor: Colors.transparent,
-      shape: const CircleBorder(),
-      child: InkWell(
-        onTap: onPressed,
-        customBorder: const CircleBorder(),
-        child: Ink(
-          width: size,
-          height: size,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: context.decluttrTheme.white,
-            boxShadow: context.decluttrTheme.shadowXs,
+    final dt = context.decluttrTheme;
+    // DecoratedBox carries the circular shadow; Ink alone inside Material can
+    // produce a flat hit target that misses taps on some devices.
+    return Semantics(
+      button: true,
+      child: Material(
+        key: keyId,
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onPressed,
+          customBorder: const CircleBorder(),
+          child: Ink(
+            width: size,
+            height: size,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: dt.white,
+              boxShadow: dt.shadowXs,
+            ),
+            child: Icon(icon, color: dt.ink, size: dt.x6),
           ),
-          child: Icon(icon, color: context.decluttrTheme.ink, size: context.decluttrTheme.x6),
         ),
       ),
     );

@@ -33,6 +33,8 @@ class SwipeCardController {
     _swipeDelete = null;
   }
 
+  bool get isBound => _swipeKeep != null && _swipeDelete != null;
+
   Future<void> swipeKeep() => _swipeKeep?.call() ?? Future<void>.value();
 
   Future<void> swipeDelete() => _swipeDelete?.call() ?? Future<void>.value();
