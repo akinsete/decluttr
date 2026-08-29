@@ -32,7 +32,7 @@ android:
   submit_as_draft: true
 
 ci:
-  skip_screenshot_upload_default: true
+  skip_screenshot_upload_default: false
   skip_listing_first_build: true
   deliver_warn_only: true
   supply_warn_only: true
