@@ -1,6 +1,7 @@
 import 'package:decluttr/core/di/app_state.dart';
 import 'package:decluttr/core/di/providers.dart';
 import 'package:decluttr/core/error/result.dart';
+import 'package:decluttr/features/shared/data/repositories/kept_items_repository_impl.dart';
 import 'package:decluttr/features/shared/domain/entities/batch_item.dart';
 import 'package:decluttr/features/shared/domain/entities/insights_snapshot.dart';
 import 'package:decluttr/features/shared/domain/entities/lifetime_swipe_stats.dart';
@@ -16,7 +17,10 @@ import 'package:decluttr/features/swipe/swipe_session/swipe_session_notifier.dar
 import 'package:decluttr/features/swipe/swipe_session/swipe_session_state.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+import '../../../helpers/mock_providers.dart';
 
 const _swipeArgs = SwipeSessionArgs(
   batchId: '2026-07',
@@ -144,6 +148,104 @@ void main() {
     expect(state.currentItem?.id, 'last');
     expect(trashRepo.items, isEmpty);
   });
+
+  test('keepCurrent persists id and undo removes it', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final keptRepo = MockKeptItemsRepository();
+    when(keptRepo.add(any, any)).thenAnswer((_) async {});
+    when(keptRepo.remove(any)).thenAnswer((_) async {});
+
+    final container = ProviderContainer(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        appStateProvider.overrideWith(_ReadyAppState.new),
+        photosRepositoryProvider.overrideWithValue(_MemoryPhotosRepository()),
+        trashRepositoryProvider.overrideWithValue(_MemoryTrashRepository()),
+        keptItemsRepositoryProvider.overrideWithValue(keptRepo),
+        swipeSessionProvider(_swipeArgs).overrideWith(_SingleItemSwipeSession.new),
+      ],
+    );
+    addTearDown(container.dispose);
+
+    final notifier = container.read(swipeSessionProvider(_swipeArgs).notifier);
+    await notifier.keepCurrent();
+
+    verify(keptRepo.add('last', TrashItemType.photo)).called(1);
+    expect(container.read(swipeSessionProvider(_swipeArgs)).kept, 1);
+
+    await notifier.undoLast();
+
+    verify(keptRepo.remove('last')).called(1);
+    expect(container.read(swipeSessionProvider(_swipeArgs)).kept, 0);
+    expect(container.read(swipeSessionProvider(_swipeArgs)).currentItem?.id, 'last');
+  });
+
+  test('reload excludes previously kept ids from the deck', () async {
+    SharedPreferences.setMockInitialValues({});
+    final prefs = await SharedPreferences.getInstance();
+    final keptRepo = KeptItemsRepositoryImpl(prefs: prefs);
+    final photos = _MemoryPhotosRepository(
+      assets: const [
+        PhotoAsset(
+          id: 'keep-me',
+          title: 'Keep me',
+          subtitle: 'July 2026',
+          monthKey: '2026-07',
+        ),
+        PhotoAsset(
+          id: 'next',
+          title: 'Next',
+          subtitle: 'July 2026',
+          monthKey: '2026-07',
+        ),
+      ],
+    );
+
+    final first = ProviderContainer(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        appStateProvider.overrideWith(_ReadyAppState.new),
+        photosRepositoryProvider.overrideWithValue(photos),
+        trashRepositoryProvider.overrideWithValue(_MemoryTrashRepository()),
+        keptItemsRepositoryProvider.overrideWithValue(keptRepo),
+      ],
+    );
+
+    await _waitUntilLoaded(first);
+    final firstNotifier = first.read(swipeSessionProvider(_swipeArgs).notifier);
+    expect(first.read(swipeSessionProvider(_swipeArgs)).currentItem?.id, 'keep-me');
+    await firstNotifier.keepCurrent();
+    expect(await keptRepo.fetchIds(TrashItemType.photo), {'keep-me'});
+    first.dispose();
+
+    final second = ProviderContainer(
+      overrides: [
+        sharedPreferencesProvider.overrideWithValue(prefs),
+        appStateProvider.overrideWith(_ReadyAppState.new),
+        photosRepositoryProvider.overrideWithValue(photos),
+        trashRepositoryProvider.overrideWithValue(_MemoryTrashRepository()),
+        keptItemsRepositoryProvider.overrideWithValue(
+          KeptItemsRepositoryImpl(prefs: prefs),
+        ),
+      ],
+    );
+    addTearDown(second.dispose);
+
+    await _waitUntilLoaded(second);
+    final ids =
+        second.read(swipeSessionProvider(_swipeArgs)).items.map((item) => item.id).toList();
+    expect(ids, isNot(contains('keep-me')));
+    expect(ids, ['next']);
+  });
+}
+
+Future<void> _waitUntilLoaded(ProviderContainer container) async {
+  for (var i = 0; i < 50; i++) {
+    await Future<void>.delayed(Duration.zero);
+    if (!container.read(swipeSessionProvider(_swipeArgs)).isLoading) return;
+  }
+  fail('swipe session stayed loading');
 }
 
 class _ReadyAppState extends AppStateNotifier {
@@ -256,6 +358,9 @@ class _MemoryTrashRepository implements TrashRepository {
 }
 
 class _MemoryPhotosRepository implements PhotosRepository {
+  _MemoryPhotosRepository({this.assets = const []});
+
+  final List<PhotoAsset> assets;
   final deletedIds = <String>[];
 
   @override
@@ -269,15 +374,29 @@ class _MemoryPhotosRepository implements PhotosRepository {
 
   @override
   Future<Result<List<PhotoAsset>>> fetchPhotosForBatch(String batchId) async =>
-      const Success([]);
+      Success(assets);
 
   @override
   Future<Result<PhotoBatchPage>> fetchPhotosForBatchPage(
     String batchId, {
     required int offset,
     required int limit,
-  }) async =>
-      const Success(PhotoBatchPage(items: [], totalCount: 0, hasMore: false));
+  }) async {
+    if (offset >= assets.length) {
+      return Success(
+        PhotoBatchPage(items: const [], totalCount: assets.length, hasMore: false),
+      );
+    }
+    final end = (offset + limit).clamp(0, assets.length);
+    final slice = assets.sublist(offset, end);
+    return Success(
+      PhotoBatchPage(
+        items: slice,
+        totalCount: assets.length,
+        hasMore: end < assets.length,
+      ),
+    );
+  }
 
   @override
   Future<Result<bool>> hasPermission() async => const Success(true);

@@ -24,6 +24,7 @@ class SwipeSessionNotifier extends Notifier<SwipeSessionState> {
   static const _prefetchThreshold = 2;
 
   Set<String> _trashedIds = {};
+  Set<String> _keptIds = {};
 
   @override
   SwipeSessionState build() {
@@ -44,14 +45,15 @@ class SwipeSessionNotifier extends Notifier<SwipeSessionState> {
     trace.step('tutorialSeen');
 
     _trashedIds = await _loadTrashedIds();
-    trace.step('trashedIds=${_trashedIds.length}');
+    _keptIds = await _loadKeptIds();
+    trace.step('trashedIds=${_trashedIds.length} keptIds=${_keptIds.length}');
 
     if (_args.isPhotos) {
       await _loadInitialPhotos(showTutorial: !tutorialSeen, trace: trace);
     } else {
       final result = await ref.read(contactsRepositoryProvider).fetchContactsForBatch(_args.batchId);
       final contacts = (result is Success ? result.value : const [])
-          .where((contact) => !_trashedIds.contains(contact.id))
+          .where((contact) => !_isExcluded(contact.id))
           .toList();
       state = state.copyWith(
         items: contacts
@@ -148,7 +150,7 @@ class SwipeSessionNotifier extends Notifier<SwipeSessionState> {
 
       final page = result.value;
       repoTotalCount = page.totalCount;
-      final fresh = page.items.where((photo) => !_trashedIds.contains(photo.id)).map(_mapPhoto).toList();
+      final fresh = page.items.where((photo) => !_isExcluded(photo.id)).map(_mapPhoto).toList();
 
       collected.addAll(fresh);
       nextOffset += page.items.length;
@@ -156,7 +158,7 @@ class SwipeSessionNotifier extends Notifier<SwipeSessionState> {
 
       trace?.step(
         'repoRound=$repoRound raw=${page.items.length} kept=${fresh.length} '
-        'trashedFiltered=${page.items.length - fresh.length} '
+        'excluded=${page.items.length - fresh.length} '
         'repoMs=${roundSw.elapsedMilliseconds}',
       );
 
@@ -175,6 +177,13 @@ class SwipeSessionNotifier extends Notifier<SwipeSessionState> {
     final trashed = await ref.read(trashRepositoryProvider).fetchByType(type);
     return trashed.map((item) => item.id).toSet();
   }
+
+  Future<Set<String>> _loadKeptIds() async {
+    final type = _args.isPhotos ? TrashItemType.photo : TrashItemType.contact;
+    return ref.read(keptItemsRepositoryProvider).fetchIds(type);
+  }
+
+  bool _isExcluded(String id) => _trashedIds.contains(id) || _keptIds.contains(id);
 
   SwipeItem _mapPhoto(PhotoAsset photo) {
     return SwipeItem(
@@ -196,6 +205,11 @@ class SwipeSessionNotifier extends Notifier<SwipeSessionState> {
   Future<void> keepCurrent() async {
     final item = state.currentItem;
     if (item == null) return;
+
+    final type = state.isPhotos ? TrashItemType.photo : TrashItemType.contact;
+    await ref.read(keptItemsRepositoryProvider).add(item.id, type);
+    _keptIds.add(item.id);
+
     _lastRemoved = item;
     _lastDecision = SwipeDecision.keep;
     state = state.copyWith(currentIndex: state.currentIndex + 1, kept: state.kept + 1);
@@ -261,6 +275,8 @@ class SwipeSessionNotifier extends Notifier<SwipeSessionState> {
         deletedBytes: state.deletedBytes - (state.isPhotos ? _lastRemoved!.sizeBytes : 0),
       );
     } else {
+      await ref.read(keptItemsRepositoryProvider).remove(_lastRemoved!.id);
+      _keptIds.remove(_lastRemoved!.id);
       state = state.copyWith(currentIndex: state.currentIndex - 1, kept: state.kept - 1);
     }
 

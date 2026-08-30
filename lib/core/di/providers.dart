@@ -8,14 +8,17 @@ import '../error/result.dart';
 
 import '../../features/shared/data/repositories/auth_repository_impl.dart';
 import '../../features/shared/data/repositories/contacts_repository_impl.dart';
+import '../../features/shared/data/repositories/kept_items_repository_impl.dart';
 import '../../features/shared/data/repositories/photos_repository_impl.dart';
 import '../../features/shared/data/repositories/streak_repository_impl.dart';
 import '../../features/shared/data/repositories/swipe_stats_repository_impl.dart';
 import '../../features/shared/data/repositories/trash_repository_impl.dart';
+import '../../features/shared/domain/committed_photo_bytes.dart';
 import '../../features/shared/domain/entities/trash_item.dart';
 import '../../features/shared/domain/repositories/app_preferences_repository.dart';
 import '../../features/shared/domain/repositories/auth_repository.dart';
 import '../../features/shared/domain/repositories/contacts_repository.dart';
+import '../../features/shared/domain/repositories/kept_items_repository.dart';
 import '../../features/shared/domain/repositories/photos_repository.dart';
 import '../../features/shared/domain/repositories/streak_repository.dart';
 import '../../features/shared/domain/repositories/swipe_stats_repository.dart';
@@ -48,6 +51,10 @@ final photosRepositoryProvider = Provider<PhotosRepository>(
 
 final trashRepositoryProvider = Provider<TrashRepository>(
   (ref) => TrashRepositoryImpl(prefs: ref.watch(sharedPreferencesProvider)),
+);
+
+final keptItemsRepositoryProvider = Provider<KeptItemsRepository>(
+  (ref) => KeptItemsRepositoryImpl(prefs: ref.watch(sharedPreferencesProvider)),
 );
 
 final authRepositoryProvider = Provider<AuthRepository>(
@@ -105,10 +112,14 @@ class AppStateNotifier extends Notifier<AppState> {
           .map((i) => i.id)
           .toList();
       if (photoIds.isNotEmpty) {
-        await ref.read(photosRepositoryProvider).deletePhotos(photoIds);
-        final bytes = expired
-            .where((i) => i.type == TrashItemType.photo)
-            .fold<int>(0, (sum, i) => sum + i.sizeBytes);
+        final photos = ref.read(photosRepositoryProvider);
+        final photoItems =
+            expired.where((i) => i.type == TrashItemType.photo).toList();
+        final bytes = await sumCommittedPhotoBytes(
+          photos: photos,
+          photoItems: photoItems,
+        );
+        await photos.deletePhotos(photoIds);
         await ref.read(swipeStatsRepositoryProvider).recordCommittedDeletedBytes(bytes);
       }
       for (final contact in expired.where((i) => i.type == TrashItemType.contact)) {

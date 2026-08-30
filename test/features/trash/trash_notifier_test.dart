@@ -96,8 +96,11 @@ void main() {
       final ok = await notifier.deleteForeverSelected();
 
       expect(ok, isTrue);
-      verify(photos.resolvePhotoSizeBytes('zero')).called(1);
-      verify(stats.recordCommittedDeletedBytes(4_200_000)).called(1);
+      verifyInOrder([
+        photos.resolvePhotoSizeBytes('zero'),
+        photos.deletePhotos(any),
+        stats.recordCommittedDeletedBytes(4_200_000),
+      ]);
     });
   });
 }

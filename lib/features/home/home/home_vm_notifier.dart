@@ -58,15 +58,22 @@ class HomeScreenVmNotifier extends AsyncNotifier<HomeScreenVm> {
         ? await ref.read(trashRepositoryProvider).fetchByType(TrashItemType.contact)
         : const <TrashItem>[];
 
+    final keptPhotoIds = appState.photosGranted
+        ? await ref.read(keptItemsRepositoryProvider).fetchIds(TrashItemType.photo)
+        : const <String>{};
+    final keptContactIds = appState.contactsGranted
+        ? await ref.read(keptItemsRepositoryProvider).fetchIds(TrashItemType.contact)
+        : const <String>{};
+
     final contactsCount = _waitingCount(
       rawContactsCount,
       trashedContacts.length,
-      lifetimeStats.contactsKept,
+      keptContactIds.length,
     );
     final photosCount = _waitingCount(
       rawPhotosCount,
       trashedPhotos.length,
-      lifetimeStats.photosKept,
+      keptPhotoIds.length,
     );
     final itemsRemaining = contactsCount + photosCount;
     final totalReviewed = lifetimeStats.totalKept + lifetimeStats.totalDeleted;

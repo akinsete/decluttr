@@ -6,6 +6,7 @@ import '../../shared/data/photos/photo_load_log.dart';
 import '../../../../core/error/result.dart';
 import '../../shared/domain/entities/photo_size_formatter.dart';
 import '../../shared/domain/entities/trash_item.dart';
+import '../../shared/domain/committed_photo_bytes.dart';
 import 'trash_month_grouper.dart';
 import 'trash_state.dart';
 
@@ -109,9 +110,13 @@ class TrashUiNotifier extends Notifier<TrashUiState> {
     final photoItems = items.where((item) => item.type == TrashItemType.photo).toList();
     final photoIds = photoItems.map((item) => item.id).toList();
     if (photoIds.isNotEmpty) {
-      final result = await ref.read(photosRepositoryProvider).deletePhotos(photoIds);
+      final photos = ref.read(photosRepositoryProvider);
+      final committedBytes = await sumCommittedPhotoBytes(
+        photos: photos,
+        photoItems: photoItems,
+      );
+      final result = await photos.deletePhotos(photoIds);
       if (result is FailureResult<void>) return false;
-      final committedBytes = await _committedPhotoBytes(photoItems);
       await ref.read(swipeStatsRepositoryProvider).recordCommittedDeletedBytes(committedBytes);
     }
 
@@ -125,20 +130,6 @@ class TrashUiNotifier extends Notifier<TrashUiState> {
     return true;
   }
 
-  /// Prefer stored sizes; re-resolve when swipe stored 0 so Insights isn't undercounted.
-  Future<int> _committedPhotoBytes(List<TrashItem> photoItems) async {
-    var total = 0;
-    final photos = ref.read(photosRepositoryProvider);
-    for (final item in photoItems) {
-      var bytes = item.sizeBytes;
-      if (bytes <= 0) {
-        final sized = await photos.resolvePhotoSizeBytes(item.id);
-        bytes = sized.valueOrNull ?? 0;
-      }
-      total += bytes;
-    }
-    return total;
-  }
 
   List<TrashItem> get filteredItems {
     final type = state.tab == TrashTab.photos

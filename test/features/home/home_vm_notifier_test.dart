@@ -19,8 +19,17 @@ import 'package:decluttr/features/shared/domain/repositories/swipe_stats_reposit
 import 'package:decluttr/features/shared/domain/repositories/trash_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+
+import '../../helpers/mock_providers.dart';
 
 void main() {
+  MockKeptItemsRepository emptyKeptRepo() {
+    final repo = MockKeptItemsRepository();
+    when(repo.fetchIds(any)).thenAnswer((_) async => <String>{});
+    return repo;
+  }
+
   test('home vm rebuilds when swipe stats revision bumps', () async {
     final statsRepo = _MutableSwipeStatsRepository();
     final container = ProviderContainer(
@@ -31,6 +40,7 @@ void main() {
         contactsRepositoryProvider.overrideWithValue(_EmptyContactsRepository()),
         photosRepositoryProvider.overrideWithValue(_EmptyPhotosRepository()),
         trashRepositoryProvider.overrideWithValue(_EmptyTrashRepository()),
+        keptItemsRepositoryProvider.overrideWithValue(emptyKeptRepo()),
       ],
     );
     addTearDown(container.dispose);
@@ -46,24 +56,34 @@ void main() {
     expect(vm.deleted, 4);
   });
 
-  test('home vm rebuilds when trash revision bumps', () async {
+  test('home waiting uses unique kept ids not lifetime kept counters', () async {
     final trashRepo = _MutableTrashRepository();
-    final statsRepo = _MutableSwipeStatsRepository(
-      stats: const LifetimeSwipeStats(photosKept: 2),
-    );
+    final keptRepo = MockKeptItemsRepository();
+    when(keptRepo.fetchIds(TrashItemType.photo))
+        .thenAnswer((_) async => {'k1', 'k2'});
+    when(keptRepo.fetchIds(TrashItemType.contact))
+        .thenAnswer((_) async => <String>{});
+
     final container = ProviderContainer(
       overrides: [
         appStateProvider.overrideWith(_ReturningAppState.new),
-        swipeStatsRepositoryProvider.overrideWithValue(statsRepo),
+        swipeStatsRepositoryProvider.overrideWithValue(
+          _MutableSwipeStatsRepository(
+            // Inflated lifetime kept must not affect waiting counts.
+            stats: const LifetimeSwipeStats(photosKept: 50, totalKept: 50),
+          ),
+        ),
         streakRepositoryProvider.overrideWithValue(_FakeStreakRepository()),
         contactsRepositoryProvider.overrideWithValue(_EmptyContactsRepository()),
         photosRepositoryProvider.overrideWithValue(_PhotosBatchesRepository()),
         trashRepositoryProvider.overrideWithValue(trashRepo),
+        keptItemsRepositoryProvider.overrideWithValue(keptRepo),
       ],
     );
     addTearDown(container.dispose);
 
     await container.read(homeScreenVmProvider.future);
+    // 100 batch − 0 trash − 2 unique kept ids
     expect(container.read(homeScreenVmProvider).value?.photosCount, 98);
 
     trashRepo.photoTrashCount = 5;

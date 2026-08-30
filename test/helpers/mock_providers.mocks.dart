@@ -18,8 +18,12 @@ import 'package:decluttr/features/shared/domain/entities/photo_batch_page.dart'
     as _i14;
 import 'package:decluttr/features/shared/domain/entities/swipe_session_record.dart'
     as _i16;
+import 'package:decluttr/features/shared/domain/entities/trash_item.dart'
+    as _i18;
 import 'package:decluttr/features/shared/domain/repositories/auth_repository.dart'
     as _i7;
+import 'package:decluttr/features/shared/domain/repositories/kept_items_repository.dart'
+    as _i17;
 import 'package:decluttr/features/shared/domain/repositories/photos_repository.dart'
     as _i10;
 import 'package:decluttr/features/shared/domain/repositories/swipe_stats_repository.dart'
@@ -1343,6 +1347,41 @@ class MockSwipeStatsRepository extends _i1.Mock
   _i8.Future<void> syncPendingSessions() =>
       (super.noSuchMethod(
             Invocation.method(#syncPendingSessions, []),
+            returnValue: _i8.Future<void>.value(),
+            returnValueForMissingStub: _i8.Future<void>.value(),
+          )
+          as _i8.Future<void>);
+}
+
+/// A class which mocks [KeptItemsRepository].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockKeptItemsRepository extends _i1.Mock
+    implements _i17.KeptItemsRepository {
+  @override
+  _i8.Future<Set<String>> fetchIds(_i18.TrashItemType? type) =>
+      (super.noSuchMethod(
+            Invocation.method(#fetchIds, [type]),
+            returnValue: _i8.Future<Set<String>>.value(<String>{}),
+            returnValueForMissingStub: _i8.Future<Set<String>>.value(
+              <String>{},
+            ),
+          )
+          as _i8.Future<Set<String>>);
+
+  @override
+  _i8.Future<void> add(String? id, _i18.TrashItemType? type) =>
+      (super.noSuchMethod(
+            Invocation.method(#add, [id, type]),
+            returnValue: _i8.Future<void>.value(),
+            returnValueForMissingStub: _i8.Future<void>.value(),
+          )
+          as _i8.Future<void>);
+
+  @override
+  _i8.Future<void> remove(String? id) =>
+      (super.noSuchMethod(
+            Invocation.method(#remove, [id]),
             returnValue: _i8.Future<void>.value(),
             returnValueForMissingStub: _i8.Future<void>.value(),
           )

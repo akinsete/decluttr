@@ -1,4 +1,5 @@
 import 'package:decluttr/features/shared/domain/repositories/auth_repository.dart';
+import 'package:decluttr/features/shared/domain/repositories/kept_items_repository.dart';
 import 'package:decluttr/features/shared/domain/repositories/photos_repository.dart';
 import 'package:decluttr/features/shared/domain/repositories/swipe_stats_repository.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -13,5 +14,6 @@ export 'mock_providers.mocks.dart';
   MockSpec<UserCredential>(),
   MockSpec<PhotosRepository>(),
   MockSpec<SwipeStatsRepository>(),
+  MockSpec<KeptItemsRepository>(),
 ])
 void main() {}
