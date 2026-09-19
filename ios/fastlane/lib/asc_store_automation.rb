@@ -27,7 +27,8 @@ module AscStoreAutomation
   module_function
 
   def repo_store_root
-    File.expand_path("../../../docs/store/app-store", __dir__)
+    # __dir__ is mobile/ios/fastlane/lib → four levels up to repo root.
+    File.expand_path("../../../../docs/store/app-store", __dir__)
   end
 
   def private_key_b64
@@ -109,23 +110,120 @@ module AscStoreAutomation
     id
   end
 
+  # --- Content rights ---------------------------------------------------------
+
+  def set_content_rights!(uses_third_party_content: false)
+    app_id = find_app_id
+    declaration =
+      if uses_third_party_content
+        "USES_THIRD_PARTY_CONTENT"
+      else
+        "DOES_NOT_USE_THIRD_PARTY_CONTENT"
+      end
+    UI_message("Setting contentRightsDeclaration=#{declaration}")
+    request(
+      :patch,
+      "/v1/apps/#{app_id}",
+      body: {
+        data: {
+          type: "apps",
+          id: app_id,
+          attributes: { contentRightsDeclaration: declaration }
+        }
+      }
+    )
+    UI_message("Content rights updated")
+  end
+
+  # --- Pricing (free via appPriceSchedules) ---------------------------------
+
+  def set_free_price_schedule!(base_territory: "USA")
+    app_id = find_app_id
+
+    begin
+      existing = request(
+        :get,
+        "/v1/apps/#{app_id}/appPriceSchedule",
+        query: { "include" => "manualPrices,baseTerritory" }
+      )
+      if existing.dig("data", "id")
+        UI_message("App price schedule already present (#{existing.dig('data', 'id')}) — skipping")
+        return
+      end
+    rescue StandardError => e
+      # 404 when no schedule exists yet — continue to create.
+      raise unless e.message.include?("404")
+      UI_message("No existing appPriceSchedule (404) — will create free schedule")
+    end
+
+    points = request(
+      :get,
+      "/v1/apps/#{app_id}/appPricePoints",
+      query: {
+        "filter[territory]" => base_territory,
+        "limit" => 200
+      }
+    )
+    free_point = (points["data"] || []).find do |row|
+      row.dig("attributes", "customerPrice").to_f.zero?
+    end
+    raise "No free (customerPrice=0) appPricePoint for territory #{base_territory}" unless free_point
+
+    UI_message("Creating free price schedule (base=#{base_territory}, point=#{free_point['id']})")
+    body = {
+      data: {
+        type: "appPriceSchedules",
+        relationships: {
+          app: { data: { type: "apps", id: app_id } },
+          baseTerritory: { data: { type: "territories", id: base_territory } },
+          manualPrices: {
+            data: [{ type: "appPrices", id: "${price-0}" }]
+          }
+        }
+      },
+      included: [
+        {
+          type: "appPrices",
+          id: "${price-0}",
+          attributes: { startDate: nil },
+          relationships: {
+            appPricePoint: {
+              data: { type: "appPricePoints", id: free_point["id"] }
+            }
+          }
+        }
+      ]
+    }
+    request(:post, "/v1/appPriceSchedules", body: body)
+    UI_message("Free price schedule created")
+  end
+
   # --- Privacy ----------------------------------------------------------------
 
   def sync_privacy!(json_path: nil, skip_publish: false)
-    configure_spaceship_token!
     path = json_path || File.join(repo_store_root, "app_privacy_details.json")
-    usages_config = JSON.parse(File.read(path))
-    app = Spaceship::ConnectAPI::App.find(BUNDLE_ID) ||
-          Spaceship::ConnectAPI::App.get(app_id: APPLE_ID)
-    raise "Could not find app #{BUNDLE_ID}" unless app
+    raise "Missing App Privacy JSON: #{path}" unless File.file?(path)
 
+    usages_config = JSON.parse(File.read(path))
+    unless usages_config.is_a?(Array)
+      raise "app_privacy_details.json must be an array of usage configs (got #{usages_config.class})"
+    end
+
+    app_id = find_app_id
     UI_message("Uploading App Privacy from #{path}")
-    all_usages = Spaceship::ConnectAPI::AppDataUsage.all(
-      app_id: app.id,
-      includes: "category,grouping,purpose,dataProtection",
-      limit: 500
+
+    # Spaceship still calls the retired /apps/{id}/dataUsages path — use appDataUsages.
+    existing = request(
+      :get,
+      "/v1/apps/#{app_id}/appDataUsages",
+      query: {
+        "include" => "category,purpose,dataProtection",
+        "limit" => 200
+      }
     )
-    all_usages.each(&:delete!)
+    (existing["data"] || []).each do |usage|
+      request(:delete, "/v1/appDataUsages/#{usage['id']}")
+    end
 
     usages_config.each do |usage_config|
       category = usage_config["category"]
@@ -135,24 +233,61 @@ module AscStoreAutomation
 
       purposes.each do |purpose|
         data_protections.each do |data_protection|
-          Spaceship::ConnectAPI::AppDataUsage.create(
-            app_id: app.id,
-            app_data_usage_category_id: category,
-            app_data_usage_protection_id: data_protection,
-            app_data_usage_purpose_id: purpose
+          relationships = {
+            app: { data: { type: "apps", id: app_id } }
+          }
+          if category
+            relationships[:category] = {
+              data: { type: "appDataUsageCategories", id: category }
+            }
+          end
+          if data_protection
+            relationships[:dataProtection] = {
+              data: { type: "appDataUsageDataProtections", id: data_protection }
+            }
+          end
+          if purpose
+            relationships[:purpose] = {
+              data: { type: "appDataUsagePurposes", id: purpose }
+            }
+          end
+
+          request(
+            :post,
+            "/v1/appDataUsages",
+            body: {
+              data: {
+                type: "appDataUsages",
+                relationships: relationships
+              }
+            }
           )
+          UI_message("  set #{category || 'n/a'} / #{purpose || 'n/a'} → #{data_protection}")
         end
       end
     end
 
     unless skip_publish
-      publish_state = Spaceship::ConnectAPI::AppDataUsagesPublishState.get(app_id: app.id)
-      if publish_state.published
+      publish = request(:get, "/v1/apps/#{app_id}/appDataUsagesPublishState")
+      state = publish["data"]
+      if state.dig("attributes", "published")
         UI_message("App Privacy already published")
       else
-        publish_state.publish!
+        request(
+          :patch,
+          "/v1/appDataUsagesPublishState/#{state['id']}",
+          body: {
+            data: {
+              type: "appDataUsagesPublishState",
+              id: state["id"],
+              attributes: { published: true }
+            }
+          }
+        )
         UI_message("App Privacy published")
       end
+    else
+      UI_message("App Privacy uploaded (skip_publish=true — verify in App Store Connect)")
     end
   end
 

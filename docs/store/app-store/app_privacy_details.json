@@ -1,4 +1,22 @@
-{
-  "privacyType": "DATA_NOT_COLLECTED_OR_LINKED",
-  "notes": "Decluttr processes contacts and photos on-device. Replace this stub with ASC nutrition-label JSON before publishing privacy answers."
-}
+[
+  {
+    "category": "EMAIL_ADDRESS",
+    "purposes": ["APP_FUNCTIONALITY"],
+    "data_protections": ["DATA_LINKED_TO_YOU"]
+  },
+  {
+    "category": "USER_ID",
+    "purposes": ["APP_FUNCTIONALITY", "ANALYTICS"],
+    "data_protections": ["DATA_LINKED_TO_YOU"]
+  },
+  {
+    "category": "DEVICE_ID",
+    "purposes": ["ANALYTICS"],
+    "data_protections": ["DATA_NOT_LINKED_TO_YOU"]
+  },
+  {
+    "category": "PRODUCT_INTERACTION",
+    "purposes": ["ANALYTICS", "APP_FUNCTIONALITY"],
+    "data_protections": ["DATA_LINKED_TO_YOU"]
+  }
+]

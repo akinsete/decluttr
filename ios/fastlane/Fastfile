@@ -66,9 +66,63 @@ platform :ios do
     )
   end
 
-  desc "Privacy extras (CPP / intro offers skipped unless JSON is Decluttr-ready)"
+  desc "First-submit prep: content rights, free price, App Privacy"
+  lane :prepare_first_submission do
+    failures = []
+
+    begin
+      AscStoreAutomation.set_content_rights!(uses_third_party_content: false)
+    rescue StandardError => e
+      UI.error("Content rights failed: #{e.message}")
+      failures << "content_rights"
+    end
+
+    begin
+      AscStoreAutomation.set_free_price_schedule!
+    rescue StandardError => e
+      UI.error("Free price schedule failed: #{e.message}")
+      failures << "pricing"
+    end
+
+    unless ENV["SKIP_PRIVACY_UPLOAD"] == "true"
+      begin
+        AscStoreAutomation.sync_privacy!(
+          skip_publish: ENV["SKIP_PRIVACY_PUBLISH"] == "true"
+        )
+      rescue StandardError => e
+        # Public ASC API no longer exposes app privacy nutrition labels (PATH_ERROR on
+        # dataUsages / appDataUsages). An Account Holder/Admin must fill App Privacy in the web UI.
+        if e.message.include?("PATH_ERROR") || e.message.include?("dataUsages") || e.message.include?("appDataUsages")
+          UI.important("App Privacy API unavailable (#{e.message.split("\n").first}).")
+          UI.important("Fill App Privacy in App Store Connect as Admin, then publish.")
+        else
+          UI.error("App Privacy sync failed: #{e.message}")
+          failures << "privacy"
+        end
+      end
+    end
+
+    UI.user_error!("prepare_first_submission failed: #{failures.join(', ')}") unless failures.empty?
+    UI.success("First-submit prep complete (content rights, pricing; privacy may need web UI).")
+  end
+
+  desc "Privacy extras + content rights + free pricing (CPP / intro offers skipped unless JSON is Decluttr-ready)"
   lane :sync_store_extras do
     failures = []
+
+    begin
+      AscStoreAutomation.set_content_rights!(uses_third_party_content: false)
+    rescue StandardError => e
+      UI.error("Content rights failed: #{e.message}")
+      failures << "content_rights"
+    end
+
+    begin
+      AscStoreAutomation.set_free_price_schedule!
+    rescue StandardError => e
+      UI.error("Free price schedule failed: #{e.message}")
+      failures << "pricing"
+    end
 
     unless ENV["SKIP_PRIVACY_UPLOAD"] == "true"
       begin

@@ -27,13 +27,21 @@ bool get _skipPixelTestsInCi =>
 
 /// Store listing captures — run locally only (`flutter test --tags store-screenshot`).
 /// Frames: splash → dashboard → deleted photos → photos directory.
+///
+/// Phone: logical 390×844 @ DPR 3 → 1170×2532 (downscales cleanly into 6.5"/6.9").
+/// iPad:  logical 1032×1376 @ DPR 2 → exact 2064×2752 (13" App Store slot).
 const Size _storePhoneSize = Size(390, 844);
+const double _storePhoneDpr = 3;
+const Size _storeIpadSize = Size(1032, 1376);
+const double _storeIpadDpr = 2;
 
 Future<void> _capture(
   WidgetTester tester, {
   required String storeFolder,
   required String fileName,
   required Widget child,
+  required Size logicalSize,
+  required double devicePixelRatio,
   List<Override> overrides = const [],
   Map<String, Object> prefs = const {
     'onboarding_complete': true,
@@ -45,7 +53,20 @@ Future<void> _capture(
 }) async {
   final sharedPrefs = await initTestPrefs(prefs);
 
-  await tester.binding.setSurfaceSize(_storePhoneSize);
+  final view = tester.view;
+  final previousPhysical = view.physicalSize;
+  final previousDpr = view.devicePixelRatio;
+  view.physicalSize = Size(
+    logicalSize.width * devicePixelRatio,
+    logicalSize.height * devicePixelRatio,
+  );
+  view.devicePixelRatio = devicePixelRatio;
+  addTearDown(() {
+    view.physicalSize = previousPhysical;
+    view.devicePixelRatio = previousDpr;
+  });
+
+  await tester.binding.setSurfaceSize(logicalSize);
   addTearDown(() => tester.binding.setSurfaceSize(null));
 
   await tester.pumpWidget(
@@ -67,6 +88,67 @@ Future<void> _capture(
   );
 }
 
+typedef _FrameSpec = ({
+  String fileName,
+  Widget child,
+  List<Override> Function() overrides,
+  Map<String, Object> prefs,
+  Duration extraPump,
+});
+
+List<_FrameSpec> get _frames => [
+      (
+        fileName: '01-splash_light.png',
+        child: const SplashPage(),
+        overrides: () => [
+          appStateProvider.overrideWith(_PendingSplashAppState.new),
+        ],
+        prefs: const <String, Object>{},
+        extraPump: const Duration(milliseconds: 950),
+      ),
+      (
+        fileName: '02-home_light.png',
+        child: const HomePage(),
+        overrides: () => [
+          appStateProvider.overrideWith(_StoreAppState.new),
+          homeScreenVmProvider.overrideWith(_StoreHomeVm.new),
+        ],
+        prefs: const {
+          'onboarding_complete': true,
+          'tutorial_seen': true,
+          'has_activity': true,
+        },
+        extraPump: Duration.zero,
+      ),
+      (
+        fileName: '03-trash_light.png',
+        child: const TrashPage(),
+        overrides: () => [
+          trashUiProvider.overrideWith(_PopulatedTrashUi.new),
+        ],
+        prefs: const {
+          'onboarding_complete': true,
+          'tutorial_seen': true,
+          'has_activity': true,
+        },
+        extraPump: Duration.zero,
+      ),
+      (
+        fileName: '04-photos_light.png',
+        child: const BatchPhotosPage(),
+        overrides: () => [
+          batchPhotosProvider.overrideWith(_SampleBatchPhotos.new),
+          trashItemCountProvider.overrideWith((ref) async => 9),
+        ],
+        prefs: const {
+          'onboarding_complete': true,
+          'tutorial_seen': true,
+          'has_activity': true,
+        },
+        extraPump: Duration.zero,
+      ),
+    ];
+
 void main() {
   if (_skipPixelTestsInCi) {
     test(
@@ -78,60 +160,45 @@ void main() {
   }
 
   for (final store in ['google-play', 'app-store']) {
-    group('$store screenshots', () {
-      testWidgets('01-splash_light.png', (tester) async {
-        await _capture(
-          tester,
-          storeFolder: store,
-          fileName: '01-splash_light.png',
-          prefs: const {},
-          overrides: [
-            appStateProvider.overrideWith(_PendingSplashAppState.new),
-          ],
-          // Splash entry fade is 900ms; wait so logo/tagline are fully visible.
-          extraPump: const Duration(milliseconds: 950),
-          child: const SplashPage(),
-        );
-      }, tags: 'store-screenshot');
-
-      testWidgets('02-home_light.png', (tester) async {
-        await _capture(
-          tester,
-          storeFolder: store,
-          fileName: '02-home_light.png',
-          overrides: [
-            appStateProvider.overrideWith(_StoreAppState.new),
-            homeScreenVmProvider.overrideWith(_StoreHomeVm.new),
-          ],
-          child: const HomePage(),
-        );
-      }, tags: 'store-screenshot');
-
-      testWidgets('03-trash_light.png', (tester) async {
-        await _capture(
-          tester,
-          storeFolder: store,
-          fileName: '03-trash_light.png',
-          overrides: [
-            trashUiProvider.overrideWith(_PopulatedTrashUi.new),
-          ],
-          child: const TrashPage(),
-        );
-      }, tags: 'store-screenshot');
-
-      testWidgets('04-photos_light.png', (tester) async {
-        await _capture(
-          tester,
-          storeFolder: store,
-          fileName: '04-photos_light.png',
-          overrides: [
-            batchPhotosProvider.overrideWith(_SampleBatchPhotos.new),
-            trashItemCountProvider.overrideWith((ref) async => 9),
-          ],
-          child: const BatchPhotosPage(),
-        );
-      }, tags: 'store-screenshot');
+    group('$store phone screenshots', () {
+      for (final frame in _frames) {
+        testWidgets(frame.fileName, (tester) async {
+          await _capture(
+            tester,
+            storeFolder: store,
+            fileName: frame.fileName,
+            prefs: frame.prefs,
+            overrides: frame.overrides(),
+            extraPump: frame.extraPump,
+            logicalSize: _storePhoneSize,
+            devicePixelRatio: _storePhoneDpr,
+            child: frame.child,
+          );
+        }, tags: 'store-screenshot');
+      }
     });
+
+    // App Store iPad 13" only — Google Play uses phone sources for tablet export.
+    if (store == 'app-store') {
+      group('$store iPad screenshots', () {
+        for (final frame in _frames) {
+          final ipadName = frame.fileName.replaceFirst('.png', '_ipad.png');
+          testWidgets(ipadName, (tester) async {
+            await _capture(
+              tester,
+              storeFolder: store,
+              fileName: ipadName,
+              prefs: frame.prefs,
+              overrides: frame.overrides(),
+              extraPump: frame.extraPump,
+              logicalSize: _storeIpadSize,
+              devicePixelRatio: _storeIpadDpr,
+              child: frame.child,
+            );
+          }, tags: 'store-screenshot');
+        }
+      });
+    }
   }
 }
 

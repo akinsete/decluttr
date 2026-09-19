@@ -16,4 +16,9 @@ Codemagic runs the same after the AAB build unless `SKIP_PLAY_LISTING_UPLOAD=tru
 
 Edit `title.txt`, `short-description.txt`, `full-description.txt` (and `locales/`).
 
+## Feature graphic
+
+Required Play asset **1024×500**: [`feature-graphic.png`](feature-graphic.png).  
+`prepare-supply.sh` copies it to Fastlane as `featureGraphic.png` when present.
+
 See [`data-safety.md`](data-safety.md) before production.

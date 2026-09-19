@@ -10,6 +10,11 @@ skip_app_version_update false
 metadata_path "./fastlane/metadata"
 screenshots_path "./fastlane/screenshots"
 
+# App Information (non-localized) — required before first App Review submit.
+copyright "2026 456Labs"
+primary_category "UTILITIES"
+secondary_category "PRODUCTIVITY"
+
 # CI: never wait for an HTML preview confirmation.
 force true
 
