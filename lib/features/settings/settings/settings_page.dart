@@ -10,7 +10,8 @@ import '../../../../core/testing/widget_keys.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../../../l10n/l10n.dart';
-import '../../../app/router/app_router.dart';
+// Sign-in entry temporarily hidden — restore with SignInRoute below.
+// import '../../../app/router/app_router.dart';
 import 'settings_notifier.dart';
 
 @RoutePage()
@@ -39,19 +40,21 @@ class SettingsPage extends ConsumerWidget {
             l10n.settingsTitle,
             style: context.decluttrTypography.walkthroughTitle,
           ),
-          SizedBox(height: context.decluttrTheme.x5 + context.decluttrTheme.x1),
-          _PremiumCard(
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l10n.settingsPremiumComingSoon)),
-              );
-            },
-          ),
-          SizedBox(height: context.decluttrTheme.x5 + context.decluttrTheme.x1),
-          _SignInCard(
-            signedIn: ui.signedIn,
-            onTap: () => context.router.push(const SignInRoute()),
-          ),
+          // Premium card hidden for v1 store review.
+          // SizedBox(height: context.decluttrTheme.x5 + context.decluttrTheme.x1),
+          // _PremiumCard(
+          //   onTap: () {
+          //     ScaffoldMessenger.of(context).showSnackBar(
+          //       SnackBar(content: Text(l10n.settingsPremiumComingSoon)),
+          //     );
+          //   },
+          // ),
+          // Sign-in card hidden for v1 store review (optional sync only).
+          // SizedBox(height: context.decluttrTheme.x5 + context.decluttrTheme.x1),
+          // _SignInCard(
+          //   signedIn: ui.signedIn,
+          //   onTap: () => context.router.push(const SignInRoute()),
+          // ),
           SizedBox(height: context.decluttrTheme.x5 + context.decluttrTheme.x1),
           _SettingsSection(
             title: l10n.settingsPreferences,
@@ -164,6 +167,8 @@ class SettingsPage extends ConsumerWidget {
   }
 }
 
+// Kept for restore when premium reappears on Settings.
+// ignore: unused_element
 class _PremiumCard extends StatelessWidget {
   const _PremiumCard({required this.onTap});
 
@@ -240,6 +245,8 @@ class _PremiumCard extends StatelessWidget {
   }
 }
 
+// Kept for restore when sign-in reappears on Settings.
+// ignore: unused_element
 class _SignInCard extends StatelessWidget {
   const _SignInCard({
     required this.signedIn,
