@@ -4,7 +4,7 @@ import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 import '../../../core/testing/widget_keys.dart';
 import '../../../core/theme/theme.dart';
 
-/// Bottom action row for swipe session — undo, delete (X), keep (check).
+/// Bottom action row for swipe session — delete (X), undo (center), keep (check).
 class SwipeActionBar extends StatelessWidget {
   const SwipeActionBar({
     super.key,
@@ -25,19 +25,8 @@ class SwipeActionBar extends StatelessWidget {
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        _SwipeCircleButton(
-          key: WidgetKeys.swipeUndoButton,
-          size: dt.x10 + dt.x1,
-          iconSize: dt.x5,
-          icon: PhosphorIconsRegular.arrowCounterClockwise,
-          iconColor: dt.dockInactive,
-          backgroundColor: dt.white,
-          shadows: dt.shadowSm,
-          onTap: onUndo,
-        ),
-        SizedBox(width: dt.x5 + dt.x1),
         _SwipeCircleButton(
           key: WidgetKeys.swipeDeleteButton,
           size: dt.x11 + dt.x1,
@@ -53,6 +42,17 @@ class SwipeActionBar extends StatelessWidget {
             ),
           ],
           onTap: onDelete,
+        ),
+        SizedBox(width: dt.x5 + dt.x1),
+        _SwipeCircleButton(
+          key: WidgetKeys.swipeUndoButton,
+          size: dt.x10 + dt.x1,
+          iconSize: dt.x5,
+          icon: PhosphorIconsRegular.arrowCounterClockwise,
+          iconColor: dt.dockInactive,
+          backgroundColor: dt.white,
+          shadows: dt.shadowSm,
+          onTap: onUndo,
         ),
         SizedBox(width: dt.x5 + dt.x1),
         _SwipeCircleButton(

@@ -462,6 +462,14 @@ class PhotosRepositoryImpl implements PhotosRepository {
       if (entity == null || entity.type != AssetType.video) {
         return const Success(null);
       }
+      // Prefer a direct media URL (content:// / asset URL) so playback does not
+      // wait on exporting a full copy of a large video.
+      final url = await entity.getMediaUrl();
+      if (url != null && url.isNotEmpty) return Success(url);
+
+      final origin = await entity.originFile;
+      if (origin != null) return Success(origin.path);
+
       final file = await entity.file;
       return Success(file?.path);
     } catch (e, st) {

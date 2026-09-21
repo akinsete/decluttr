@@ -34,6 +34,7 @@ abstract final class WidgetKeys {
   static const swipeCloseButton = Key('swipe_close_button');
   static const swipeKeepButton = Key('swipe_keep_button');
   static const swipeDeleteButton = Key('swipe_delete_button');
+  static const swipeUpcomingStrip = Key('swipe_upcoming_strip');
   static const swipeUndoButton = Key('swipe_undo_button');
   static const swipePlayVideoButton = Key('swipe_play_video_button');
   static const swipeVideoPlayerClose = Key('swipe_video_player_close');

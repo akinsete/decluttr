@@ -12,6 +12,7 @@ import '../../../../core/theme/theme.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../../../l10n/l10n.dart';
 import '../../../app/router/app_router.dart';
+import '../../shared/data/photos/photo_thumbnail_provider.dart';
 import '../../shared/domain/entities/swipe_item.dart';
 import 'swipe_action_bar.dart';
 import 'swipe_progress_bar.dart';
@@ -19,6 +20,7 @@ import 'swipe_session_notifier.dart';
 import 'swipe_session_state.dart';
 import 'swipe_session_loading_shimmer.dart';
 import 'swipe_tutorial_overlay.dart';
+import 'swipe_upcoming_strip.dart';
 
 @RoutePage()
 class SwipeSessionPage extends ConsumerStatefulWidget {
@@ -41,6 +43,11 @@ class SwipeSessionPage extends ConsumerStatefulWidget {
 
 class _SwipeSessionPageState extends ConsumerState<SwipeSessionPage> {
   final _topCardController = SwipeCardController();
+  final _playablePaths = <String, String>{};
+  final _warmingPlayable = <String>{};
+
+  /// Matches [PhotoAssetThumbnail] on swipe cards so prefetch hits the same cache.
+  static const _swipeThumbSize = 240;
   bool _completionHandled = false;
 
   SwipeSessionArgs get _args => SwipeSessionArgs(
@@ -103,6 +110,8 @@ class _SwipeSessionPageState extends ConsumerState<SwipeSessionPage> {
         _handleSessionComplete(ref.read(swipeSessionProvider(_args)));
       });
     }
+
+    _warmUpcomingMedia(ref, state);
 
     final current = state.displayedProgress;
     final total = state.total;
@@ -186,7 +195,15 @@ class _SwipeSessionPageState extends ConsumerState<SwipeSessionPage> {
                         ],
                       ),
               ),
-              SizedBox(height: dt.x8),
+              SizedBox(height: dt.x3),
+              if (!state.isLoading)
+                SwipeUpcomingStrip(
+                  items: state.currentIndex + 1 < state.items.length
+                      ? state.items.sublist(state.currentIndex + 1)
+                      : const [],
+                  isPhotos: widget.isPhotos,
+                ),
+              SizedBox(height: dt.x4),
               Padding(
                 padding: EdgeInsets.only(bottom: dt.x5),
                 child: SwipeActionBar(
@@ -245,7 +262,13 @@ class _SwipeSessionPageState extends ConsumerState<SwipeSessionPage> {
       subtitle: item.subtitle,
       gradientIndex: item.gradientIndex,
       tagLabel: widget.isPhotos ? item.title : null,
-      mediaBackground: widget.isPhotos ? PhotoAssetThumbnail(assetId: item.id, fallbackGradient: gradient) : null,
+      mediaBackground: widget.isPhotos
+          ? PhotoAssetThumbnail(
+              assetId: item.id,
+              fallbackGradient: gradient,
+              thumbnailSize: _swipeThumbSize,
+            )
+          : null,
       isTop: isTop,
       durationLabel: item.isVideo ? item.durationLabel : null,
       playLabel: item.isVideo ? l10n.swipePlayVideo : null,
@@ -268,10 +291,16 @@ class _SwipeSessionPageState extends ConsumerState<SwipeSessionPage> {
 
   Future<void> _playVideo(WidgetRef ref, String assetId) async {
     final l10n = context.l10n;
-    final result = await ref.read(photosRepositoryProvider).resolvePlayablePath(assetId);
-    if (!mounted) return;
+    var path = _playablePaths[assetId];
+    if (path == null || path.isEmpty) {
+      final result = await ref.read(photosRepositoryProvider).resolvePlayablePath(assetId);
+      if (!mounted) return;
+      path = result is Success<String?> ? result.value : null;
+      if (path != null && path.isNotEmpty) {
+        _playablePaths[assetId] = path;
+      }
+    }
 
-    final path = result is Success<String?> ? result.value : null;
     if (path == null || path.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.swipeVideoUnavailable)),
@@ -281,8 +310,49 @@ class _SwipeSessionPageState extends ConsumerState<SwipeSessionPage> {
 
     await showDialog<void>(
       context: context,
-      builder: (_) => PhotoAssetVideoPlayerDialog(filePath: path),
+      builder: (_) => PhotoAssetVideoPlayerDialog(filePath: path!),
     );
+  }
+
+  void _warmUpcomingMedia(WidgetRef ref, SwipeSessionState state) {
+    if (!widget.isPhotos || state.items.isEmpty) return;
+    final start = state.currentIndex;
+    final end = start + 4;
+    for (var i = start; i < state.items.length && i < end; i++) {
+      final item = state.items[i];
+      unawaited(
+        ref.read(
+          photoThumbnailProvider((assetId: item.id, size: _swipeThumbSize)).future,
+        ),
+      );
+      if (item.isVideo) {
+        unawaited(_warmPlayable(ref, item.id));
+      }
+      if (i > start) {
+        unawaited(
+          ref.read(
+            photoThumbnailProvider((assetId: item.id, size: SwipeUpcomingStrip.thumbSize)).future,
+          ),
+        );
+      }
+    }
+  }
+
+  Future<void> _warmPlayable(WidgetRef ref, String assetId) async {
+    if (_playablePaths.containsKey(assetId) || _warmingPlayable.contains(assetId)) {
+      return;
+    }
+    _warmingPlayable.add(assetId);
+    try {
+      final result = await ref.read(photosRepositoryProvider).resolvePlayablePath(assetId);
+      if (!mounted) return;
+      final path = result is Success<String?> ? result.value : null;
+      if (path != null && path.isNotEmpty) {
+        _playablePaths[assetId] = path;
+      }
+    } finally {
+      _warmingPlayable.remove(assetId);
+    }
   }
 
   void _showDetail(BuildContext context, WidgetRef ref, SwipeItem item) {

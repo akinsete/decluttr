@@ -29,7 +29,7 @@ class _PhotoAssetVideoPlayerDialogState
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.file(File(widget.filePath));
+    _controller = _controllerFor(widget.filePath);
     _init = _controller.initialize().then((_) {
       if (!mounted) return;
       _controller
@@ -37,6 +37,20 @@ class _PhotoAssetVideoPlayerDialogState
         ..play();
       setState(() {});
     });
+  }
+
+  VideoPlayerController _controllerFor(String path) {
+    final uri = Uri.tryParse(path);
+    if (path.startsWith('content://') && uri != null) {
+      return VideoPlayerController.contentUri(uri);
+    }
+    if ((path.startsWith('http://') ||
+            path.startsWith('https://') ||
+            path.startsWith('file://')) &&
+        uri != null) {
+      return VideoPlayerController.networkUrl(uri);
+    }
+    return VideoPlayerController.file(File(path));
   }
 
   @override

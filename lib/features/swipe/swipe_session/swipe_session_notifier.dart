@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
@@ -213,38 +215,32 @@ class SwipeSessionNotifier extends Notifier<SwipeSessionState> {
     _lastRemoved = item;
     _lastDecision = SwipeDecision.keep;
     state = state.copyWith(currentIndex: state.currentIndex + 1, kept: state.kept + 1);
-    await ref.read(appHapticsProvider).decision();
-    await ref.read(appStateProvider.notifier).recordActivity();
-    await _prefetchIfNeeded();
+    unawaited(_afterDecision());
   }
 
   Future<void> deleteCurrent() async {
     final item = state.currentItem;
     if (item == null) return;
 
-    var sizeBytes = item.sizeBytes;
-    if (state.isPhotos && sizeBytes <= 0) {
-      final sized = await ref.read(photosRepositoryProvider).resolvePhotoSizeBytes(item.id);
-      sizeBytes = sized.valueOrNull ?? 0;
-    }
-
+    // Never await originFile/length on the swipe path — large photos/videos
+    // freeze the UI. Use the known size (may be 0) and backfill later.
+    final sizeBytes = item.sizeBytes > 0 ? item.sizeBytes : 0;
     final trashedItem = item.copyWith(sizeBytes: sizeBytes);
+    final isPhotos = state.isPhotos;
 
-    await ref
-        .read(trashRepositoryProvider)
-        .add(
+    await ref.read(trashRepositoryProvider).add(
           TrashItem(
             id: trashedItem.id,
-            type: state.isPhotos ? TrashItemType.photo : TrashItemType.contact,
+            type: isPhotos ? TrashItemType.photo : TrashItemType.contact,
             title: trashedItem.title,
             subtitle: trashedItem.subtitle,
             deletedAt: DateTime.now(),
-            monthKey: state.isPhotos ? state.batchId : null,
-            initial: state.isPhotos ? null : _initials(trashedItem.title),
-            sizeBytes: state.isPhotos ? sizeBytes : 0,
+            monthKey: isPhotos ? state.batchId : null,
+            initial: isPhotos ? null : _initials(trashedItem.title),
+            sizeBytes: isPhotos ? sizeBytes : 0,
             gradientIndex: trashedItem.gradientIndex,
-            isVideo: state.isPhotos ? trashedItem.isVideo : false,
-            durationLabel: state.isPhotos ? trashedItem.durationLabel : null,
+            isVideo: isPhotos ? trashedItem.isVideo : false,
+            durationLabel: isPhotos ? trashedItem.durationLabel : null,
           ),
         );
 
@@ -256,11 +252,39 @@ class SwipeSessionNotifier extends Notifier<SwipeSessionState> {
     state = state.copyWith(
       currentIndex: state.currentIndex + 1,
       deleted: state.deleted + 1,
-      deletedBytes: state.deletedBytes + (state.isPhotos ? sizeBytes : 0),
+      deletedBytes: state.deletedBytes + (isPhotos ? sizeBytes : 0),
     );
+
+    if (isPhotos && item.sizeBytes <= 0) {
+      unawaited(_backfillDeletedSize(trashedItem.id));
+    }
+
+    unawaited(_afterDecision());
+  }
+
+  Future<void> _afterDecision() async {
+    if (!ref.mounted) return;
     await ref.read(appHapticsProvider).decision();
+    if (!ref.mounted) return;
     await ref.read(appStateProvider.notifier).recordActivity();
+    if (!ref.mounted) return;
     await _prefetchIfNeeded();
+  }
+
+  /// Resolves file size off the swipe critical path and patches session stats.
+  Future<void> _backfillDeletedSize(String assetId) async {
+    final sized =
+        await ref.read(photosRepositoryProvider).resolvePhotoSizeBytes(assetId);
+    if (!ref.mounted) return;
+    final sizeBytes = sized.valueOrNull ?? 0;
+    if (sizeBytes <= 0) return;
+
+    if (_lastRemoved?.id == assetId) {
+      _lastRemoved = _lastRemoved!.copyWith(sizeBytes: sizeBytes);
+    }
+    if (_lastDecision == SwipeDecision.delete && state.deleted > 0) {
+      state = state.copyWith(deletedBytes: state.deletedBytes + sizeBytes);
+    }
   }
 
   Future<void> undoLast() async {
